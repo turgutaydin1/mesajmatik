@@ -36,35 +36,38 @@ function generateMessage_(p) {
     const uslup = String(p.uslup || "samimi").slice(0, 30);
     const uzunluk = String(p.uzunluk || "orta").slice(0, 20);
     const hitap = String(p.hitap || "").slice(0, 100);
-    const anahtar = String(p.anahtar || "").slice(0, 300);
+    const anahtar = String(p.anahtar || "").slice(0, 350);
     const imza = String(p.imza || "").slice(0, 120);
 
     if (!gun) return { error: "Gün bilgisi eksik." };
 
     const uzunlukMetni = uzunluk === "kisa" ? "45-70 kelime" : uzunluk === "uzun" ? "150-210 kelime" : "90-130 kelime";
 
-    const prompt = `Sen manevi yönü güçlü, hitabet yeteneği yüksek, samimi ve derinlikli bir yazarsın. Görevin; kullanıcının seçtiği dini gün ve belirttiği özel anahtar kelimeler/imza doğrultusunda özgün bir tebrik mesajı üretmektir.
+    const prompt = `Sen manevi yönü güçlü, hitabet yeteneği yüksek, samimi ve derinlikli bir yazarsın. Görevin; kullanıcının seçtiği dini gün ve belirttiği özel kavramlar doğrultusunda özgün bir tebrik mesajı üretmektir.
 
 Girdi:
 - Dini gün / zaman: ${gun}
 - Üslup tercihi: ${uslup}
 - Hedef uzunluk: ${uzunlukMetni}
 - Hitap: ${hitap || "yok"}
-- Özel anahtar kelimeler / hassasiyetler: ${anahtar || "yok"}
+- Kullanıcının verdiği kavramlar / hassasiyetler: ${anahtar || "yok"}
 - İmza: ${imza || "yok"}
 
 Kurallar ve üslup rehberi:
-1. Hitap ve Ton: Dil son derece samimi, sıcak, kucaklayıcı ve manevi derinliği yüksek bir Türkçe olmalı. Ne çok resmî ve soğuk ne de aşırı sıradan olmalı; kalbe dokunmalı.
-2. Coğrafi ve Toplumsal Vurgular: Kullanıcı özellikle Gazze, Doğu Türkistan, tüm İslam âlemi veya mazlum coğrafyalar gibi hassasiyetler belirttiğinde bunu ajitasyon yapmadan, onurlu, duacı ve kucaklayıcı bir üslupla mesaja mutlaka entegre et.
-3. Yapı: Akıcı bir giriş, günün manasına uygun dualar, anahtar kelimelerin doğal şekilde harmanlandığı orta bölüm ve istenmişse şık bir imza/kapanış kullan.
-4. Çeşitlilik: Her üretimde kelimeleri, cümle yapılarını, açılışı ve kapanışı taze tut. Kalıplaşmış, ezbere metinlerden kaçın; mesaj benzersiz hissettirsin.
-5. Türkçe dilbilgisi kusursuz olsun. Cuma Günü'ünüz gibi hatalı ekler kullanma.
-6. Emin olmadığın ayet veya hadis alıntısı yapma; kaynak uydurma.
-7. Dua ağırlıklı üslup seçilmiş olsa bile her mesajın sonuna otomatik olarak “Allah kabul eylesin” ekleme. Kapanışı mesajın anlamına göre doğal biçimde oluştur.
-8. Hitap verilmişse ilk satırda hitabı yaz ve ardından bir boş satır bırak.
-9. İmza verilmişse en sonda bir boş satırdan sonra yalnızca imzayı yaz; “Saygılarımla” gibi otomatik ek yapma.
-10. Başlık, açıklama, madde işareti veya tırnak kullanma. Yalnızca son mesaj metnini döndür.
-11. Önceki üretimlerden bağımsız ve taze bir metin üret. Aynı giriş-kapanış kalıbını tekrar etme.
+1. Dil son derece samimi, sıcak, kucaklayıcı ve manevi derinliği yüksek bir Türkçe olmalı. Ne çok resmî ve soğuk ne de aşırı sıradan olmalı; kalbe dokunmalı.
+2. ANAHTAR KELİMELERİ LİSTE GİBİ TEKRARLAMA. Önce her kavramın anlamını, türünü ve bağlamını zihninde yorumla. Sonra ilgili kavramları anlamlı temalara dönüştürerek metne doğal biçimde yedir. Kullanıcının yazdığı kelimeleri aynen kullanmak zorunda değilsin.
+3. Yer adlarını, insan gruplarını, duyguları, değerleri ve temennileri birbirinden ayır. Örneğin “Gazze, Doğu Türkistan, umut, çocuklar, sabır” girdisini “Gazze, Doğu Türkistan, umut, çocuklar, sabır için dua ediyoruz” gibi mekanik bir listeye dönüştürme. Gazze ve Doğu Türkistan'ı mazlum coğrafyalardaki kardeşlerimizin huzur ve selameti bağlamında; çocukları güven, merhamet ve gelecek bağlamında; umut ve sabrı ise metnin manevi duygusu içinde işle.
+4. Gazze, Doğu Türkistan, tüm İslam âlemi, mazlum coğrafyalar gibi hassasiyetler varsa ajitasyon, slogan veya siyasi dil kullanmadan; onurlu, insani, duacı ve kucaklayıcı bir tonla yer ver.
+5. Anahtar kelimeler arasında anlam ilişkisi kur. Birbirine ait olanları aynı cümlede doğal biçimde birleştir; alakasız olanları zorla yan yana getirme.
+6. Yapı: Akıcı ve özgün bir giriş; günün manasına uygun manevi dilek ve dualar; kullanıcının hassasiyetlerinin anlamlı biçimde işlendiği orta bölüm; zarif ve doğal bir kapanış.
+7. Çeşitlilik: Her üretimde kelime seçimini, cümle uzunluklarını, giriş biçimini, dua yapısını ve kapanışı değiştir. Kalıplaşmış “bu mübarek gün vesilesiyle...” tarzı ezber başlangıçlara sürekli yaslanma.
+8. Aynı girdi tekrar verilse bile önceki mesaja benzeyen bir metin üretmemeye çalış. Benzersiz, insan eliyle yazılmış hissi versin.
+9. Türkçe dilbilgisi kusursuz olsun. “Cuma Günü'ünüz” gibi yanlış ekler veya yapay ifadeler kullanma.
+10. Dini içerikte saygılı ve ölçülü ol. Doğruluğundan emin olmadığın ayet veya hadis alıntısı yapma, kaynak uydurma.
+11. Dua ağırlıklı üslup seçilmiş olsa bile her mesajın sonuna otomatik olarak “Allah kabul eylesin” veya başka sabit bir cümle ekleme. Kapanışı metnin anlamına göre özgün kur.
+12. Hitap verilmişse ilk satırda hitabı yaz ve ardından bir boş satır bırak.
+13. İmza verilmişse en sonda bir boş satırdan sonra yalnızca imzayı yaz; “Saygılarımla” gibi otomatik bir ek yapma.
+14. Başlık, açıklama, madde işareti, tırnak veya “işte mesajınız” ifadesi kullanma. Yalnızca nihai mesaj metnini döndür.
 
 Şimdi yalnızca nihai mesajı yaz.`;
 
@@ -72,9 +75,9 @@ Kurallar ve üslup rehberi:
     const payload = {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
-        temperature: 1.15,
-        topP: 0.95,
-        maxOutputTokens: 700
+        temperature: 1.18,
+        topP: 0.96,
+        maxOutputTokens: 750
       }
     };
 
@@ -97,7 +100,6 @@ Kurallar ve üslup rehberi:
 
     if (!text) return { error: "Boş yanıt alındı." };
     return { text: text };
-
   } catch (err) {
     return { error: "Sunucu hatası.", detail: String(err) };
   }
