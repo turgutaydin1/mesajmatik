@@ -65,18 +65,19 @@ SEÇİMLER:
 ${uslupTalimatlari}
 
 ZORUNLU KALİTE KURALLARI:
-1. Kullanıcının özel vurgu alanındaki HER ifadeyi önce bağlam içinde sessizce anlamlandır. Önceden tanımlanmış kelime listelerine dayanma. İfade kişi, kurum, yer, topluluk, millet, unvan, statü, nesne, olay, duygu, değer, soyut kavram veya bambaşka bir şey olabilir.
-2. Farklı anlam türlerini sırf virgülle yan yana yazıldı diye aynı dilbilgisel nesne gibi birleştirme.
-3. Türkçe ekleri, zamirleri, özne-yüklem ve tekil-çoğul uyumunu kusursuz kur. Bir zamirin neye döndüğü belirsizse o zamiri kullanma.
-4. Kullanıcının yazdığı özel ad, kurum, kişi, unvan veya resmî adlandırmanın doğru biçiminden emin değilsen onu başka bir ada dönüştürme. Yalnızca açık bir yazım düzeltmesinden eminsen düzelt.
-5. Kullanıcı girdisini mekanik biçimde tırnak içine alıp “bu konudaki hassasiyetiniz” gibi hazır cümlelere yerleştirme. Girdinin gerçek anlamını mesajın doğal akışına yedir.
-6. “diliyorum”, “dilerim”, “temenni ederim”, “ümit ederim”, “vesile olsun”, “huzur ve bereket” gibi kalıpları gereksiz tekrar etme.
-7. Aynı girdilerde Samimi, Resmî ve Kurumsal mesajlar yalnızca kelime değişiklikleriyle birbirine benzemesin. Giriş, özne, cümle yapısı, vurgu sırası ve kapanış da değişsin.
-8. Cümleler birbirine anlam bakımından bağlı olsun; hazır parçalar yapıştırılmış gibi görünmesin.
-9. Hitap verilmişse ilk satırda yaz ve bir boş satır bırak. İmza verilmişse en sonda bir boş satırdan sonra yalnızca imzayı yaz.
-10. “Allah kabul eylesin”, “Saygılarımla”, “Sevgilerimle” gibi sabit kapanışları otomatik ekleme.
-11. Dinî, tarihî, kurumsal veya toplumsal bilgi uydurma.
-12. Mesajı göndermeden önce sessizce dilbilgisi, anlam, tekrar ve seçilen üslup açısından kontrol edip hataları düzelt.
+1. Kullanıcının özel vurgu alanındaki HER ayrı ifadeyi önce bağlam içinde sessizce anlamlandır. Önceden tanımlanmış kelime listelerine dayanma. İfade kişi, kurum, yer, topluluk, millet, unvan, statü, nesne, olay, duygu, değer, soyut kavram veya bambaşka bir şey olabilir.
+2. Özel vurgu alanı boş değilse kullanıcının yazdığı HER ayrı vurgu nihai mesajda tanınabilir biçimde yer almak ZORUNDADIR. Hiçbir vurguyu görmezden gelme veya yalnızca zihninde dikkate alıp metinden çıkarma. Türkçe doğal akış için çoğul, iyelik veya hâl eki kullanılabilir; ancak ifadenin kökü ve anlamı açıkça seçilebilmelidir. Örneğin kullanıcı "şehit" yazdıysa nihai mesajda "şehit", "şehitlerimiz", "şehitlerimizi" gibi açık bir kullanım bulunmalıdır. Bu örnek bir sözlük değildir; aynı kural kullanıcının yazabileceği her ifade için geçerlidir.
+3. Farklı anlam türlerini sırf virgülle yan yana yazıldı diye aynı dilbilgisel nesne gibi birleştirme.
+4. Türkçe ekleri, zamirleri, özne-yüklem ve tekil-çoğul uyumunu kusursuz kur. Bir zamirin neye döndüğü belirsizse o zamiri kullanma.
+5. Kullanıcının yazdığı özel ad, kurum, kişi, unvan veya resmî adlandırmanın doğru biçiminden emin değilsen onu başka bir ada dönüştürme. Yalnızca açık bir yazım düzeltmesinden eminsen düzelt.
+6. Kullanıcı girdisini mekanik biçimde tırnak içine alıp “bu konudaki hassasiyetiniz”, “özel olarak belirttiğiniz” veya “bu vurgu” gibi hazır cümlelere yerleştirme. Girdinin gerçek anlamını mesajın doğal akışına yedir.
+7. “diliyorum”, “dilerim”, “temenni ederim”, “ümit ederim”, “vesile olsun”, “huzur ve bereket” gibi kalıpları gereksiz tekrar etme.
+8. Aynı girdilerde Samimi, Resmî ve Kurumsal mesajlar yalnızca kelime değişiklikleriyle birbirine benzemesin. Giriş, özne, cümle yapısı, vurgu sırası ve kapanış da değişsin.
+9. Cümleler birbirine anlam bakımından bağlı olsun; hazır parçalar yapıştırılmış gibi görünmesin.
+10. Hitap verilmişse ilk satırda yaz ve bir boş satır bırak. İmza verilmişse en sonda bir boş satırdan sonra yalnızca imzayı yaz.
+11. “Allah kabul eylesin”, “Saygılarımla”, “Sevgilerimle” gibi sabit kapanışları otomatik ekleme.
+12. Dinî, tarihî, kurumsal veya toplumsal bilgi uydurma.
+13. Mesajı göndermeden önce sessizce dilbilgisi, anlam, tekrar, seçilen üslup ve kullanıcının HER özel vurgusunun metinde görünür olup olmadığı açısından kontrol et. Bir vurgu eksikse mesajı döndürmeden önce düzelt.
 
 ${onceki ? `ÖNCEKİ MESAJ:\n---\n${onceki}\n---\nYeni mesajı bunun girişinden, cümle ritminden, vurgu sırasından ve kapanışından belirgin biçimde farklı kur.` : ""}
 
