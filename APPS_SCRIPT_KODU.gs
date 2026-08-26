@@ -13,14 +13,16 @@ function doPost(e) {
     const body = JSON.parse((e && e.postData && e.postData.contents) || "{}");
     return ContentService.createTextOutput(JSON.stringify(generateMessage_(body))).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ error: String(err) })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ error: "İstek okunamadı.", detail: String(err) })).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
 function generateMessage_(p) {
   try {
     const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
-    if (!apiKey) return { error: "API anahtarı tanımlı değil." };
+    if (!apiKey) {
+      return { error: "Gemini bağlantısı kurulamadı.", detail: "GEMINI_API_KEY Script Property bulunamadı." };
+    }
 
     const gun = String(p.gun || "").slice(0, 80);
     const uslup = String(p.uslup || "samimi").slice(0, 40);
@@ -30,13 +32,9 @@ function generateMessage_(p) {
     const imza = String(p.imza || "").slice(0, 160);
     const onceki = String(p.onceki || "").slice(0, 1200);
 
-    if (!gun) return { error: "Gün bilgisi eksik." };
+    if (!gun) return { error: "Gün bilgisi eksik.", detail: "gun parametresi boş." };
 
-    const uzunlukMetni =
-      uzunluk === "kisa" ? "45-70 kelime" :
-      uzunluk === "uzun" ? "150-210 kelime" :
-      "90-130 kelime";
-
+    const uzunlukMetni = uzunluk === "kisa" ? "45-70 kelime" : uzunluk === "uzun" ? "150-210 kelime" : "90-130 kelime";
     const uslupAdi = {
       samimi: "Samimi",
       resmi: "Resmî",
@@ -46,159 +44,45 @@ function generateMessage_(p) {
     }[uslup] || "Samimi";
 
     const uslupTalimatlari = {
-      samimi: `
-SAMİMİ MESAJ:
-- Metni kişiden kişiye yazılmış gibi kur.
-- İçten, dostane ve sıcak ol; fakat seviyeyi koru.
-- Kurumsal "biz", "paydaşlarımız", "kurumumuz" diline kayma.
-- Resmî yazışma kalıplarını ana omurga yapma.
-- Cümle yapıları daha doğal ve insani olsun.
-`,
-      resmi: `
-RESMÎ MESAJ:
-- Samimi metnin kelimelerini resmîleştirmekle yetinme; metni baştan resmî kur.
-- Saygılı, mesafeli, dengeli ve profesyonel bir hitabet kullan.
-- Kişisel duygu yoğunluğunu ve konuşma dili sıcaklığını azalt.
-- Cümle kuruluşları daha kontrollü, ölçülü ve protokol diline yakın olsun.
-- Aynı "dilerim / temenni ederim / ümit ederim" fiillerini art arda tekrarlama.
-- Kapanış samimi mesajdan yapısal olarak farklı olsun.
-`,
-      kurumsal: `
-KURUMSAL MESAJ:
-- Bireysel bir metni çoğul eki ekleyerek kurumsallaştırma; metni baştan kurum adına tasarla.
-- Temsil dili kullan; bireysel "ben / gönlümden / şahsen" yapılarından kaçın.
-- Uygun olduğunda ortak değerler, birlik, dayanışma, çalışanlar, paydaşlar, toplum ve sorumluluk perspektifi kur.
-- "Biz" dili yalnızca doğal olduğu yerde kullan.
-- Mesaj bir kurumun yayımlayacağı metin gibi güven veren, ciddi ve kucaklayıcı olsun.
-- Kapanış kurum adına tebrik niteliğinde olsun.
-`,
-      dua: `
-DUA AĞIRLIKLI MESAJ:
-- Metnin ana omurgası dua olsun.
-- Aynı dua kipini peş peşe tekrarlama; dua fiillerini ve cümle yapısını çeşitlendir.
-- Sıradan bir tebrik metninin sonuna birkaç dua eklemekle yetinme.
-- Manevi yoğunluk yüksek ama sade ve anlaşılır olsun.
-`,
-      kaynakli: `
-AYET / HADİS AĞIRLIKLI MESAJ:
-- Ana temayı destekleyen yalnızca kısa ve doğruluğundan yüksek derecede emin olduğun bir ayet meali veya sahih hadis kullan.
-- Kaynağı kısa ve açık biçimde belirt.
-- Emin olmadığın hiçbir sözü ayet veya hadis diye aktarma.
-- Kaynak, mesajın akışına doğal biçimde bağlansın; metni boğmasın.
-`
+      samimi: "Metni kişiden kişiye yazılmış gibi kur. İçten, sıcak ve doğal ol; kurumsal veya protokol dili kullanma.",
+      resmi: "Metni baştan resmî kur. Saygılı, mesafeli, dengeli ve profesyonel hitabet kullan. Samimi metnin birkaç kelimesini değiştirmiş gibi görünmesin.",
+      kurumsal: "Metni baştan kurum adına tasarla. Temsil dili, ortak değerler ve çoğul bakış kullan. Bireysel bir mesajı sadece çoğul eklerle kurumsallaştırma.",
+      dua: "Metnin ana omurgası dua olsun. Dua kiplerini ve fiilleri çeşitlendir; aynı kalıbı tekrar etme.",
+      kaynakli: "Doğruluğundan yüksek derecede emin olduğun kısa bir ayet meali veya sahih hadis kullan ve kaynağını belirt. Emin olmadığın alıntıyı kullanma."
     }[uslup] || "";
 
-    const prompt = `SİSTEM ROLÜ VE TALİMATLARI:
+    const prompt = `Sen manevi değerlerine bağlı, temiz ve doğal Türkçe kullanan özenli bir yazarsın. Yalnızca nihai mesaj metnini üret; başlık, açıklama veya analiz yazma.
 
-Sen manevi değerlerine bağlı, net, dengeli ve özenli bir yazarsın. Görevin; kullanıcının seçtiği dini gün, mesaj türü, özel vurgu / anahtar kelimeler, hitap ve imza detayına sadık kalarak özgün tebrik mesajları üretmektir.
-
-Üreteceğin çıktı doğrudan kullanılabilir mesaj metni olmalıdır. Başlık, açıklama, analiz, madde listesi veya "işte mesajınız" gibi ifadeler yazma.
-
-TEMEL DİL KURALLARI:
-- Türkçe temiz, doğal, anlaşılır, vakur ve dilbilgisel olarak doğru olmalı.
-- Ağdalı, Osmanlıca ağırlıklı veya anlaşılması güç bir dil kullanma.
-- Laçka, argo veya aşırı sıradan bir dil kullanma.
-- Aynı kelimeyi, yüklemi, dilek kalıbını veya cümle ritmini kısa aralıklarla tekrar etme.
-- Özellikle "diliyorum", "dilerim", "temenni ederim", "ümit ederim", "vesile olsun", "huzur ve bereket" gibi kalıpları gereksiz yere çoğaltma.
-- Her cümle metne yeni bir anlam, duygu veya işlev katmalı.
-
-MESAJ TÜRÜ: ${uslupAdi}
-${uslupTalimatlari}
-
-KULLANICI GİRDİLERİ:
-- Dini gün / zaman: ${gun}
-- Hedef uzunluk: ${uzunlukMetni}
+SEÇİMLER:
+- Gün: ${gun}
+- Üslup: ${uslupAdi}
+- Uzunluk: ${uzunlukMetni}
 - Hitap: ${hitap || "yok"}
-- Özel vurgu / anahtar kelimeler: ${anahtar || "yok"}
+- Özel vurgu / kullanıcı girdisi: ${anahtar || "yok"}
 - İmza: ${imza || "yok"}
 
-DİNAMİK ANLAMLANDIRMA KURALI — EN ÖNEMLİ BÖLÜM:
-Kullanıcının özel vurgu alanına yazdığı hiçbir ifade için önceden tanımlanmış sabit bir kelime listesine, sözlüğe, örnek tablosuna veya birkaç bilinen kelimeye bağımlı kalma.
+ÜSLUP KURALI:
+${uslupTalimatlari}
 
-Her çağrıda kullanıcının yazdığı HER ifadeyi kendi bağlamı içinde sessizce analiz et ve anlamını kendin belirle. Bir ifade; özel ad, kişi, kurum, kuruluş, yer, coğrafya, topluluk, millet, insan grubu, unvan, statü, nesne, olay, tarihî kavram, duygu, değer, soyut tema, hedef, temenni veya bunların dışında başka bir anlam türünde olabilir. Bu liste yalnızca olası türleri anlatır; kullanıcı girdisini bu seçeneklerden birine zorlamak zorunda değilsin.
+ZORUNLU KALİTE KURALLARI:
+1. Kullanıcının özel vurgu alanındaki HER ifadeyi önce bağlam içinde sessizce anlamlandır. Önceden tanımlanmış kelime listelerine dayanma. İfade kişi, kurum, yer, topluluk, millet, unvan, statü, nesne, olay, duygu, değer, soyut kavram veya bambaşka bir şey olabilir.
+2. Farklı anlam türlerini sırf virgülle yan yana yazıldı diye aynı dilbilgisel nesne gibi birleştirme.
+3. Türkçe ekleri, zamirleri, özne-yüklem ve tekil-çoğul uyumunu kusursuz kur. Bir zamirin neye döndüğü belirsizse o zamiri kullanma.
+4. Kullanıcının yazdığı özel ad, kurum, kişi, unvan veya resmî adlandırmanın doğru biçiminden emin değilsen onu başka bir ada dönüştürme. Yalnızca açık bir yazım düzeltmesinden eminsen düzelt.
+5. Kullanıcı girdisini mekanik biçimde tırnak içine alıp “bu konudaki hassasiyetiniz” gibi hazır cümlelere yerleştirme. Girdinin gerçek anlamını mesajın doğal akışına yedir.
+6. “diliyorum”, “dilerim”, “temenni ederim”, “ümit ederim”, “vesile olsun”, “huzur ve bereket” gibi kalıpları gereksiz tekrar etme.
+7. Aynı girdilerde Samimi, Resmî ve Kurumsal mesajlar yalnızca kelime değişiklikleriyle birbirine benzemesin. Giriş, özne, cümle yapısı, vurgu sırası ve kapanış da değişsin.
+8. Cümleler birbirine anlam bakımından bağlı olsun; hazır parçalar yapıştırılmış gibi görünmesin.
+9. Hitap verilmişse ilk satırda yaz ve bir boş satır bırak. İmza verilmişse en sonda bir boş satırdan sonra yalnızca imzayı yaz.
+10. “Allah kabul eylesin”, “Saygılarımla”, “Sevgilerimle” gibi sabit kapanışları otomatik ekleme.
+11. Dinî, tarihî, kurumsal veya toplumsal bilgi uydurma.
+12. Mesajı göndermeden önce sessizce dilbilgisi, anlam, tekrar ve seçilen üslup açısından kontrol edip hataları düzelt.
 
-Önce şu soruları sessizce çöz:
-1. İfade gerçekte neyi ifade ediyor?
-2. Tekil mi, çoğul mu, özel ad mı, cins isim mi?
-3. Cümlede hangi dilbilgisel görevi doğal biçimde alır?
-4. Kullanıcının diğer ifadeleriyle anlam ilişkisi nedir?
-5. Dini gün mesajında bu ifade hangi bağlamda doğal ve saygılı biçimde kullanılabilir?
-6. İfade hassas bir insan grubu, tarihî/toplumsal konu, sağlık kurumu, unvan/statü, nesne veya başka özel bağlam taşıyorsa bunu uygun saygı ve doğrulukla nasıl ele almak gerekir?
+${onceki ? `ÖNCEKİ MESAJ:\n---\n${onceki}\n---\nYeni mesajı bunun girişinden, cümle ritminden, vurgu sırasından ve kapanışından belirgin biçimde farklı kur.` : ""}
 
-ÇOK ÖNEMLİ:
-- Kullanıcının yazdığı hiçbir ifadeyi sırf alışılmadık diye atlama.
-- Bir ifadenin özel ad, kurum adı, kişi adı, unvan veya resmî adlandırma olma ihtimali varsa ve doğru yazımından emin değilsen, onu kafana göre başka bir ada dönüştürme; kullanıcının verdiği biçimi koru.
-- Yalnızca açık ve güvenli bir Türkçe büyük/küçük harf ya da ek düzeltmesi olduğundan eminsen düzelt.
-- Anlamından emin olmadığın bir ifadeye kategori uydurma; nötr ama dilbilgisel olarak doğru bir bağ kur.
-- Kullanıcının tüm girdilerini tek tek zihninde hesaba kattığından emin ol; bazılarını sessizce yok sayma.
+Yalnızca nihai mesajı yaz.`;
 
-Bu iç analizi kullanıcıya yazma; yalnızca sonucunu düzgün Türkçe mesajda uygula.
-
-ANLAMSAL BÜTÜNLÜK:
-- Farklı anlam türlerini sırf kullanıcı virgülle yan yana yazdı diye aynı dilbilgisel nesneymiş gibi bağlama.
-- Her ifadeye gerçek anlamına uygun ek, zamir, fiil ve cümle ilişkisi kur.
-- "orada", "onlar", "bunlar", "için", "hakkında" gibi zamir ve edatları ancak hangi ifadeye döndüğü açık ve dilbilgisel olarak doğruysa kullan.
-- Özne-yüklem, tekil-çoğul, kişi ve zaman uyumunu son kontrolde mutlaka doğrula.
-- Türkçe ekleri özel adların ve kurum/topluluk adlarının gerçek yazımına göre doğru getir.
-- Kullanıcının yazımında küçük/büyük harf veya açık bir ek hatası varsa anlamı bozmadan Türkçe yazımını düzelt.
-
-KULLANICI VURGULARININ KULLANIMI:
-- Kullanıcının verdiği ifadeleri mekanik bir liste gibi tekrar etme.
-- Birden fazla ifadeyi "X, Y, Z için..." biçiminde zorla tek cümleye yığma.
-- Somut veya kimliği belirli bir kişi, yer, kurum, topluluk, unvan/statü ya da özel ad kullanıcının asıl vurgusunu oluşturuyorsa onu metinde tanınabilir biçimde koru.
-- Soyut duygu/değer/tema niteliğindeki ifadeleri aynen yazmak zorunda değilsin; anlamlarını doğal biçimde metne yedirebilirsin.
-- Kullanıcının yazdığı bir ifade alışılmadık olsa bile onu görmezden gelme; önce bağlamını anlamaya çalış, sonra mesajın doğallığını bozmadan işle.
-- Bir ifadenin anlamından emin değilsen yanlış sınıflandırma uydurma. İfadeyi güvenli, genel ve dilbilgisel olarak doğru bir yapı içinde kullan.
-
-ÜSLUPLAR ARASINDA GERÇEK FARK:
-Aynı girdiler farklı mesaj türleriyle çağrıldığında yalnızca birkaç kelime değiştirilmiş benzer metinler üretme.
-- Samimi: kişisel yakınlık, sıcaklık ve doğal anlatım.
-- Resmî: mesafe, saygı, profesyonel hitabet ve kontrollü cümle yapısı.
-- Kurumsal: kurum/topluluk perspektifi, temsil dili, ortak değerler ve çoğul bakış.
-- Dua Ağırlıklı: dua yapısı metnin ana omurgası.
-- Ayet/Hadis Ağırlıklı: güvenilir kısa kaynak metnin ana temasını destekler.
-Giriş, gelişme, vurgu sırası, özne seçimi, fiil yapısı ve kapanış da seçilen türe göre değişmeli.
-
-AKIŞ:
-- Günün anlamına uygun doğal bir giriş kur.
-- Kullanıcının özel vurgularını anlam ilişkisine göre uygun yerlere dağıt.
-- Cümleler birbirinden kopuk hazır parçalar gibi durmasın.
-- Bir önceki cümlenin anlamından alakasız bir şablon cümleye atlama.
-- Kapanışı seçilen üsluba göre kur.
-- Bu akış bir kalıp değildir; her çağrıda farklı bir yapı oluşturabilirsin.
-
-HİTAP VE İMZA:
-- Hitap verilmişse ilk satırda yaz ve ardından bir boş satır bırak.
-- İmza verilmişse en sonda bir boş satırdan sonra yalnızca imzayı yaz.
-- Otomatik olarak "Saygılarımla", "Sevgilerimle", "Allah kabul eylesin" gibi sabit kapanışlar ekleme.
-
-DİNİ DOĞRULUK:
-- Ayet/Hadis Ağırlıklı tür seçilmediyse gereksiz alıntılarla metni doldurma.
-- Kaynaklı türde doğruluğundan yüksek derecede emin olmadığın hiçbir ayet veya hadis aktarma.
-- Dinî, tarihî, kurumsal veya toplumsal bilgi uydurma.
-
-TEKRAR ÖNLEME:
-${onceki ? `Aşağıdaki metin bir önceki üretimdir:
----
-${onceki}
----
-Yeni mesajda aynı giriş, aynı orta paragraf, aynı özel vurgu cümlesi, aynı kapanış veya aynı cümle ritmini kullanma. Yeni metni belirgin biçimde farklı kur.` : `Bu çağrıda da ezber ve kalıplaşmış cümlelerden uzak dur.`}
-
-SON KONTROL:
-Mesajı döndürmeden önce sessizce kontrol et:
-- Kullanıcının tüm önemli vurgularını gerçekten ele aldın mı?
-- Her ifade gerçek anlamına uygun biçimde kullanıldı mı?
-- Bir özel adı, kurum adını veya unvanı yanlışlıkla başka şeye çevirdin mi?
-- Yanlış sınıflandırma, anlamsız bağlama veya uygunsuz zamir var mı?
-- Özne-yüklem ve tekil-çoğul uyumu doğru mu?
-- Türkçe ekler, özel ad yazımı ve büyük/küçük harfler doğru mu?
-- Aynı fiil veya kalıp gereksiz tekrar ediyor mu?
-- Seçilen mesaj türü yalnızca kelimelerde değil, bütün metin yapısında hissediliyor mu?
-- Metin doğal, tutarlı ve insan eliyle yazılmış gibi mi?
-
-Bir hata görürsen sessizce düzelt. Yalnızca nihai mesajı döndür.`;
-
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(apiKey);
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
     const payload = {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
@@ -208,34 +92,61 @@ Bir hata görürsen sessizce düzelt. Yalnızca nihai mesajı döndür.`;
       }
     };
 
-    const response = UrlFetchApp.fetch(url, {
-      method: "post",
-      contentType: "application/json",
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    });
+    let lastCode = 0;
+    let lastDetail = "Bilinmeyen Gemini API hatası.";
 
-    const code = response.getResponseCode();
-    const data = JSON.parse(response.getContentText() || "{}");
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const response = UrlFetchApp.fetch(url, {
+        method: "post",
+        contentType: "application/json",
+        headers: {
+          "x-goog-api-key": apiKey,
+          "x-goog-api-client": "mesajmatik-appsscript/1.0"
+        },
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      });
 
-    if (code < 200 || code >= 300) {
-      return {
-        error: "Üretim servisi yanıt vermedi.",
-        detail: (data.error && data.error.message) || String(code)
-      };
+      const code = response.getResponseCode();
+      lastCode = code;
+      let data = {};
+      try {
+        data = JSON.parse(response.getContentText() || "{}");
+      } catch (parseErr) {
+        lastDetail = "Gemini yanıtı JSON olarak okunamadı: " + String(parseErr);
+      }
+
+      if (code >= 200 && code < 300) {
+        const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
+        const text = Array.isArray(parts) ? parts.map(function(x){ return x.text || ""; }).join("\n").trim() : "";
+        if (text) return { text: text, engine: "ai", attempt: attempt };
+
+        const finishReason = data && data.candidates && data.candidates[0] && data.candidates[0].finishReason;
+        const blockReason = data && data.promptFeedback && data.promptFeedback.blockReason;
+        lastDetail = "Gemini boş yanıt verdi" + (finishReason ? "; finishReason=" + finishReason : "") + (blockReason ? "; blockReason=" + blockReason : "") + ".";
+        if (attempt < 3) Utilities.sleep(700 * attempt);
+        continue;
+      }
+
+      lastDetail = (data && data.error && data.error.message) ? data.error.message : response.getContentText().slice(0, 500);
+
+      if ((code === 429 || code === 500 || code === 502 || code === 503 || code === 504) && attempt < 3) {
+        Utilities.sleep(800 * Math.pow(2, attempt - 1));
+        continue;
+      }
+
+      break;
     }
 
-    const parts = data && data.candidates && data.candidates[0] &&
-      data.candidates[0].content && data.candidates[0].content.parts;
+    return {
+      error: "Gemini API hatası [" + lastCode + "]",
+      detail: lastDetail
+    };
 
-    const text = Array.isArray(parts)
-      ? parts.map(function(x){ return x.text || ""; }).join("\n").trim()
-      : "";
-
-    if (!text) return { error: "Boş yanıt alındı." };
-
-    return { text: text, engine: "ai" };
   } catch (err) {
-    return { error: "Sunucu hatası.", detail: String(err) };
+    return {
+      error: "Sunucu hatası.",
+      detail: String(err)
+    };
   }
 }
