@@ -1,86 +1,62 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesajmatik - Manevi Mesaj Oluşturucu</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 30px auto; padding: 20px; background: #f4f4f9; color: #333; }
-        .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-        h2 { color: #2c3e50; text-align: center; margin-top: 0; }
-        label { font-weight: bold; display: block; margin-top: 15px; font-size: 14px; color: #444; }
-        select, input, textarea { width: 100%; padding: 12px; margin-top: 6px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; margin-top: 22px; border-radius: 6px; border: none; background: #27ae60; color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
-        button:hover { background: #219653; }
-        textarea { height: 140px; margin-top: 15px; background: #fafafa; font-family: inherit; }
-        .kopyala-btn { background: #2980b9; margin-top: 10px; }
-        .kopyala-btn:hover { background: #2471a3; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesajmatik - Manevi Mesaj Oluşturucu</title>
+<style>
+:root{--yesil:#2f7d5a;--yesil2:#1f5d43;--altin:#c5a24d;--yazi:#26332c;--soluk:#6b766f}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#eef5f0 0%,#f7f5ef 100%);color:var(--yazi)}
+.wrap{max-width:760px;margin:0 auto;padding:18px}
+.box{background:rgba(255,255,255,.96);border:1px solid #e2e8e3;border-radius:18px;box-shadow:0 10px 30px rgba(34,65,47,.10);overflow:hidden}
+.header{padding:24px 22px 18px;text-align:center;background:linear-gradient(135deg,#edf7f0,#fffaf0);border-bottom:1px solid #e7ece8}
+.logo{font-size:34px}h1{margin:6px 0 4px;font-size:28px;color:var(--yesil2)}.sub{margin:0;color:var(--soluk);font-size:14px}
+.content{padding:22px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}
+label{display:block;font-weight:700;font-size:13px;margin-bottom:6px;color:#3c4a42}
+select,input,textarea{width:100%;border:1px solid #ccd6cf;border-radius:10px;padding:12px 13px;font-size:15px;background:#fff;color:#27332c;outline:none;transition:.2s}
+select:focus,input:focus,textarea:focus{border-color:var(--yesil);box-shadow:0 0 0 3px rgba(47,125,90,.10)}
+textarea{min-height:170px;resize:vertical;line-height:1.5;background:#fbfcfb}.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+button{border:none;border-radius:10px;padding:13px 14px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s}.primary{background:var(--yesil);color:#fff}.primary:hover{background:var(--yesil2)}
+.secondary{background:#eaf2ed;color:var(--yesil2)}.secondary:hover{background:#ddeae2}.blue{background:#2f6da1;color:white}.blue:hover{background:#255983}.gold{background:#b68d2f;color:white}.gold:hover{background:#967321}
+.smallnote{font-size:12px;color:#718078;margin-top:8px;line-height:1.45;background:#f6f8f6;border-radius:9px;padding:10px 12px}.preview{margin-top:18px;border-top:1px dashed #d8dfda;padding-top:18px}.preview h3{margin:0 0 10px;color:var(--yesil2)}
+canvas{width:100%;height:auto;border-radius:14px;border:1px solid #dfe6e0;background:#f4f1e8;display:none}.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.status{margin-top:10px;font-size:13px;font-weight:700;color:var(--yesil2);min-height:20px}.footer{text-align:center;padding:0 20px 22px;color:#7a857e;font-size:12px}
+@media(max-width:640px){.wrap{padding:10px}.content{padding:16px}.grid,.btnrow,.actions{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
 </head>
 <body>
-
-    <div class="box">
-        <h2>🌙 Mesajmatik</h2>
-        
-        <label>Özel Gün / Zaman:</label>
-        <select id="gunSecim">
-            <option value="Berat Kandili">Berat Kandili</option>
-            <option value="Kadir Gecesi">Kadir Gecesi</option>
-            <option value="Ramazan Bayramı">Ramazan Bayramı</option>
-            <option value="Kurban Bayramı">Kurban Bayramı</option>
-            <option value="Cuma Günü">Cuma Günü</option>
-        </select>
-
-        <label>Özel Vurgu ve Anahtar Kelimeler:</label>
-        <input type="text" id="anahtarKelime" placeholder="Örn: Gazze, Doğu Türkistan, birlik, huzur...">
-
-        <label>İsim veya Şirket Adı (İsteğe bağlı imza):</label>
-        <input type="text" id="imza" placeholder="Örn: Ahmet Yılmaz veya Şirket Adı">
-
-        <button onclick="mesajOlustur()">Mesajı Oluştur</button>
-
-        <textarea id="sonuc" readonly placeholder="Oluşturulan mesaj burada görünecek..."></textarea>
-        <button class="kopyala-btn" onclick="mesajKopyala()">Mesajı Kopyala</button>
-    </div>
-
+<div class="wrap"><div class="box">
+<div class="header"><div class="logo">🌙</div><h1>Mesajmatik</h1><p class="sub">Manevi günler için özgün mesaj ve paylaşım kartı oluşturucu</p></div>
+<div class="content">
+<div class="grid">
+<div><label>Özel Gün / Zaman</label><select id="gunSecim"><option>Berat Kandili</option><option>Kadir Gecesi</option><option>Mevlid Kandili</option><option>Regaib Kandili</option><option>Miraç Kandili</option><option>Ramazan Bayramı</option><option>Kurban Bayramı</option><option>Cuma Günü</option><option>Ramazan Ayı</option><option>Arefe Günü</option></select></div>
+<div><label>Üslup</label><select id="uslup"><option value="samimi">Samimi</option><option value="resmi">Resmî</option><option value="kurumsal">Kurumsal</option><option value="dua">Dua ağırlıklı</option></select></div>
+<div><label>Mesaj Uzunluğu</label><select id="uzunluk"><option value="kisa">Kısa</option><option value="orta" selected>Orta</option><option value="uzun">Uzun</option></select></div>
+<div><label>Hitap</label><select id="hitap"><option value="">Hitap ekleme</option><option>Değerli Dostlarım</option><option>Kıymetli Dostlarım</option><option>Değerli Mesai Arkadaşlarım</option><option>Kıymetli Ailem</option><option>Değerli Çalışma Arkadaşlarımız</option></select></div>
+<div class="full"><label>Özel Vurgu ve Anahtar Kelimeler</label><input id="anahtarKelime" placeholder="Örn: Gazze, Doğu Türkistan, birlik, kardeşlik, huzur, sağlık..."></div>
+<div class="full"><label>İsim / Kurum / Şirket Adı (İsteğe bağlı imza)</label><input id="imza" placeholder="Örn: Ahmet Yılmaz veya Kurum Adı"></div>
+</div>
+<div class="btnrow"><button class="primary" onclick="mesajOlustur()">✨ Mesajı Oluştur</button><button class="secondary" onclick="mesajOlustur()">🔄 Başka Bir Mesaj Üret</button></div>
+<div class="preview"><h3>Oluşturulan Mesaj</h3><textarea id="sonuc" readonly placeholder="Mesajınız burada görünecek..."></textarea><div class="actions"><button class="blue" onclick="mesajKopyala()">📋 Kopyala</button><button class="secondary" onclick="whatsappPaylas()">🟢 WhatsApp</button><button class="gold" onclick="kartOlustur()">🖼️ Görsel Kart Oluştur</button></div><div id="status" class="status"></div></div>
+<div class="preview"><h3>Paylaşım Kartı</h3><canvas id="kartCanvas" width="1080" height="1080"></canvas><div class="actions"><button class="primary" onclick="kartIndir()">⬇️ Görseli Kaydet</button><button class="secondary" onclick="kartPaylas()">📤 Görseli Paylaş</button><button class="secondary" onclick="kartOlustur()">🎨 Kartı Yenile</button></div><div class="smallnote">Görsel kart cihazınızda oluşturulur ve internet gerektirmez. Gerçek yapay zekâ ile sıfırdan resim üretmek için internet bağlantısı ve bir görsel üretim servisi/API gerekir.</div></div>
+</div><div class="footer">Mesajmatik · İnternetsiz çalışır · Tek HTML dosyası</div></div></div>
 <script>
-    function mesajOlustur() {
-        const gun = document.getElementById('gunSecim').value;
-        const anahtar = document.getElementById('anahtarKelime').value.trim();
-        const imza = document.getElementById('imza').value.trim();
-
-        let metin = `Gönüllerin aydınlandığı, duaların semaya yükseldiği bu mübarek ${gun} vesilesiyle; `;
-        
-        if (anahtar) {
-            metin += `${anahtar} dualarının kabul olmasını, `;
-        }
-        
-        metin += `sevdiklerinizle birlikte huzur, sağlık ve bereket dolu bir gün geçirmenizi dilerim. `;
-
-        if (anahtar.toLowerCase().includes("gazze") || anahtar.toLowerCase().includes("türkistan")) {
-            metin += `Dünyanın dört bir yanında zulüm gören tüm mazlum kardeşlerimizin bir an önce selamete ermesi en büyük duamızdır. `;
-        }
-
-        metin += `${gun}'ünüz mübarek olsun.`;
-
-        if (imza) {
-            metin += `\n\nSaygılarımla,\n${imza}`;
-        }
-
-        document.getElementById('sonuc').value = metin;
-    }
-
-    function mesajKopyala() {
-        const textarea = document.getElementById('sonuc');
-        if (!textarea.value) {
-            alert("Önce bir mesaj oluşturmalısınız!");
-            return;
-        }
-        textarea.select();
-        navigator.clipboard.writeText(textarea.value);
-        alert("Mesaj panoya kopyalandı!");
-    }
+const havuz={
+acilis:["Gönüllerin huzurla buluştuğu bu mübarek {gun} vesilesiyle","Rahmetin, bereketin ve kardeşliğin daha derinden hissedildiği bu güzel {gun} vesilesiyle","Duaların gönülden semaya yükseldiği bu kıymetli {gun} vesilesiyle","Kalplerimizin iyilik, merhamet ve umutla dolduğu bu mübarek {gun} gününde","Manevi iklimiyle gönüllerimizi kuşatan bu mübarek {gun} vesilesiyle"],
+dilek:["sağlık, huzur, bereket ve gönül ferahlığı diliyorum","sevdiklerinizle birlikte huzur ve afiyet içinde nice güzel günlere erişmenizi diliyorum","evlerinize bereket, gönüllerinize huzur, hayatınıza hayırlar getirmesini diliyorum","dualarınızın kabul, gönüllerinizin huzur, sofralarınızın bereketli olmasını temenni ediyorum","hayatınıza iyilik, umut ve güzellikler katmasını diliyorum"],
+dua:["Rabbim edilen duaları kabul, gönüllerdeki güzel niyetleri hayra tebdil eylesin.","Rabbim birlik ve beraberliğimizi daim, gönüllerimizi iman ve merhametle güçlü kılsın.","Rabbim bizleri sevdiklerimizle birlikte sağlık, huzur ve hayır üzere yaşatsın.","Dualarımızın kabulüne, gönüllerimizin ferahlığına ve güzel yarınlara vesile olsun.","Rabbim bu mübarek vakti affa, rahmete ve hayırlara vesile eylesin."],
+kapanis:["{gun}'ünüz mübarek olsun.","Bu mübarek {gun}'ün hayırlara vesile olmasını dilerim.","{gun}'ün gönlünüze huzur, hanenize bereket getirmesini dilerim.","Nice hayırlı ve huzurlu {gun} günlerine erişmek dileğiyle.","{gun}'ünüzü en içten dileklerimle kutlarım."]};
+function sec(a){return a[Math.floor(Math.random()*a.length)]}
+function vurguCumlesi(anahtar){if(!anahtar)return"";const a=anahtar.toLowerCase();let c=` Özellikle ${anahtar} için gönülden ettiğimiz duaların hayırlara vesile olmasını diliyorum.`;if(a.includes("gazze")||a.includes("türkistan")||a.includes("mazlum")){c+=" Başta mazlum coğrafyalardaki kardeşlerimiz olmak üzere, zulüm ve sıkıntı içindeki tüm insanların selamete, huzura ve adalete kavuşması en büyük dualarımızdandır."}else if(a.includes("birlik")||a.includes("kardeş")){c+=" Birlik, beraberlik ve kardeşlik duygularımızın güçlenerek devam etmesini temenni ediyorum."}else if(a.includes("sağlık")||a.includes("huzur")){c+=" Sağlık, huzur ve gönül ferahlığının hepimizin hayatına daim olmasını temenni ediyorum."}return c}
+function uslupDonustur(m,u){if(u==="resmi")return m.replaceAll("diliyorum","temenni ederim").replaceAll("dilerim","temenni ederim");if(u==="kurumsal")return m.replaceAll("diliyorum","temenni ediyoruz").replaceAll("dilerim","temenni ediyoruz").replaceAll("Rabbim","Yüce Allah");if(u==="dua")return m+" Allah kabul eylesin; gönüllerimizi iyilikten, merhametten ve güzel niyetlerden ayırmasın.";return m}
+function mesajOlustur(){const gun=document.getElementById("gunSecim").value,uslup=document.getElementById("uslup").value,uzunluk=document.getElementById("uzunluk").value,hitap=document.getElementById("hitap").value,anahtar=document.getElementById("anahtarKelime").value.trim(),imza=document.getElementById("imza").value.trim();let m="";if(hitap)m+=hitap+",\n\n";m+=sec(havuz.acilis).replaceAll("{gun}",gun)+"; "+sec(havuz.dilek)+".";if(uzunluk!=="kisa"){m+=vurguCumlesi(anahtar);m+=" "+sec(havuz.dua)}if(uzunluk==="uzun"){m+=" Sevgi, saygı, hoşgörü ve paylaşma duygularımızın güçlenmesine; kırgınlıkların yerini muhabbetin almasına vesile olmasını temenni ediyorum. Bu özel vaktin sadece bugünümüze değil, hayatımızın tamamına güzellik ve bilinç katmasını diliyorum."}if(uzunluk==="kisa"&&anahtar)m+=vurguCumlesi(anahtar);m+=" "+sec(havuz.kapanis).replaceAll("{gun}",gun);m=uslupDonustur(m,uslup);if(imza)m+=uslup==="kurumsal"?`\n\n${imza}`:`\n\nSaygılarımla,\n${imza}`;document.getElementById("sonuc").value=m;document.getElementById("status").textContent="Yeni bir mesaj oluşturuldu."}
+async function mesajKopyala(){const t=document.getElementById("sonuc");if(!t.value){alert("Önce bir mesaj oluşturmalısınız.");return}try{await navigator.clipboard.writeText(t.value)}catch(e){t.select();document.execCommand("copy")}document.getElementById("status").textContent="Mesaj panoya kopyalandı."}
+function whatsappPaylas(){const t=document.getElementById("sonuc").value;if(!t){alert("Önce bir mesaj oluşturmalısınız.");return}window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}
+function wrapText(ctx,text,maxWidth){const words=text.split(/\s+/),lines=[];let line="";for(const word of words){const test=line?line+" "+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);return lines}
+function kartOlustur(){let txt=document.getElementById("sonuc").value.trim();if(!txt){mesajOlustur();txt=document.getElementById("sonuc").value.trim()}const gun=document.getElementById("gunSecim").value,canvas=document.getElementById("kartCanvas"),ctx=canvas.getContext("2d");canvas.style.display="block";const g=ctx.createLinearGradient(0,0,1080,1080);g.addColorStop(0,"#eaf5ee");g.addColorStop(.55,"#fffaf0");g.addColorStop(1,"#e5efe8");ctx.fillStyle=g;ctx.fillRect(0,0,1080,1080);ctx.strokeStyle="#c7a64d";ctx.lineWidth=5;ctx.strokeRect(52,52,976,976);ctx.beginPath();ctx.arc(540,150,55,0,Math.PI*2);ctx.fillStyle="#2f7d5a";ctx.fill();ctx.fillStyle="#fff";ctx.font="58px serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("☾",540,148);ctx.fillStyle="#1f5d43";ctx.font="bold 48px Arial";ctx.textBaseline="alphabetic";ctx.fillText(gun,540,260);ctx.strokeStyle="#c7a64d";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(270,300);ctx.lineTo(810,300);ctx.stroke();const body=txt.replace(/\n+/g," ").replace(/\s+/g," ").trim();ctx.fillStyle="#28372f";ctx.font="32px Arial";const lines=wrapText(ctx,body,860),shown=lines.slice(0,15);let y=365;ctx.textAlign="center";for(let i=0;i<shown.length;i++){let line=shown[i];if(i===14&&lines.length>15)line=line.replace(/[.,;:!?]?$/,"…");ctx.fillText(line,540,y);y+=46}ctx.fillStyle="#6c776f";ctx.font="24px Arial";ctx.fillText("Mesajmatik",540,980);document.getElementById("status").textContent="Paylaşım kartı oluşturuldu."}
+function kartIndir(){const c=document.getElementById("kartCanvas");if(c.style.display==="none"||!c.style.display)kartOlustur();const a=document.createElement("a");a.download="mesajmatik-kart.png";a.href=c.toDataURL("image/png");a.click()}
+async function kartPaylas(){const c=document.getElementById("kartCanvas");if(c.style.display==="none"||!c.style.display)kartOlustur();c.toBlob(async blob=>{const file=new File([blob],"mesajmatik-kart.png",{type:"image/png"});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:"Mesajmatik Kartı"})}catch(e){}}else alert("Bu cihaz doğrudan görsel paylaşımını desteklemiyor. 'Görseli Kaydet' seçeneğini kullanabilirsiniz.")},"image/png")}
+mesajOlustur();
 </script>
-
 </body>
 </html>
