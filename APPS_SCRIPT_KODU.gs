@@ -26,17 +26,18 @@ function generateMessage_(p) {
     const uslup = String(p.uslup || "samimi").slice(0, 40);
     const uzunluk = String(p.uzunluk || "orta").slice(0, 20);
     const hitap = String(p.hitap || "").slice(0, 120);
-    const anahtar = String(p.anahtar || "").slice(0, 700);
+    const anahtar = String(p.anahtar || "").slice(0, 500);
+    const semantik = String(p.semantik || "").slice(0, 1000);
     const imza = String(p.imza || "").slice(0, 160);
-    const onceki = String(p.onceki || "").slice(0, 900);
-    const zorunluAdlar = String(p.zorunluAdlar || "").slice(0, 300);
+    const onceki = String(p.onceki || "").slice(0, 1000);
+    const zorunluAdlar = String(p.zorunluAdlar || "").slice(0, 350);
 
     if (!gun) return { error: "Gün bilgisi eksik." };
 
     const uzunlukMetni = uzunluk === "kisa" ? "45-70 kelime" : uzunluk === "uzun" ? "150-210 kelime" : "90-130 kelime";
     const uslupAdi = {
       samimi: "Samimi",
-      resmi: "Resmi",
+      resmi: "Resmî",
       kurumsal: "Kurumsal",
       dua: "Dua Ağırlıklı",
       kaynakli: "Ayet / Hadis Ağırlıklı"
@@ -55,48 +56,87 @@ UYULACAK TEMEL KURALLAR VE ÜSLUP DENGESİ:
 
 2. Mesaj Türlerine Göre İçerik Ayrımı (Kesinlikle uyulacak):
 - Samimi: İçten, dostane, sıcak ama seviyeyi koruyan bir ton kullan.
-- Resmi: Saygılı, mesafeli, nazik, hitabet kurallarına tam uyan profesyonel bir dil kullan.
+- Resmî: Saygılı, mesafeli, nazik, hitabet kurallarına tam uyan profesyonel bir dil kullan.
 - Kurumsal: Şirket veya kurum kimliğine uygun, topluluk ruhunu yansıtan, ciddi, kucaklayıcı ve güven veren bir ton benimse.
 - Dua Ağırlıklı: Manevi atmosferi yüksek, arka arkaya samimi hayır duaları barındıran derin ve huzurlu bir ton seç.
-- Ayet / Hadis Ağırlıklı: Mesajın ana temasını destekleyen, doğruluğu kesinleşmiş kısa bir ayet meali veya hadis-i şerif lafzını metne doğal bir akışla entegre et.
+- Ayet / Hadis Ağırlıklı: Mesajın ana temasını destekleyen, doğruluğu kesinleşmiş kısa bir ayet meali veya sahih hadis-i şerif lafzını metne doğal bir akışla entegre et.
 
-3. Coğrafi ve Toplumsal Hassasiyetler (Gazze, Doğu Türkistan, İslam Âlemi vb.):
-- Kullanıcı bu tarz coğrafi veya toplumsal vurgular eklediğinde; asla ajitasyona, hamasete veya ucuz duygu sömürüsüne kaçma.
-- Bunun yerine onurlu, kararlı, ümitvar ve kucaklayıcı bir duacı üslup benimse. Mazlum coğrafyaların selametini vakur bir dille dile getir.
+3. Coğrafi ve Toplumsal Hassasiyetler:
+- Gazze, Doğu Türkistan ve benzeri coğrafi vurgularda ajitasyon, hamaset ve duygu sömürüsünden kaçın.
+- İslam âlemi, Müslümanlar gibi ifadeleri bir coğrafya adı gibi kullanma.
+- Mazlum coğrafyaların selametini vakur, insani ve duacı bir dille ele al.
 
-4. Mesaj Yapısı ve Akışı:
-- Giriş: Günün manasına uygun sade ve isabetli bir başlangıç yap.
-- Gelişme: Kullanıcının girdiği özel anahtar kelimeleri ve seçtiği mesaj türünü metne doğal bir şekilde harmanla.
-- Kapanış ve İmza: Eğer kullanıcı bir isim veya şirket unvanı belirttiyse, bunu mesajın sonuna şık ve uygun bir imza bloğu olarak ekle.
-- Çeşitlilik: Her çağrıda kalıplaşmış ve ezbere cümlelerden kaçınarak taze, özgün ve duru cümleler kur.
+4. Mesaj Yapısı:
+- Giriş: Günün manasına uygun sade ve isabetli bir başlangıç.
+- Gelişme: Anahtar kelimeleri anlam türlerine göre doğal biçimde işle.
+- Kapanış: Seçilen üsluba özgü bir kapanış yap.
+- İmza: Verilmişse en sonda ayrı satırda yalnızca imza yer alsın.
+- Her çağrıda kalıplaşmış cümlelerden kaçın.
 
 BU ÇAĞRIYA AİT BİLGİLER:
 - Dini gün / zaman: ${gun}
 - Mesaj türü: ${uslupAdi}
 - Hedef uzunluk: ${uzunlukMetni}
 - Hitap: ${hitap || "yok"}
-- Özel vurgu / anahtar kelimeler: ${anahtar || "yok"}
+- Kullanıcının ham özel vurguları: ${anahtar || "yok"}
+- Önceden ayrıştırılmış anlam bilgisi: ${semantik || "yok"}
+- Mesajda açıkça geçmesi gereken özel adlar / topluluk adları: ${zorunluAdlar || "yok"}
 - İmza: ${imza || "yok"}
 
-UYGULAMA KURALLARI:
-1. Mesaj türünü gerçekten değiştir. Resmi mesajı samimi mesajın kelimelerini değiştirerek üretme; cümle kuruluşu, hitap mesafesi ve kapanış biçimi de farklı olsun.
-2. Aynı fiili veya kalıbı art arda kullanma. Özellikle “diliyorum”, “temenni ederim”, “vesile olsun”, “huzur ve bereket” gibi ifadeler aynı mesaj içinde gereksiz yere tekrarlanmasın.
-3. Anahtar kelimeleri virgüllü bir liste gibi tekrar etme. “X, Y, Z için dua...” biçiminde mekanik cümle kurma. Önce anlamlarını ve aralarındaki ilişkiyi çöz; sonra metnin farklı noktalarına doğal biçimde dağıt.
-4. Özel adlar ve yer adları kullanıcı tarafından yazıldıysa atlanmamalıdır. Zorunlu olarak açıkça geçmesi gereken adlar: ${zorunluAdlar || "yok"}. Bunları genel ifadelerle değiştirme; doğru Türkçe büyük/küçük harf kullanımıyla yaz.
-5. Duygu ve tema sözcüklerinin hepsini aynen tekrar etmek zorunda değilsin; anlamlarını metne yedir.
-6. Gazze, Doğu Türkistan ve benzeri hassasiyetleri tek bir ezber paragrafla anlatma. Aynı girdi tekrar geldiğinde vurgu sırasını, cümle yapısını ve anlatım biçimini değiştir.
-7. Hitap verilmişse ilk satırda hitabı yaz, ardından bir boş satır bırak. İmza verilmişse en sonda bir boş satırdan sonra yalnızca imzayı yaz.
-8. “Allah kabul eylesin” veya başka bir sabit kapanışı otomatik ekleme.
-9. Ayet / Hadis Ağırlıklı tür seçilmişse yalnızca doğruluğundan yüksek derecede emin olduğun kısa bir ayet meali veya sahih hadis kullan ve kaynağı kısa biçimde belirt. Emin değilsen söz uydurma; bunun yerine doğruluğu bilinen başka kısa bir kaynak seç.
-10. Başlık, madde işareti, açıklama, tırnak veya “işte mesajınız” ifadesi kullanma. Yalnızca mesajı döndür.
-${onceki ? `11. Aşağıdaki önceki mesajla belirgin benzerlik kurma. Aynı giriş, aynı orta paragraf, aynı kapanış ve aynı cümle ritmini kullanma:\n---\n${onceki}\n---` : ""}
+KESİN UYGULAMA KURALLARI:
+
+1. ÖNCE ANLAMI ÇÖZ, SONRA CÜMLE KUR.
+Coğrafi yer, topluluk/kapsam, kişi/kurum, duygu ve soyut tema aynı gramer grubuna sokulamaz.
+Örneğin Gazze bir coğrafyadır; İslam âlemi bir topluluk/kapsam ifadesidir; umut ve sabır soyut temalardır.
+Bunları “Gazze ve İslam için...” veya “Gazze ve İslam'ı unutmuyoruz...” gibi tek bir isim listesi yapma.
+
+2. TÜRKÇE EK VE ÖZNE UYUMUNU KUSURSUZ KORU.
+“islam'yi”, “Gazze ve İslam'yi”, “Dualarımızda ... unutmuyor” gibi yapılar kesinlikle yasaktır.
+Özel adları doğru büyük harfle yaz: Gazze, Doğu Türkistan, İslam âlemi.
+Özne tekilse yüklem tekil, çoğulsa çoğul olmalı.
+
+3. COĞRAFYA VE TOPLULUK AYRIMI:
+- Gazze, Doğu Türkistan, Filistin vb. için “Gazze'de yaşayanlar”, “Doğu Türkistan'daki kardeşlerimiz”, “Filistin'in huzuru” gibi coğrafyaya uygun yapı kullan.
+- İslam âlemi / Müslümanlar için “İslam âleminin huzuru”, “Müslümanların birlik ve selameti” gibi topluluk yapısı kullan.
+- Coğrafya ile topluluğu tek “orada/oradaki” zamiri altında birleştirme.
+
+4. ANAHTAR KELİMELER:
+Kelimeleri virgüllü liste gibi tekrarlama.
+Özel adlar ve topluluk adları zorunluysa metinde açıkça geçsin.
+Duygu/tema kelimelerinin hepsini aynen kullanmak zorunda değilsin; anlamlarını metne yedir.
+
+5. ÜSLUPLAR SADECE KELİME DEĞİŞİMİ OLMAYACAK:
+- Samimi: Bir kişiden bir kişiye yazılmış hissi versin. “gönülden”, “sevdikleriniz”, sıcak ama ölçülü bir yakınlık kullanılabilir.
+- Resmî: Daha mesafeli ve protokol diline yakın olsun. Kişisel duygusal yoğunluğu azalt; cümleler daha dengeli ve resmî yapılsın. “tebrik ederim”, “esenlik dilerim”, “bu vesileyle” gibi yapılar kullanılabilir ama tekrar edilmesin.
+- Kurumsal: Metin “biz” diliyle, kurum adına yazılmış gibi kurgulansın. Bireysel “gönlümden diliyorum” dili kullanılmasın. Ortak değerler, dayanışma, paydaşlar/toplum vurgusu yapılabilir.
+- Dua Ağırlıklı: Cümlelerin çoğu dua kipinde olsun; “Rabbim... nasip eylesin / ihsan eylesin” yapıları doğal biçimde çeşitlendirilsin.
+- Ayet/Hadis Ağırlıklı: Doğruluğundan yüksek derecede emin olduğun kısa bir kaynak kullan ve kaynağı belirt; uydurma yapma.
+
+6. TEKRAR KONTROLÜ:
+Aynı mesaj içinde aynı yüklem veya kalıbı peş peşe kullanma.
+“diliyorum”, “temenni ederim”, “dileriz”, “vesile olsun”, “huzur ve bereket” gibi ifadeler gereksiz tekrarlanmasın.
+Bir fiil iki kez kullanılacaksa aralarında belirgin yapı ve anlam farkı olmalı.
+
+7. AKIŞ:
+Her cümle bir öncekiyle anlam ilişkisi kursun.
+Bir coğrafi hassasiyetten sonra alakasız bir hazır cümleye atlama.
+Giriş → günün manası → kullanıcının hassasiyetleri → üsluba uygun kapanış sırası korunmalı.
+
+8. Hitap verilmişse ilk satırda yaz ve sonra bir boş satır bırak.
+9. İmza verilmişse sonda bir boş satırdan sonra yalnızca imzayı yaz.
+10. “Allah kabul eylesin” gibi sabit kapanışları otomatik ekleme.
+11. Başlık, madde işareti, açıklama veya “işte mesajınız” yazma.
+${onceki ? `12. Aşağıdaki önceki mesajı incele ve yeni mesajı belirgin biçimde farklı kur. Aynı giriş, aynı hassasiyet cümlesi, aynı kapanış veya aynı cümle ritmini kullanma:
+---
+${onceki}
+---` : ""}
 
 Şimdi yalnızca nihai mesajı yaz.`;
 
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(apiKey);
     const payload = {
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 1.12, topP: 0.94, maxOutputTokens: 800 }
+      generationConfig: { temperature: 1.08, topP: 0.93, maxOutputTokens: 850 }
     };
 
     const response = UrlFetchApp.fetch(url, {
@@ -115,6 +155,7 @@ ${onceki ? `11. Aşağıdaki önceki mesajla belirgin benzerlik kurma. Aynı gir
     const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
     const text = Array.isArray(parts) ? parts.map(function(x){ return x.text || ""; }).join("\n").trim() : "";
     if (!text) return { error: "Boş yanıt alındı." };
+
     return { text: text, engine: "ai" };
   } catch (err) {
     return { error: "Sunucu hatası.", detail: String(err) };
