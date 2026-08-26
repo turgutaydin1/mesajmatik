@@ -46,8 +46,8 @@ let lastAiText="";
 
 const fallbackText={
  samimi:{kisa:"Bu mübarek vaktin gönlünüze huzur, hayatınıza hayır getirmesini gönülden diliyorum. Kandiliniz mübarek olsun.",orta:"Bu mübarek vaktin gönlünüze huzur, hayatınıza hayır getirmesini gönülden diliyorum. Sevdiklerinizle birlikte sağlık, muhabbet ve iyilik içinde nice güzel günlere erişmeniz dileğiyle. Kandiliniz mübarek olsun.",uzun:"Bu mübarek vaktin gönlünüze huzur, hayatınıza hayır getirmesini gönülden diliyorum. Sevdiklerinizle birlikte sağlık, muhabbet ve iyilik içinde nice güzel günlere erişmeniz dileğiyle. Kırgınlıkların azaldığı, paylaşmanın ve merhametin çoğaldığı güzel günlere erişelim. Kandiliniz mübarek olsun."},
- resmi:{kisa:"Bu mübarek gününüzü tebrik eder, sağlık ve esenlikler dilerim.",orta:"Bu mübarek gününüzü tebrik eder; sağlık, esenlik ve huzur içinde nice güzel günlere erişmenizi dilerim. Bu anlamlı vaktin birlik ve karşılıklı anlayışı güçlendirmesini temenni ederim.",uzun:"Bu mübarek gününüzü tebrik eder; sağlık, esenlik ve huzur içinde nice güzel günlere erişmenizi dilerim. Bu anlamlı vaktin birlik, dayanışma ve karşılıklı anlayışı güçlendirmesini; gönüllerde güzel izler bırakmasını temenni ederim."},
- kurumsal:{kisa:"Bu anlamlı gün vesilesiyle tüm çalışanlarımızın ve paydaşlarımızın kandilini kutlarız.",orta:"Manevi değerlerimizin bizi bir araya getirdiği bu anlamlı gün vesilesiyle tüm çalışanlarımızın, paydaşlarımızın ve ailelerinin kandilini kutlarız. Birlik, dayanışma ve karşılıklı anlayışın güçlendiği güzel günler dileriz.",uzun:"Manevi değerlerimizin bizi bir araya getirdiği bu anlamlı gün vesilesiyle tüm çalışanlarımızın, paydaşlarımızın ve ailelerinin kandilini kutlarız. Ortak değerler etrafında dayanışmanın, merhametin ve karşılıklı anlayışın güçlenmesini; bu özel günün toplumumuza huzur ve esenlik getirmesini dileriz."},
+ resmi:{kisa:"Bu mübarek gününüzü tebrik eder, sağlık ve esenlikler dilerim.",orta:"Bu mübarek gününüzü tebrik eder; sağlık ve esenlik içinde nice güzel günlere erişmenizi dilerim. Bu anlamlı vaktin birlik ve karşılıklı anlayışı güçlendirmesi en içten temennimdir.",uzun:"Bu mübarek gününüzü tebrik eder; sağlık ve esenlik içinde nice güzel günlere erişmenizi dilerim. Bu anlamlı vaktin birlik, dayanışma ve karşılıklı anlayışı güçlendirmesi, gönüllerde güzel izler bırakması en içten temennimdir."},
+ kurumsal:{kisa:"Bu anlamlı gün vesilesiyle tüm çalışanlarımızın ve paydaşlarımızın kandilini kutlarız.",orta:"Manevi değerlerimizin bizi bir araya getirdiği bu anlamlı gün vesilesiyle tüm çalışanlarımızın, paydaşlarımızın ve ailelerinin kandilini kutlarız. Birlik ve dayanışmanın güçlendiği güzel günlerin çoğalmasını diliyoruz.",uzun:"Manevi değerlerimizin bizi bir araya getirdiği bu anlamlı gün vesilesiyle tüm çalışanlarımızın, paydaşlarımızın ve ailelerinin kandilini kutlarız. Ortak değerler etrafında dayanışmanın ve karşılıklı anlayışın güçlenmesi; toplumumuzda huzur ve esenliğin çoğalması ortak dileğimizdir."},
  dua:{kisa:"Rabbim bu mübarek vaktin rahmetinden hepimizi nasiplendirsin; gönüllerimize ferahlık versin.",orta:"Rabbim bu mübarek vaktin rahmetinden hepimizi nasiplendirsin. Gönüllerimize ferahlık, hanelerimize huzur ihsan etsin; bizi sevdiklerimizle birlikte hayır üzere daim eylesin.",uzun:"Rabbim bu mübarek vaktin rahmetinden hepimizi nasiplendirsin. Gönüllerimize ferahlık, hanelerimize huzur ihsan etsin; dertlerimize deva, sıkıntılarımıza kolaylık versin. Bizi sevdiklerimizle birlikte sağlık, iman ve güzel ahlak üzere daim eylesin."},
  kaynakli:{kisa:"“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu mübarek vaktin gönüllerimize umut ve huzur vermesini diliyorum.",orta:"“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu ilahi müjdenin gönüllerimize umut ve metanet vermesini; bu mübarek vaktin hayatımıza hayır ve huzur katmasını diliyorum.",uzun:"“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu ilahi müjdenin gönüllerimize umut ve metanet vermesini; bu mübarek vaktin hayatımıza hayır ve huzur katmasını diliyorum. İyiliğin, merhametin ve kardeşliğin çoğaldığı günlere erişmek nasip olsun."}
 };
@@ -68,14 +68,66 @@ function similarity(a,b){
 }
 
 function mesajOlustur(){
- const b=$("olusturBtn");b.disabled=true;b.textContent="⏳ Mesaj hazırlanıyor...";$("status").textContent="Mesaj hazırlanıyor...";
- const cb="mesajmatikCb_"+Date.now()+"_"+Math.floor(Math.random()*99999);let done=false,timer;
+ const b=$("olusturBtn");
+ b.disabled=true;
+ b.textContent="⏳ Mesaj hazırlanıyor...";
+ $("status").textContent="Mesaj hazırlanıyor...";
  const raw=$("anahtarKelime").value.trim();
- const cleanup=()=>{clearTimeout(timer);const s=document.getElementById(cb);if(s)s.remove();try{delete window[cb]}catch(e){}b.disabled=false;b.textContent="✨ Mesajı Oluştur"};
- const useFallback=detail=>{if(done)return;done=true;$("sonuc").value=localMessage();$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"fallback",detail:detail||"api_unavailable",time:new Date().toISOString()};cleanup()};
- window[cb]=data=>{if(done)return;const text=data&&data.text?String(data.text).trim():"";if(text.length>20){done=true;const sim=similarity(lastAiText,text);lastAiText=text;$("sonuc").value=text;$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:"similarity:"+sim.toFixed(2),time:new Date().toISOString()};cleanup()}else useFallback(data&&data.error?String(data.error):"empty_response")};
- const q=new URLSearchParams({callback:cb,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:raw,onceki:lastAiText.slice(0,1000),imza:$("imza").value.trim(),_:String(Date.now())});
- const s=document.createElement("script");s.id=cb;s.src=API_URL+"?"+q.toString();s.onerror=()=>useFallback("network_error");document.body.appendChild(s);timer=setTimeout(()=>useFallback("timeout"),25000);
+ let done=false,attempt=0,timer=null,currentId="";
+
+ const clearActive=()=>{
+   clearTimeout(timer);
+   if(currentId){
+     const s=document.getElementById(currentId);if(s)s.remove();
+     try{delete window[currentId]}catch(e){}
+     currentId="";
+   }
+ };
+ const finish=()=>{clearActive();b.disabled=false;b.textContent="✨ Mesajı Oluştur"};
+ const useFallback=detail=>{
+   if(done)return;
+   done=true;
+   $("sonuc").value=localMessage();
+   $("status").textContent="Mesaj oluşturuldu.";
+   window.__mesajmatikDebug={engine:"fallback",detail:detail||"api_unavailable",attempts:attempt,time:new Date().toISOString()};
+   finish();
+ };
+ const succeed=text=>{
+   if(done)return;
+   done=true;
+   const sim=similarity(lastAiText,text);
+   lastAiText=text;
+   $("sonuc").value=text;
+   $("status").textContent="Mesaj oluşturuldu.";
+   window.__mesajmatikDebug={engine:"ai",detail:"similarity:"+sim.toFixed(2),attempts:attempt,time:new Date().toISOString()};
+   finish();
+ };
+ const retryOrFallback=reason=>{
+   if(done)return;
+   clearActive();
+   if(attempt<2){setTimeout(requestAI,350);return;}
+   useFallback(reason);
+ };
+ function requestAI(){
+   if(done)return;
+   attempt++;
+   const cb="mesajmatikCb_"+Date.now()+"_"+attempt+"_"+Math.floor(Math.random()*99999);
+   currentId=cb;
+   window[cb]=data=>{
+     if(done)return;
+     const text=data&&data.text?String(data.text).trim():"";
+     if(text.length>20){succeed(text);return;}
+     retryOrFallback(data&&data.error?String(data.error):"empty_response");
+   };
+   const q=new URLSearchParams({callback:cb,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:raw,onceki:lastAiText.slice(0,1000),imza:$("imza").value.trim(),_:String(Date.now())});
+   const s=document.createElement("script");
+   s.id=cb;
+   s.src=API_URL+"?"+q.toString();
+   s.onerror=()=>retryOrFallback("network_error");
+   document.body.appendChild(s);
+   timer=setTimeout(()=>retryOrFallback("timeout"),30000);
+ }
+ requestAI();
 }
 
 async function kopyala(){if(!$("sonuc").value)return;try{await navigator.clipboard.writeText($("sonuc").value)}catch(e){$("sonuc").select();document.execCommand("copy")}$("status").textContent="Mesaj kopyalandı."}
