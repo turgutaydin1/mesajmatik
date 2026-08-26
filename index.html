@@ -32,71 +32,32 @@ button{border:0;border-radius:10px;padding:13px;font-size:14px;font-weight:800;c
 <div class="full"><label>İsim / Kurum / Şirket Adı</label><input id="imza" autocomplete="off"></div>
 </div>
 <button class="mainbtn" id="olusturBtn" onclick="mesajOlustur()">✨ Mesajı Oluştur</button>
-
 <div class="sec"><h3>Oluşturulan Mesaj</h3><textarea id="sonuc" readonly placeholder="Mesajınız burada görünecek..."></textarea>
 <div class="three"><button class="blue" onclick="kopyala()">📋 Kopyala</button><button class="soft" onclick="whatsapp()">🟢 WhatsApp</button><button class="gold" onclick="kartOlustur(false)">🖼️ Görsel Kart Oluştur</button></div><div class="status" id="status"></div></div>
-
 <div class="sec"><h3>Paylaşım Kartı</h3><canvas id="kartCanvas" width="1080" height="1080"></canvas>
 <div class="three"><button class="green" onclick="kartIndir()">⬇️ Görseli Kaydet</button><button class="soft" onclick="kartPaylas()">📤 Görseli Paylaş</button><button class="soft" onclick="kartOlustur(true)">🎨 Tasarımı Değiştir</button></div>
 <div class="note">Kart düzeni seçilen güne göre değişir. Uzun metinlerde yazı boyutu karta sığacak şekilde otomatik ayarlanır.</div></div>
 </div><div class="footer">Mesajmatik</div></div></div>
-
 <script>
 const API_URL="https://script.google.com/macros/s/AKfycbwZVpAEB4IYujc-yNL2mOLgHnV-t6i2OO32bWgV8r8OeeZeeMYJDh4r58_rfFXXLOTR/exec";
 const $=id=>document.getElementById(id),pick=a=>a[Math.floor(Math.random()*a.length)];
 window.__mesajmatikDebug={engine:null,detail:null,time:null};
 let lastAiText="";
 
-const fallbackBanks={
- samimi:{
-  open:["Bu özel vaktin gönlünüze huzur ve iyilik getirmesini gönülden diliyorum.","Manevi değeri yüksek bu güzel zamanda sizi sevgi ve muhabbetle anıyorum.","Bu anlamlı günün gönlünüzde güzel izler bırakmasını diliyorum."],
-  mid:["Sevdiklerinizle birlikte sağlık ve muhabbet içinde nice güzel günlere erişmeniz en içten dileğimdir.","Güzel niyetlerinizin hayırla karşılık bulması ve gönlünüzün ferah kalması dileğiyle.","Kırgınlıkların azaldığı, paylaşmanın ve iyiliğin çoğaldığı günlere erişelim."],
-  close:["Kandiliniz mübarek olsun.","Bu mübarek vakit size ve sevdiklerinize hayır getirsin.","Gönlünüz huzurla dolsun."]
- },
- resmi:{
-  open:["Bu anlamlı gün vesilesiyle en iyi dileklerimi sunarım.","Manevi değeri yüksek bu özel günün hayırlara vesile olmasını dilerim.","Bu mübarek günün sağlık, esenlik ve huzur getirmesini temenni ederim."],
-  mid:["Bu vesileyle size ve sevdiklerinize sağlık ve esenlik dilerim.","Birlik, dayanışma ve karşılıklı anlayışın güçlenmesini ümit ederim.","Bu özel günün güzel gelişmelere kapı aralamasını temenni ederim."],
-  close:["Kandilinizi tebrik ederim.","Bu mübarek gününüzü saygıyla kutlarım.","Huzurlu ve hayırlı bir kandil dilerim."]
- },
- kurumsal:{
-  open:["Bu anlamlı gün vesilesiyle ortak değerlerimizi ve dayanışmanın önemini bir kez daha hatırlıyoruz.","Manevi değerlerimizin bizi bir araya getirdiği bu özel günü birlik duygusuyla karşılıyoruz.","Bu mübarek günün toplumumuzda huzur ve dayanışmayı güçlendirmesini diliyoruz."],
-  mid:["Çalışanlarımızın, paydaşlarımızın ve ailelerinin sağlık ve huzur içinde olmasını diliyoruz.","Paylaşma, merhamet ve sorumluluk duygularının hayatımızda daha fazla yer bulmasını önemsiyoruz.","Ortak değerler etrafında kenetlenmenin önemini bir kez daha vurguluyoruz."],
-  close:["Kandilinizi en içten dileklerimizle kutlarız.","Tüm paydaşlarımızın kandilini kutlarız.","Bu anlamlı günün hepimiz için hayırlara vesile olmasını dileriz."]
- },
- dua:{
-  open:["Rabbim bu mübarek vaktin rahmetinden hepimizi nasiplendirsin.","Allah gönüllerimizi iyiliğe ve samimi duaya açık eylesin.","Rabbim bu kıymetli gecede kalplerimize ferahlık ihsan eylesin."],
-  mid:["Dertlerimize deva, gönüllerimize şifa, sıkıntılarımıza ferahlık nasip eylesin.","Bizi sevdiklerimizle birlikte sağlık, iman ve güzel ahlak üzere daim eylesin.","Dualarımızı hayırla karşılasın; iyiliği çoğaltmayı nasip etsin."],
-  close:["Dualarımız hayra vesile olsun.","Rabbim gönüllerimizden geçen hayırlı duaları kabul eylesin.","Bu mübarek vakit hepimiz için hayırlara vesile olsun."]
- },
- kaynakli:{
-  open:["“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu ilahi müjdeyi hatırladığımız bu özel vakitte gönüllerimizin umutla güçlenmesini diliyorum.","“Şüphesiz Allah sabredenlerle beraberdir.” (Bakara, 2/153) Bu mübarek günde sabrımızın ve teslimiyetimizin güçlenmesini diliyorum."],
-  mid:["Güzel niyetlerin iyiliğe ve merhamete dönüşmesi en büyük temennimiz olsun.","Kalplerimizin iyilikte birleştiği, kardeşlik ve dayanışmanın güçlendiği günlere erişelim."],
-  close:["Kandiliniz mübarek olsun.","Bu mübarek vakit hayırlara vesile olsun."]
- }
+const fallbackText={
+ samimi:{kisa:"Bu mübarek vaktin gönlünüze huzur, hayatınıza hayır getirmesini gönülden diliyorum. Kandiliniz mübarek olsun.",orta:"Bu mübarek vaktin gönlünüze huzur, hayatınıza hayır getirmesini gönülden diliyorum. Sevdiklerinizle birlikte sağlık, muhabbet ve iyilik içinde nice güzel günlere erişmeniz dileğiyle. Kandiliniz mübarek olsun.",uzun:"Bu mübarek vaktin gönlünüze huzur, hayatınıza hayır getirmesini gönülden diliyorum. Sevdiklerinizle birlikte sağlık, muhabbet ve iyilik içinde nice güzel günlere erişmeniz dileğiyle. Kırgınlıkların azaldığı, paylaşmanın ve merhametin çoğaldığı güzel günlere erişelim. Kandiliniz mübarek olsun."},
+ resmi:{kisa:"Bu mübarek gününüzü tebrik eder, sağlık ve esenlikler dilerim.",orta:"Bu mübarek gününüzü tebrik eder; sağlık, esenlik ve huzur içinde nice güzel günlere erişmenizi dilerim. Bu anlamlı vaktin birlik ve karşılıklı anlayışı güçlendirmesini temenni ederim.",uzun:"Bu mübarek gününüzü tebrik eder; sağlık, esenlik ve huzur içinde nice güzel günlere erişmenizi dilerim. Bu anlamlı vaktin birlik, dayanışma ve karşılıklı anlayışı güçlendirmesini; gönüllerde güzel izler bırakmasını temenni ederim."},
+ kurumsal:{kisa:"Bu anlamlı gün vesilesiyle tüm çalışanlarımızın ve paydaşlarımızın kandilini kutlarız.",orta:"Manevi değerlerimizin bizi bir araya getirdiği bu anlamlı gün vesilesiyle tüm çalışanlarımızın, paydaşlarımızın ve ailelerinin kandilini kutlarız. Birlik, dayanışma ve karşılıklı anlayışın güçlendiği güzel günler dileriz.",uzun:"Manevi değerlerimizin bizi bir araya getirdiği bu anlamlı gün vesilesiyle tüm çalışanlarımızın, paydaşlarımızın ve ailelerinin kandilini kutlarız. Ortak değerler etrafında dayanışmanın, merhametin ve karşılıklı anlayışın güçlenmesini; bu özel günün toplumumuza huzur ve esenlik getirmesini dileriz."},
+ dua:{kisa:"Rabbim bu mübarek vaktin rahmetinden hepimizi nasiplendirsin; gönüllerimize ferahlık versin.",orta:"Rabbim bu mübarek vaktin rahmetinden hepimizi nasiplendirsin. Gönüllerimize ferahlık, hanelerimize huzur ihsan etsin; bizi sevdiklerimizle birlikte hayır üzere daim eylesin.",uzun:"Rabbim bu mübarek vaktin rahmetinden hepimizi nasiplendirsin. Gönüllerimize ferahlık, hanelerimize huzur ihsan etsin; dertlerimize deva, sıkıntılarımıza kolaylık versin. Bizi sevdiklerimizle birlikte sağlık, iman ve güzel ahlak üzere daim eylesin."},
+ kaynakli:{kisa:"“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu mübarek vaktin gönüllerimize umut ve huzur vermesini diliyorum.",orta:"“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu ilahi müjdenin gönüllerimize umut ve metanet vermesini; bu mübarek vaktin hayatımıza hayır ve huzur katmasını diliyorum.",uzun:"“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu ilahi müjdenin gönüllerimize umut ve metanet vermesini; bu mübarek vaktin hayatımıza hayır ve huzur katmasını diliyorum. İyiliğin, merhametin ve kardeşliğin çoğaldığı günlere erişmek nasip olsun."}
 };
 
-function fallbackVurgu(raw,style){
- if(!raw)return"";
- const clean=raw.replace(/\s+/g," ").trim().slice(0,180);
- const map={
-  samimi:[`Özel olarak belirttiğiniz “${clean}” vurgusunun da bu mesajın anlamı içinde hayır ve güzellikle yer bulmasını gönülden diliyorum.`,`Gönlünüzde yer eden “${clean}” hassasiyetini de bu özel vaktin manevi iklimi içinde saygıyla anıyorum.`],
-  resmi:[`Özel olarak belirttiğiniz “${clean}” hususunu da bu anlamlı gün vesilesiyle saygıyla ifade etmek isterim.`,`“${clean}” konusundaki hassasiyetinizin de mesajın manevi çerçevesi içinde karşılık bulmasını temenni ederim.`],
-  kurumsal:[`Özel olarak belirtilen “${clean}” vurgusunu da bu mesajın anlam bütünlüğü içinde önemsiyoruz.`,`“${clean}” konusundaki hassasiyeti de ortak değerlerimiz çerçevesinde saygıyla karşılıyoruz.`],
-  dua:[`Rabbim “${clean}” konusunda gönüllerde taşınan hayırlı niyetleri güzelliklere dönüştürsün.`,`“${clean}” ile ilgili hayırlı dilek ve dualarımızın güzel sonuçlara vesile olmasını niyaz ediyorum.`],
-  kaynakli:[`Özel olarak belirtilen “${clean}” vurgusunun da bu manevi hatırlayış içinde anlamlı bir yer bulmasını diliyorum.`]
- };
- return pick(map[style]||map.samimi);
-}
-
 function localMessage(){
- const style=$("uslup").value,z=$("uzunluk").value,h=$("hitap").value.trim(),raw=$("anahtarKelime").value.trim(),im=$("imza").value.trim();
- const bank=fallbackBanks[style]||fallbackBanks.samimi,parts=[pick(bank.open)];
- const v=fallbackVurgu(raw,style);if(v)parts.push(v);
- if(z!=="kisa")parts.push(pick(bank.mid));
- if(z==="uzun")parts.push(pick(bank.mid));
- parts.push(pick(bank.close));
- let m=parts.filter(Boolean).join(" ").replace(/\s+/g," ").trim();
- if(h)m=h+",\n\n"+m;if(im)m+="\n\n"+im;return m;
+ const style=$("uslup").value,z=$("uzunluk").value,h=$("hitap").value.trim(),im=$("imza").value.trim();
+ let m=((fallbackText[style]||fallbackText.samimi)[z]||(fallbackText[style]||fallbackText.samimi).orta).trim();
+ if(h)m=h+",\n\n"+m;
+ if(im)m+="\n\n"+im;
+ return m;
 }
 
 function similarity(a,b){
@@ -114,7 +75,7 @@ function mesajOlustur(){
  const useFallback=detail=>{if(done)return;done=true;$("sonuc").value=localMessage();$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"fallback",detail:detail||"api_unavailable",time:new Date().toISOString()};cleanup()};
  window[cb]=data=>{if(done)return;const text=data&&data.text?String(data.text).trim():"";if(text.length>20){done=true;const sim=similarity(lastAiText,text);lastAiText=text;$("sonuc").value=text;$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:"similarity:"+sim.toFixed(2),time:new Date().toISOString()};cleanup()}else useFallback(data&&data.error?String(data.error):"empty_response")};
  const q=new URLSearchParams({callback:cb,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:raw,onceki:lastAiText.slice(0,1000),imza:$("imza").value.trim(),_:String(Date.now())});
- const s=document.createElement("script");s.id=cb;s.src=API_URL+"?"+q.toString();s.onerror=()=>useFallback("network_error");document.body.appendChild(s);timer=setTimeout(()=>useFallback("timeout"),9000);
+ const s=document.createElement("script");s.id=cb;s.src=API_URL+"?"+q.toString();s.onerror=()=>useFallback("network_error");document.body.appendChild(s);timer=setTimeout(()=>useFallback("timeout"),25000);
 }
 
 async function kopyala(){if(!$("sonuc").value)return;try{await navigator.clipboard.writeText($("sonuc").value)}catch(e){$("sonuc").select();document.execCommand("copy")}$("status").textContent="Mesaj kopyalandı."}
