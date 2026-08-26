@@ -1,52 +1,51 @@
-# Mesajmatik – Yapay Zekâ API Kurulumu
+# Mesajmatik – Gemini / Google Apps Script Kurulumu
 
-Mesajmatik GitHub Pages üzerinde çalıştığı için API anahtarı **index.html içine yazılmamalıdır**. Aksi halde anahtar herkese açık hale gelir.
+Mesajmatik GitHub Pages üzerinde çalışır. Gemini API anahtarı `index.html` içine yazılmaz. Anahtar Google Apps Script tarafında Script Properties içinde saklanır.
 
-Bu depo içinde `cloudflare-worker.js` adlı güvenli bir aracı servis hazırlanmıştır.
+## Güncel mimari
 
-## Önerilen yapı
+GitHub Pages → Google Apps Script Web App → Gemini API
 
-GitHub Pages → Cloudflare Worker → OpenAI API
+Gemini yanıt vermezse web arayüzündeki yerel yedek mesaj motoru otomatik devreye girer.
 
-Bu yapıda OpenAI anahtarı yalnızca Cloudflare tarafında gizli değişken olarak tutulur.
+## 1. Apps Script projesi
 
-## 1. OpenAI API anahtarı alın
+Google Apps Script projesinde `Kod.gs` dosyasının tamamını depodaki `APPS_SCRIPT_KODU.gs` içeriğiyle aynı tutun.
 
-1. https://platform.openai.com/ adresine giriş yapın.
-2. API bölümünden yeni bir API key oluşturun.
-3. Anahtarı bir yere yapıştırıp GitHub'a yüklemeyin.
-4. Hesabınızda kullanım/faturalandırma sınırı belirleyin.
+## 2. API anahtarı
 
-Mesajmatik için önerilen model: `gpt-5.4-mini`.
+Apps Script proje ayarlarında Script Properties bölümüne şu özelliği ekleyin:
 
-## 2. Cloudflare hesabı açın
+- Özellik adı: `GEMINI_API_KEY`
+- Değer: Gemini API anahtarınız
 
-1. https://dash.cloudflare.com/ adresine girin.
-2. Workers & Pages bölümünden yeni bir Worker oluşturun.
-3. Depodaki `cloudflare-worker.js` içeriğini Worker kodu olarak kullanın.
-4. Worker ayarlarında Secret / Environment Variable olarak şunu ekleyin:
+API anahtarını GitHub'a, HTML içine veya herkese açık bir dosyaya yazmayın.
 
-`OPENAI_API_KEY`
+## 3. Web App dağıtımı
 
-Değer kısmına OpenAI API anahtarınızı yazın.
+Apps Script içinde:
 
-## 3. Worker'ı yayınlayın
+1. Dağıt → Dağıtımları yönet
+2. Mevcut Web App dağıtımını düzenle
+3. Yeni sürüm seç
+4. Yürütme sahibi: Ben
+5. Erişim: Herkes
+6. Dağıt / Güncelle
 
-Yayınlandıktan sonra buna benzer bir adres elde edersiniz:
-
-`https://mesajmatik-api.<hesabiniz>.workers.dev`
-
-Bu adres gizli değildir. Gizli olan yalnızca `OPENAI_API_KEY` değeridir.
+Mevcut dağıtımı güncellerseniz `/exec` adresi değişmez.
 
 ## 4. Ön yüz bağlantısı
 
-Worker adresi alındıktan sonra Mesajmatik `index.html` içindeki “Yapay Zekâ ile Oluştur” düğmesi bu adrese bağlanacaktır.
+`index.html` içindeki `API_URL` değeri Apps Script Web App `/exec` adresini gösterir.
 
-API geçici olarak çalışmazsa Mesajmatik'in mevcut yerel mesaj üreticisi yedek olarak çalışmaya devam edecek şekilde tasarlanmalıdır.
+## 5. Çalışma düzeni
 
-## Güvenlik
+- Önce Gemini çağrılır.
+- Başarılı yanıt gelirse mesaj doğrudan kullanılır.
+- Ağ, kota, servis veya zaman aşımı olursa yedek motor devreye girer.
+- Son kullanıcıya hangi motorun çalıştığı gösterilmez.
+- Geliştirme için son motor bilgisi tarayıcıda `window.__mesajmatikDebug` değişkeninde tutulur.
 
-- API anahtarını GitHub'a koymayın.
-- API anahtarını sohbetlerde paylaşmayın.
-- OpenAI hesabında düşük bir aylık harcama limiti belirleyin.
-- Worker yalnızca `https://turgutaydin1.github.io` kaynağına tarayıcı erişimi verecek şekilde hazırlanmıştır.
+## 6. Güncelleme notu
+
+`APPS_SCRIPT_KODU.gs` GitHub'da değiştirildiğinde Google Apps Script'teki canlı dağıtım otomatik güncellenmez. Canlı servis için Apps Script kodu da güncel içerikle eşleştirilip yeni sürüm olarak dağıtılmalıdır.
