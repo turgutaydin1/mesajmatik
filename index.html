@@ -90,15 +90,15 @@ function mesajOlustur(){
  let done=false,attempt=0,timer=null,currentId="";
  const clearActive=()=>{clearTimeout(timer);if(currentId){const s=document.getElementById(currentId);if(s)s.remove();try{delete window[currentId]}catch(e){}currentId="";}};
  const finish=()=>{clearActive();b.disabled=false;b.textContent="✨ Mesajı Oluştur"};
- const useFallback=detail=>{if(done)return;done=true;$("sonuc").value=localMessage();$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"fallback",detail:detail||"api_unavailable",attempts:attempt,time:new Date().toISOString()};finish();};
+ const showError=detail=>{if(done)return;done=true;$("sonuc").value="";$("status").textContent="Mesaj oluşturulamadı: "+(detail||"Bilinmeyen hata");window.__mesajmatikDebug={engine:"error",detail:detail||"api_unavailable",attempts:attempt,time:new Date().toISOString()};finish();};
  const succeed=text=>{if(done)return;done=true;const sim=similarity(lastAiText,text);lastAiText=text;$("sonuc").value=text;$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:"similarity:"+sim.toFixed(2),attempts:attempt,time:new Date().toISOString()};finish();};
- const retryOrFallback=reason=>{if(done)return;clearActive();if(attempt<2){setTimeout(requestAI,350);return;}useFallback(reason);};
+ const retryOrError=reason=>{if(done)return;clearActive();if(attempt<2){setTimeout(requestAI,350);return;}showError(reason);};
  function requestAI(){
    if(done)return;attempt++;
    const cb="mesajmatikCb_"+Date.now()+"_"+attempt+"_"+Math.floor(Math.random()*99999);currentId=cb;
-   window[cb]=data=>{if(done)return;const text=data&&data.text?String(data.text).trim():"";if(text.length>20){succeed(text);return;}retryOrFallback(data&&data.error?String(data.error):"empty_response");};
+   window[cb]=data=>{if(done)return;const text=data&&data.text?String(data.text).trim():"";if(text.length>20){succeed(text);return;}const reason=data&&data.error?(String(data.error)+(data.detail?" — "+String(data.detail):"")):"empty_response";retryOrError(reason);};
    const q=new URLSearchParams({callback:cb,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:raw,onceki:lastAiText.slice(0,1000),imza:$("imza").value.trim(),_:String(Date.now())});
-   const s=document.createElement("script");s.id=cb;s.src=API_URL+"?"+q.toString();s.onerror=()=>retryOrFallback("network_error");document.body.appendChild(s);timer=setTimeout(()=>retryOrFallback("timeout"),30000);
+   const s=document.createElement("script");s.id=cb;s.src=API_URL+"?"+q.toString();s.onerror=()=>retryOrError("network_error");document.body.appendChild(s);timer=setTimeout(()=>retryOrError("timeout"),30000);
  }
  requestAI();
 }
@@ -137,7 +137,7 @@ function wrap(ctx,text,w){const words=text.replace(/\s+/g," ").trim().split(" ")
 function justify(ctx,line,x,y,w,last){const a=line.split(" ");ctx.textAlign="left";if(last||a.length<2){ctx.fillText(line,x,y);return}const tw=a.reduce((n,q)=>n+ctx.measureText(q).width,0),gap=(w-tw)/(a.length-1);let cx=x;for(const q of a){ctx.fillText(q,cx,y);cx+=ctx.measureText(q).width+gap}}
 function fitLines(ctx,text,w,startY,maxY){let size=29,lh=43,lines=[];do{ctx.font=size+"px Georgia";lines=wrap(ctx,text,w);if(startY+lines.length*lh<=maxY)break;size--;lh-=1.05}while(size>19);return{size,lh,lines}}
 function kartOlustur(change=false){
- if(!$("sonuc").value.trim())$("sonuc").value=localMessage();
+ if(!$("sonuc").value.trim()){$("status").textContent="Önce mesaj oluşturun.";return;}
  if(change)vary=(vary+1)%3;
  const c=$("kartCanvas"),ctx=c.getContext("2d"),gun=$("gunSecim").value,st=dayStyle[gun]||dayStyle["Cuma Günü"];c.style.display="block";
  const grad=ctx.createLinearGradient(0,0,1080,1080);grad.addColorStop(0,st.c1);grad.addColorStop(1,st.c2);ctx.fillStyle=grad;ctx.fillRect(0,0,1080,1080);
