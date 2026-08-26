@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesajmatik - Manevi Mesaj Oluşturucu</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 30px auto; padding: 20px; background: #f4f4f9; color: #333; }
+        .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        h2 { color: #2c3e50; text-align: center; margin-top: 0; }
+        label { font-weight: bold; display: block; margin-top: 15px; font-size: 14px; color: #444; }
+        select, input, textarea { width: 100%; padding: 12px; margin-top: 6px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; margin-top: 22px; border-radius: 6px; border: none; background: #27ae60; color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
+        button:hover { background: #219653; }
+        textarea { height: 140px; margin-top: 15px; background: #fafafa; font-family: inherit; }
+        .kopyala-btn { background: #2980b9; margin-top: 10px; }
+        .kopyala-btn:hover { background: #2471a3; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>🌙 Mesajmatik</h2>
+        
+        <label>Özel Gün / Zaman:</label>
+        <select id="gunSecim">
+            <option value="Berat Kandili">Berat Kandili</option>
+            <option value="Kadir Gecesi">Kadir Gecesi</option>
+            <option value="Ramazan Bayramı">Ramazan Bayramı</option>
+            <option value="Kurban Bayramı">Kurban Bayramı</option>
+            <option value="Cuma Günü">Cuma Günü</option>
+        </select>
+
+        <label>Özel Vurgu ve Anahtar Kelimeler:</label>
+        <input type="text" id="anahtarKelime" placeholder="Örn: Gazze, Doğu Türkistan, birlik, huzur...">
+
+        <label>İsim veya Şirket Adı (İsteğe bağlı imza):</label>
+        <input type="text" id="imza" placeholder="Örn: Ahmet Yılmaz veya Şirket Adı">
+
+        <button onclick="mesajOlustur()">Mesajı Oluştur</button>
+
+        <textarea id="sonuc" readonly placeholder="Oluşturulan mesaj burada görünecek..."></textarea>
+        <button class="kopyala-btn" onclick="mesajKopyala()">Mesajı Kopyala</button>
+    </div>
+
+<script>
+    function mesajOlustur() {
+        const gun = document.getElementById('gunSecim').value;
+        const anahtar = document.getElementById('anahtarKelime').value.trim();
+        const imza = document.getElementById('imza').value.trim();
+
+        let metin = `Gönüllerin aydınlandığı, duaların semaya yükseldiği bu mübarek ${gun} vesilesiyle; `;
+        
+        if (anahtar) {
+            metin += `${anahtar} dualarının kabul olmasını, `;
+        }
+        
+        metin += `sevdiklerinizle birlikte huzur, sağlık ve bereket dolu bir gün geçirmenizi dilerim. `;
+
+        if (anahtar.toLowerCase().includes("gazze") || anahtar.toLowerCase().includes("türkistan")) {
+            metin += `Dünyanın dört bir yanında zulüm gören tüm mazlum kardeşlerimizin bir an önce selamete ermesi en büyük duamızdır. `;
+        }
+
+        metin += `${gun}'ünüz mübarek olsun.`;
+
+        if (imza) {
+            metin += `\n\nSaygılarımla,\n${imza}`;
+        }
+
+        document.getElementById('sonuc').value = metin;
+    }
+
+    function mesajKopyala() {
+        const textarea = document.getElementById('sonuc');
+        if (!textarea.value) {
+            alert("Önce bir mesaj oluşturmalısınız!");
+            return;
+        }
+        textarea.select();
+        navigator.clipboard.writeText(textarea.value);
+        alert("Mesaj panoya kopyalandı!");
+    }
+</script>
+
+</body>
+</html>
