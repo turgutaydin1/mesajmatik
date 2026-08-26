@@ -113,17 +113,24 @@ KULLANICI GİRDİLERİ:
 - İmza: ${imza || "yok"}
 
 DİNAMİK ANLAMLANDIRMA KURALI — EN ÖNEMLİ BÖLÜM:
-Kullanıcının özel vurgu alanına yazdığı hiçbir ifade için önceden tanımlanmış sabit bir kelime listesine, sözlüğe veya birkaç örneğe bağımlı kalma.
+Kullanıcının özel vurgu alanına yazdığı hiçbir ifade için önceden tanımlanmış sabit bir kelime listesine, sözlüğe, örnek tablosuna veya birkaç bilinen kelimeye bağımlı kalma.
 
-Her çağrıda, kullanıcının yazdığı her ifadeyi kendi bağlamı içinde sessizce analiz et ve anlam türünü kendin belirle. Bir ifade; özel ad, kişi, kurum, kuruluş, yer, coğrafya, topluluk, millet, insan grubu, unvan, statü, nesne, olay, tarihî kavram, duygu, değer, soyut tema, hedef, temenni veya bunların dışında başka bir anlam türünde olabilir. Bu liste yalnızca olası türleri anlatır; kullanıcı girdisini bu seçeneklerden birine zorlamak zorunda değilsin.
+Her çağrıda kullanıcının yazdığı HER ifadeyi kendi bağlamı içinde sessizce analiz et ve anlamını kendin belirle. Bir ifade; özel ad, kişi, kurum, kuruluş, yer, coğrafya, topluluk, millet, insan grubu, unvan, statü, nesne, olay, tarihî kavram, duygu, değer, soyut tema, hedef, temenni veya bunların dışında başka bir anlam türünde olabilir. Bu liste yalnızca olası türleri anlatır; kullanıcı girdisini bu seçeneklerden birine zorlamak zorunda değilsin.
 
 Önce şu soruları sessizce çöz:
 1. İfade gerçekte neyi ifade ediyor?
 2. Tekil mi, çoğul mu, özel ad mı, cins isim mi?
-3. Bir kişi/kurum/yer/topluluk/nesne/değer veya başka bir şey olarak cümlede hangi dilbilgisel görevi doğal biçimde alır?
+3. Cümlede hangi dilbilgisel görevi doğal biçimde alır?
 4. Kullanıcının diğer ifadeleriyle anlam ilişkisi nedir?
 5. Dini gün mesajında bu ifade hangi bağlamda doğal ve saygılı biçimde kullanılabilir?
-6. İfade hassas bir insan grubu, tarihî/toplumsal konu, sağlık kurumu, unvan/statü veya başka özel bağlam taşıyorsa, bunu uygun saygı ve doğrulukla nasıl ele almak gerekir?
+6. İfade hassas bir insan grubu, tarihî/toplumsal konu, sağlık kurumu, unvan/statü, nesne veya başka özel bağlam taşıyorsa bunu uygun saygı ve doğrulukla nasıl ele almak gerekir?
+
+ÇOK ÖNEMLİ:
+- Kullanıcının yazdığı hiçbir ifadeyi sırf alışılmadık diye atlama.
+- Bir ifadenin özel ad, kurum adı, kişi adı, unvan veya resmî adlandırma olma ihtimali varsa ve doğru yazımından emin değilsen, onu kafana göre başka bir ada dönüştürme; kullanıcının verdiği biçimi koru.
+- Yalnızca açık ve güvenli bir Türkçe büyük/küçük harf ya da ek düzeltmesi olduğundan eminsen düzelt.
+- Anlamından emin olmadığın bir ifadeye kategori uydurma; nötr ama dilbilgisel olarak doğru bir bağ kur.
+- Kullanıcının tüm girdilerini tek tek zihninde hesaba kattığından emin ol; bazılarını sessizce yok sayma.
 
 Bu iç analizi kullanıcıya yazma; yalnızca sonucunu düzgün Türkçe mesajda uygula.
 
@@ -138,7 +145,7 @@ ANLAMSAL BÜTÜNLÜK:
 KULLANICI VURGULARININ KULLANIMI:
 - Kullanıcının verdiği ifadeleri mekanik bir liste gibi tekrar etme.
 - Birden fazla ifadeyi "X, Y, Z için..." biçiminde zorla tek cümleye yığma.
-- Somut veya kimliği belirli bir kişi, yer, kurum, topluluk, unvan/statü ya da özel ad kullanıcının asıl vurgusunu oluşturuyorsa, onu metinde tanınabilir biçimde koru.
+- Somut veya kimliği belirli bir kişi, yer, kurum, topluluk, unvan/statü ya da özel ad kullanıcının asıl vurgusunu oluşturuyorsa onu metinde tanınabilir biçimde koru.
 - Soyut duygu/değer/tema niteliğindeki ifadeleri aynen yazmak zorunda değilsin; anlamlarını doğal biçimde metne yedirebilirsin.
 - Kullanıcının yazdığı bir ifade alışılmadık olsa bile onu görmezden gelme; önce bağlamını anlamaya çalış, sonra mesajın doğallığını bozmadan işle.
 - Bir ifadenin anlamından emin değilsen yanlış sınıflandırma uydurma. İfadeyi güvenli, genel ve dilbilgisel olarak doğru bir yapı içinde kullan.
@@ -179,8 +186,9 @@ Yeni mesajda aynı giriş, aynı orta paragraf, aynı özel vurgu cümlesi, ayn�
 
 SON KONTROL:
 Mesajı döndürmeden önce sessizce kontrol et:
-- Kullanıcının tüm önemli vurgularını doğru anladın mı?
+- Kullanıcının tüm önemli vurgularını gerçekten ele aldın mı?
 - Her ifade gerçek anlamına uygun biçimde kullanıldı mı?
+- Bir özel adı, kurum adını veya unvanı yanlışlıkla başka şeye çevirdin mi?
 - Yanlış sınıflandırma, anlamsız bağlama veya uygunsuz zamir var mı?
 - Özne-yüklem ve tekil-çoğul uyumu doğru mu?
 - Türkçe ekler, özel ad yazımı ve büyük/küçük harfler doğru mu?
