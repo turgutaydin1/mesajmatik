@@ -17,11 +17,52 @@ function doPost(e) {
   }
 }
 
+function normalizeTr_(s) {
+  return String(s || "")
+    .toLocaleLowerCase("tr-TR")
+    .replace(/[’']/g, "")
+    .replace(/[^a-zçğıöşü0-9 ]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function visibleInText_(term, text) {
+  const t = normalizeTr_(term);
+  const x = normalizeTr_(text);
+  if (!t) return true;
+  if (x.indexOf(t) !== -1) return true;
+
+  const words = t.split(" ").filter(function(w){ return w.length >= 3; });
+  if (!words.length) return true;
+
+  // Türkçe çekim eklerine izin vermek için her kelimenin ayırt edici kök kısmını ara.
+  return words.every(function(w) {
+    const stem = w.length <= 4 ? w : w.slice(0, Math.max(4, w.length - 3));
+    return x.indexOf(stem) !== -1;
+  });
+}
+
+function missingRequirements_(text, gun, anahtar) {
+  const missing = [];
+  if (!visibleInText_(gun, text)) missing.push("GÜN=" + gun);
+
+  const terms = String(anahtar || "")
+    .split(/[,;\n]+/)
+    .map(function(x){ return x.trim(); })
+    .filter(Boolean);
+
+  terms.forEach(function(term) {
+    if (!visibleInText_(term, text)) missing.push("VURGU=" + term);
+  });
+
+  return missing;
+}
+
 function generateMessage_(p) {
   try {
     const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
     if (!apiKey) {
-      return { error: "Gemini bağlantısı kurulamadı.", detail: "GEMINI_API_KEY Script Property bulunamadı." };
+      return { error: "Mesaj servisine bağlanılamadı.", detail: "GEMINI_API_KEY Script Property bulunamadı." };
     }
 
     const gun = String(p.gun || "").slice(0, 80);
@@ -51,7 +92,7 @@ function generateMessage_(p) {
       kaynakli: "Doğruluğundan yüksek derecede emin olduğun kısa bir ayet meali veya sahih hadis kullan ve kaynağını belirt. Emin olmadığın alıntıyı kullanma."
     }[uslup] || "";
 
-    const prompt = `Sen manevi değerlerine bağlı, temiz ve doğal Türkçe kullanan özenli bir yazarsın. Yalnızca nihai mesaj metnini üret; başlık, açıklama veya analiz yazma.
+    const basePrompt = `Sen manevi değerlerine bağlı, temiz ve doğal Türkçe kullanan özenli bir yazarsın. Yalnızca nihai mesaj metnini üret; başlık, açıklama veya analiz yazma.
 
 SEÇİMLER:
 - Gün: ${gun}
@@ -64,46 +105,44 @@ SEÇİMLER:
 ÜSLUP KURALI:
 ${uslupTalimatlari}
 
-ZORUNLU KALİTE KURALLARI:
-1. Kullanıcının özel vurgu alanındaki HER ayrı ifadeyi önce bağlam içinde sessizce anlamlandır. Önceden tanımlanmış kelime listelerine dayanma. İfade kişi, kurum, yer, topluluk, millet, unvan, statü, nesne, olay, duygu, değer, soyut kavram veya bambaşka bir şey olabilir.
-2. Özel vurgu alanı boş değilse kullanıcının yazdığı HER ayrı vurgu nihai mesajda tanınabilir biçimde yer almak ZORUNDADIR. Hiçbir vurguyu görmezden gelme veya yalnızca zihninde dikkate alıp metinden çıkarma. Türkçe doğal akış için çoğul, iyelik veya hâl eki kullanılabilir; ancak ifadenin kökü ve anlamı açıkça seçilebilmelidir. Örneğin kullanıcı "şehit" yazdıysa nihai mesajda "şehit", "şehitlerimiz", "şehitlerimizi" gibi açık bir kullanım bulunmalıdır. Bu örnek bir sözlük değildir; aynı kural kullanıcının yazabileceği her ifade için geçerlidir.
-3. Farklı anlam türlerini sırf virgülle yan yana yazıldı diye aynı dilbilgisel nesne gibi birleştirme.
-4. Türkçe ekleri, zamirleri, özne-yüklem ve tekil-çoğul uyumunu kusursuz kur. Bir zamirin neye döndüğü belirsizse o zamiri kullanma.
-5. Kullanıcının yazdığı özel ad, kurum, kişi, unvan veya resmî adlandırmanın doğru biçiminden emin değilsen onu başka bir ada dönüştürme. Yalnızca açık bir yazım düzeltmesinden eminsen düzelt.
-6. Kullanıcı girdisini mekanik biçimde tırnak içine alıp “bu konudaki hassasiyetiniz”, “özel olarak belirttiğiniz” veya “bu vurgu” gibi hazır cümlelere yerleştirme. Girdinin gerçek anlamını mesajın doğal akışına yedir.
-7. “diliyorum”, “dilerim”, “temenni ederim”, “ümit ederim”, “vesile olsun”, “huzur ve bereket” gibi kalıpları gereksiz tekrar etme.
-8. Aynı girdilerde Samimi, Resmî ve Kurumsal mesajlar yalnızca kelime değişiklikleriyle birbirine benzemesin. Giriş, özne, cümle yapısı, vurgu sırası ve kapanış da değişsin.
-9. Cümleler birbirine anlam bakımından bağlı olsun; hazır parçalar yapıştırılmış gibi görünmesin.
+ZORUNLU KURALLAR:
+1. Seçilen gün/zamanın adı olan “${gun}” nihai mesajda açık ve tanınabilir biçimde geçmek ZORUNDADIR. Başka bir dini günün adıyla değiştirme.
+2. Özel vurgu alanı boş değilse kullanıcının yazdığı HER ayrı ifade nihai mesajda tanınabilir biçimde yer almak ZORUNDADIR. Hiçbirini atlama.
+3. Kullanıcının vurgularını ezber bir kalıba sokma. Her ifadeyi anlamına göre bağlam içinde yorumla; önceden tanımlanmış kelime listesi kullanma.
+4. Türkçe doğal akış için çoğul, iyelik ve hâl ekleri kullanılabilir; ancak kullanıcının verdiği ifadenin kökü ve anlamı açıkça seçilebilmelidir.
+5. Farklı anlam türlerini sırf virgülle yan yana yazıldı diye aynı dilbilgisel nesne gibi birleştirme.
+6. Kullanıcı girdisini tırnak içine alıp “bu konudaki hassasiyetiniz”, “özel olarak belirttiğiniz” veya “bu vurgu” gibi mekanik cümlelerle geçiştirme.
+7. Türkçe ekleri, zamirleri, özne-yüklem ve tekil-çoğul uyumunu doğru kur.
+8. Aynı girdilerde Samimi, Resmî ve Kurumsal metinler sadece kelime değiştirerek birbirine benzemesin; yapı, özne, vurgu sırası ve kapanış da değişsin.
+9. Aynı dilek fiillerini ve kalıpları art arda tekrar etme.
 10. Hitap verilmişse ilk satırda yaz ve bir boş satır bırak. İmza verilmişse en sonda bir boş satırdan sonra yalnızca imzayı yaz.
-11. “Allah kabul eylesin”, “Saygılarımla”, “Sevgilerimle” gibi sabit kapanışları otomatik ekleme.
-12. Dinî, tarihî, kurumsal veya toplumsal bilgi uydurma.
-13. Mesajı göndermeden önce sessizce dilbilgisi, anlam, tekrar, seçilen üslup ve kullanıcının HER özel vurgusunun metinde görünür olup olmadığı açısından kontrol et. Bir vurgu eksikse mesajı döndürmeden önce düzelt.
+11. Dinî, tarihî, kurumsal veya toplumsal bilgi uydurma.
+12. Mesajı göndermeden önce sessizce kontrol et: seçilen gün doğru mu, HER özel vurgu görünür mü, Türkçe doğal mı, tekrar var mı? Eksik varsa düzelt.
 
-${onceki ? `ÖNCEKİ MESAJ:\n---\n${onceki}\n---\nYeni mesajı bunun girişinden, cümle ritminden, vurgu sırasından ve kapanışından belirgin biçimde farklı kur.` : ""}
+${onceki ? `ÖNCEKİ MESAJ:\n---\n${onceki}\n---\nYeni mesajı önceki mesajdan belirgin biçimde farklı kur. Özellikle aynı giriş, aynı cümle ritmi ve aynı kapanışı kullanma.` : ""}
 
 Yalnızca nihai mesajı yaz.`;
 
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-    const payload = {
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 1.05,
-        topP: 0.92,
-        maxOutputTokens: 900
-      }
-    };
-
     let lastCode = 0;
-    let lastDetail = "Bilinmeyen Gemini API hatası.";
+    let lastDetail = "Bilinmeyen servis hatası.";
+    let correction = "";
 
     for (let attempt = 1; attempt <= 3; attempt++) {
+      const prompt = basePrompt + correction;
+      const payload = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 1.05,
+          topP: 0.92,
+          maxOutputTokens: 900
+        }
+      };
+
       const response = UrlFetchApp.fetch(url, {
         method: "post",
         contentType: "application/json",
-        headers: {
-          "x-goog-api-key": apiKey,
-          "x-goog-api-client": "mesajmatik-appsscript/1.0"
-        },
+        headers: { "x-goog-api-key": apiKey },
         payload: JSON.stringify(payload),
         muteHttpExceptions: true
       });
@@ -114,25 +153,36 @@ Yalnızca nihai mesajı yaz.`;
       try {
         data = JSON.parse(response.getContentText() || "{}");
       } catch (parseErr) {
-        lastDetail = "Gemini yanıtı JSON olarak okunamadı: " + String(parseErr);
+        lastDetail = "Servis yanıtı okunamadı: " + String(parseErr);
       }
 
       if (code >= 200 && code < 300) {
         const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
         const text = Array.isArray(parts) ? parts.map(function(x){ return x.text || ""; }).join("\n").trim() : "";
-        if (text) return { text: text, engine: "ai", attempt: attempt };
+
+        if (text) {
+          const missing = missingRequirements_(text, gun, anahtar);
+          if (!missing.length) {
+            return { text: text, engine: "ai", attempt: attempt };
+          }
+
+          lastDetail = "Eksik zorunlu öğe: " + missing.join(", ");
+          correction = `\n\nÖNCEKİ DENEME ZORUNLU ÖĞELERİ ATLADI. Şunların tamamı yeni metinde açıkça ve doğal biçimde bulunmalıdır: ${missing.join(" | ")}. Önceki metni kopyalama; mesajı yeniden yaz.`;
+          if (attempt < 3) Utilities.sleep(350);
+          continue;
+        }
 
         const finishReason = data && data.candidates && data.candidates[0] && data.candidates[0].finishReason;
         const blockReason = data && data.promptFeedback && data.promptFeedback.blockReason;
-        lastDetail = "Gemini boş yanıt verdi" + (finishReason ? "; finishReason=" + finishReason : "") + (blockReason ? "; blockReason=" + blockReason : "") + ".";
-        if (attempt < 3) Utilities.sleep(700 * attempt);
+        lastDetail = "Boş yanıt" + (finishReason ? "; finishReason=" + finishReason : "") + (blockReason ? "; blockReason=" + blockReason : "");
+        if (attempt < 3) Utilities.sleep(500 * attempt);
         continue;
       }
 
       lastDetail = (data && data.error && data.error.message) ? data.error.message : response.getContentText().slice(0, 500);
 
       if ((code === 429 || code === 500 || code === 502 || code === 503 || code === 504) && attempt < 3) {
-        Utilities.sleep(800 * Math.pow(2, attempt - 1));
+        Utilities.sleep(700 * Math.pow(2, attempt - 1));
         continue;
       }
 
@@ -140,8 +190,8 @@ Yalnızca nihai mesajı yaz.`;
     }
 
     return {
-      error: "Gemini API hatası [" + lastCode + "]",
-      detail: lastDetail
+      error: "Mesaj oluşturulamadı.",
+      detail: "HTTP " + lastCode + " - " + lastDetail
     };
 
   } catch (err) {
