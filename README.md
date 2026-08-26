@@ -1,29 +1,42 @@
 # Mesajmatik
 
-Manevi günler ve özel zamanlar için özgün mesajlar oluşturan, tek HTML dosyasıyla çalışan mobil uyumlu bir web uygulamasıdır.
+Manevi günler ve özel zamanlar için özgün tebrik mesajları ve 1080×1080 paylaşım kartları oluşturan mobil uyumlu web uygulamasıdır.
 
-## Özellikler
+## Güncel yapı
 
-- Berat, Kadir, Mevlid, Regaib ve Miraç kandilleri
-- Ramazan ve Kurban Bayramı
-- Cuma, Ramazan ve Arefe mesajları
-- Samimi, resmî, kurumsal ve dua ağırlıklı üslup
-- Kısa, orta ve uzun mesaj seçenekleri
-- Özel vurgu / anahtar kelime desteği
-- İsteğe bağlı hitap ve imza
-- Mesajı panoya kopyalama
-- WhatsApp ile paylaşma
-- 1080x1080 paylaşım kartı oluşturma
-- Görsel kartı PNG olarak kaydetme
-- Desteklenen cihazlarda doğrudan görsel paylaşımı
-- Temel işlevler için internet gerektirmez
+- Öncelikli mesaj üretimi: Google Apps Script üzerinden Gemini
+- API yanıt vermezse: tarayıcı içinde çalışan yedek mesaj motoru
+- Kullanıcı arayüzünde kullanılan motor gösterilmez
+- API anahtarı GitHub dosyalarında tutulmaz; Apps Script Properties içinde `GEMINI_API_KEY` olarak saklanır
 
-## Kullanım
+## Desteklenen günler
 
-`index.html` dosyasını tarayıcıda açmanız yeterlidir.
+Berat Kandili, Kadir Gecesi, Mevlid Kandili, Regaib Kandili, Miraç Kandili, Ramazan Bayramı, Kurban Bayramı, Cuma Günü, Ramazan Ayı ve Arefe Günü.
 
-GitHub Pages etkinleştirildiğinde uygulama doğrudan web sitesi olarak da kullanılabilir.
+## Mesaj türleri
 
-## Not
+- Samimi
+- Resmî
+- Kurumsal
+- Dua ağırlıklı
+- Ayet / Hadis ağırlıklı
 
-Paylaşım kartı uygulama içinde Canvas ile cihazda oluşturulur. Gerçek yapay zekâ ile sıfırdan görsel üretmek için ileride çevrimiçi bir görsel üretim servisi/API entegrasyonu eklenebilir.
+## Diğer özellikler
+
+- Kısa, orta ve uzun mesaj
+- İsteğe bağlı hitap
+- Özel vurgu / anahtar kelimeler
+- İsim / kurum / şirket imzası
+- Kopyalama ve WhatsApp paylaşımı
+- Günlere özel farklı çizim simgeleri
+- Üç farklı kart yerleşimi
+- Uzun metinlerde otomatik yazı boyutu ayarı
+- PNG kaydetme ve desteklenen cihazlarda doğrudan görsel paylaşımı
+
+## Çalışma ilkesi
+
+Uygulama çevrimiçiyken önce Gemini üzerinden özgün mesaj almaya çalışır. Bağlantı, kota veya servis sorunu yaşanırsa kullanıcı boş bırakılmaz; yedek mesaj motoru otomatik devreye girer. Kart oluşturma işlemi tarayıcıdaki Canvas üzerinde yapılır.
+
+## Kurulum
+
+Web arayüzü `index.html` dosyasıdır. Gemini tarafının kurulumu için `API_KURULUM.md` dosyasındaki güncel Google Apps Script adımları kullanılmalıdır.
