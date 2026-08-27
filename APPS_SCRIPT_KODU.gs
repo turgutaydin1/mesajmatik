@@ -28,7 +28,7 @@ function getAppHtml_() {
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <title>Mesajmatik</title>
 <style>
   :root{--green:#145c46;--green2:#2f8a66;--gold:#c89b2b;--line:#dfe8e3;--text:#1f2f2a;--muted:#6e7d77}
@@ -48,21 +48,25 @@ function getAppHtml_() {
   .mainActions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:11px}.mainActions button{min-width:0;border:0;border-radius:10px;padding:10px 8px;font-weight:700;cursor:pointer;color:#fff}.mainActions button:nth-child(1){background:#2d6ea3}.mainActions button:nth-child(2){background:#7da493}.mainActions button:nth-child(3){background:#c49325}
   .socialActions{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}.socialBtn{width:44px;height:44px;flex:0 0 44px;border:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:800;font-size:20px;line-height:1;box-shadow:0 3px 10px rgba(0,0,0,.10)}.socialBtn:hover{transform:translateY(-1px)}.socialBtn svg{width:23px;height:23px;display:block;fill:currentColor}.wa{background:#25D366}.fb{background:#1877F2}.xx{background:#111}.tg{background:#229ED9}.ig{background:radial-gradient(circle at 30% 110%,#feda75 0 25%,#d62976 45%,#962fbf 65%,#4f5bd5 100%)}
   .cardBox{display:none;margin-top:14px}canvas{width:100%;height:auto;max-width:540px;display:block;margin:0 auto;border-radius:18px;border:1px solid #d8e2dd}.cardActions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px}.cardActions button{min-width:0;border:0;border-radius:10px;padding:11px 8px;font-weight:700;cursor:pointer}.note{font-size:12px;color:var(--muted);margin-top:10px}
-  @media(max-width:650px){
-    .wrap{width:calc(100% - 16px);margin:8px auto 24px;border-radius:16px}
-    header{padding:20px 14px 18px}.moon{font-size:28px}h1{font-size:28px}header p{font-size:12px;line-height:1.4}
-    main{padding:14px}.grid{grid-template-columns:1fr;gap:11px}.full{grid-column:auto}
-    select,input,textarea{font-size:16px;padding:12px 11px}.primary{font-size:15px;padding:14px 12px}
-    #sonuc{min-height:210px}.section{margin-top:14px;padding-top:14px}
-    .mainActions{grid-template-columns:1fr 1fr;gap:8px}.mainActions button:nth-child(3){grid-column:1/-1}
-    .socialActions{gap:9px;margin-top:11px}.socialBtn{width:42px;height:42px;flex-basis:42px}.socialBtn svg{width:22px;height:22px}
+  @media(max-width:900px),(hover:none) and (pointer:coarse){
+    body{background:#fff}
+    .wrap{width:100%;max-width:none;margin:0;border-radius:0;border-left:0;border-right:0;box-shadow:none}
+    header{padding:18px 14px 16px}.moon{font-size:27px}h1{font-size:27px;margin-top:6px}header p{font-size:12px;line-height:1.35}
+    main{padding:12px}.grid{grid-template-columns:1fr;gap:10px}.full{grid-column:auto}
+    label{font-size:12px;margin-bottom:5px}
+    select,input,textarea{font-size:16px;padding:12px 11px;border-radius:10px}
+    .primary{font-size:15px;padding:14px 12px}
+    #sonuc{min-height:190px}.section{margin-top:14px;padding-top:14px}
+    .mainActions{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.mainActions button{padding:11px 5px;font-size:12px}
+    .socialActions{gap:9px;margin-top:11px}.socialBtn{width:44px;height:44px;flex-basis:44px}.socialBtn svg{width:23px;height:23px}
     .cardActions{grid-template-columns:1fr;gap:7px}.cardActions button{padding:12px 10px}
-    canvas{max-width:100%;border-radius:12px}
+    canvas{max-width:100%;border-radius:10px}
   }
-  @media(max-width:380px){
-    .wrap{width:calc(100% - 10px);margin:5px auto 18px}main{padding:11px}header{padding:17px 10px 15px}h1{font-size:25px}
-    .mainActions{grid-template-columns:1fr}.mainActions button:nth-child(3){grid-column:auto}
-    .socialActions{gap:7px}.socialBtn{width:40px;height:40px;flex-basis:40px}
+  @media(max-width:480px){
+    .mainActions{grid-template-columns:1fr 1fr}.mainActions button:nth-child(3){grid-column:1/-1}
+  }
+  @media(max-width:360px){
+    main{padding:10px}.mainActions{grid-template-columns:1fr}.mainActions button:nth-child(3){grid-column:auto}.socialActions{gap:7px}.socialBtn{width:40px;height:40px;flex-basis:40px}
   }
 </style>
 </head>
