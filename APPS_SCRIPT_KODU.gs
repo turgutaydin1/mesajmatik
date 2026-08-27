@@ -1,60 +1,56 @@
 function doGet(e) {
   const p = e && e.parameter ? e.parameter : {};
-  const callback = String(p.callback || "").replace(/[^a-zA-Z0-9_.$]/g, "");
+  const prefix = String(p.prefix || "").replace(/[^a-zA-Z0-9_.$]/g, "");
 
-  if (String(p.bridge || "") === "1") {
-    const result = generateMessage_(p);
-    return bridgeOutput_(p.requestId || "", result);
+  if (String(p.ping || "") === "1") {
+    const payload = {
+      status: "ok",
+      service: "Mesajmatik",
+      geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
+      model: "gemini-2.5-flash",
+      transport: "jsonp"
+    };
+    return jsonpOrJson_(prefix, payload);
   }
 
-  if (!p.gun && !callback) {
-    const keyOk = !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
+  if (!p.gun && !prefix) {
     return ContentService.createTextOutput(JSON.stringify({
       status: "ok",
       service: "Mesajmatik",
-      geminiKeyConfigured: keyOk,
+      geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
       model: "gemini-2.5-flash",
-      transport: "iframe-postMessage"
+      transport: "jsonp"
     })).setMimeType(ContentService.MimeType.JSON);
   }
 
-  const result = generateMessage_(p);
-  const json = JSON.stringify(result);
-
-  if (callback) {
-    return ContentService.createTextOutput(callback + "(" + json + ");")
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-
-  return ContentService.createTextOutput(json)
-    .setMimeType(ContentService.MimeType.JSON);
+  return jsonpOrJson_(prefix, generateMessage_(p));
 }
 
-function bridgeOutput_(requestId, payload) {
-  const packet = JSON.stringify({
-    type: "mesajmatik-bridge",
-    requestId: String(requestId || ""),
-    payload: payload || {}
-  }).replace(/</g, "\\u003c");
-
-  const html = '<!doctype html><html><head><meta charset="utf-8"></head><body>' +
-    '<script>parent.postMessage(' + packet + ',"*");<\/script>' +
-    '</body></html>';
-
-  return HtmlService.createHtmlOutput(html)
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+function jsonpOrJson_(prefix, payload) {
+  const json = JSON.stringify(payload || {});
+  if (prefix) {
+    return ContentService
+      .createTextOutput(prefix + "(" + json + ");")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService
+    .createTextOutput(json)
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
   try {
     const body = JSON.parse((e && e.postData && e.postData.contents) || "{}");
-    return ContentService.createTextOutput(JSON.stringify(generateMessage_(body)))
+    return ContentService
+      .createTextOutput(JSON.stringify(generateMessage_(body)))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({
-      error: "İstek okunamadı.",
-      detail: String(err)
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        error: "İstek okunamadı.",
+        detail: String(err)
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
@@ -72,10 +68,8 @@ function visibleInText_(term, text) {
   const x = normalizeTr_(text);
   if (!t) return true;
   if (x.indexOf(t) !== -1) return true;
-
   const words = t.split(" ").filter(function(w) { return w.length >= 3; });
   if (!words.length) return true;
-
   return words.every(function(w) {
     const stem = w.length <= 4 ? w : w.slice(0, Math.max(4, w.length - 3));
     return x.indexOf(stem) !== -1;
@@ -85,7 +79,6 @@ function visibleInText_(term, text) {
 function missingRequirements_(text, gun, anahtar) {
   const missing = [];
   if (!visibleInText_(gun, text)) missing.push("GÜN=" + gun);
-
   String(anahtar || "")
     .split(/[,;\n]+/)
     .map(function(x) { return x.trim(); })
@@ -93,13 +86,11 @@ function missingRequirements_(text, gun, anahtar) {
     .forEach(function(term) {
       if (!visibleInText_(term, text)) missing.push("VURGU=" + term);
     });
-
   return missing;
 }
 
 function similarity_(a, b) {
   if (!a || !b) return 0;
-
   function wordSet_(s) {
     const out = {};
     normalizeTr_(s).split(" ").forEach(function(w) {
@@ -107,13 +98,9 @@ function similarity_(a, b) {
     });
     return out;
   }
-
-  const A = wordSet_(a);
-  const B = wordSet_(b);
-  const ak = Object.keys(A);
-  const bk = Object.keys(B);
+  const A = wordSet_(a), B = wordSet_(b);
+  const ak = Object.keys(A), bk = Object.keys(B);
   if (!ak.length || !bk.length) return 0;
-
   let hit = 0;
   ak.forEach(function(w) { if (B[w]) hit++; });
   return hit / Math.max(1, Math.min(ak.length, bk.length));
@@ -130,10 +117,7 @@ function generateMessage_(p) {
   try {
     const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
     if (!apiKey) {
-      return {
-        error: "Yapay zekâ mesaj üretim hatası.",
-        detail: "GEMINI_API_KEY Script Property bulunamadı."
-      };
+      return { error: "Yapay zekâ mesaj üretim hatası.", detail: "GEMINI_API_KEY Script Property bulunamadı." };
     }
 
     const gun = String(p.gun || "").slice(0, 80);
@@ -145,19 +129,9 @@ function generateMessage_(p) {
     const onceki = String(p.onceki || "").slice(0, 1600);
     const seed = String(p.seed || new Date().getTime()).slice(0, 80);
 
-    if (!gun) {
-      return {
-        error: "Yapay zekâ mesaj üretim hatası.",
-        detail: "Gün bilgisi eksik."
-      };
-    }
+    if (!gun) return { error: "Yapay zekâ mesaj üretim hatası.", detail: "Gün bilgisi eksik." };
 
-    const uzunlukMetni = uzunluk === "kisa"
-      ? "45-70 kelime"
-      : uzunluk === "uzun"
-      ? "150-210 kelime"
-      : "90-130 kelime";
-
+    const uzunlukMetni = uzunluk === "kisa" ? "45-70 kelime" : uzunluk === "uzun" ? "150-210 kelime" : "90-130 kelime";
     const uslupAdi = {
       samimi: "Samimi",
       resmi: "Resmî",
@@ -212,10 +186,7 @@ Yalnızca nihai mesajı yaz.`;
 
     for (let attempt = 1; attempt <= 3; attempt++) {
       const payload = {
-        contents: [{
-          role: "user",
-          parts: [{ text: prompt + correction }]
-        }],
+        contents: [{ role: "user", parts: [{ text: prompt + correction }] }],
         generationConfig: {
           temperature: 1.1,
           topP: 0.95,
@@ -224,20 +195,16 @@ Yalnızca nihai mesajı yaz.`;
       };
 
       const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
-
       const response = UrlFetchApp.fetch(url, {
         method: "post",
         contentType: "application/json",
-        headers: {
-          "x-goog-api-key": apiKey
-        },
+        headers: { "x-goog-api-key": apiKey },
         payload: JSON.stringify(payload),
         muteHttpExceptions: true
       });
 
       const code = response.getResponseCode();
       lastCode = code;
-
       let data = {};
       try {
         data = JSON.parse(response.getContentText() || "{}");
@@ -247,21 +214,12 @@ Yalnızca nihai mesajı yaz.`;
 
       if (code >= 200 && code < 300) {
         const text = extractText_(data);
-
         if (text && text.length >= 35) {
           const missing = missingRequirements_(text, gun, anahtar);
           const sim = onceki ? similarity_(onceki, text) : 0;
-
           if (!missing.length && sim < 0.78) {
-            return {
-              text: text,
-              engine: "ai",
-              model: model,
-              attempt: attempt,
-              similarity: sim
-            };
+            return { text: text, engine: "ai", model: model, attempt: attempt, similarity: sim };
           }
-
           const problems = [];
           if (missing.length) problems.push("Eksik zorunlu öğe: " + missing.join(", "));
           if (sim >= 0.78) problems.push("Önceki mesaja fazla benzer: " + sim.toFixed(2));
@@ -286,7 +244,6 @@ Yalnızca nihai mesajı yaz.`;
         Utilities.sleep(700 * attempt);
         continue;
       }
-
       break;
     }
 
@@ -294,11 +251,7 @@ Yalnızca nihai mesajı yaz.`;
       error: "Yapay zekâ mesaj üretim hatası.",
       detail: "model=" + model + "; HTTP " + lastCode + " - " + lastDetail
     };
-
   } catch (err) {
-    return {
-      error: "Yapay zekâ mesaj üretim hatası.",
-      detail: String(err)
-    };
+    return { error: "Yapay zekâ mesaj üretim hatası.", detail: String(err) };
   }
 }
