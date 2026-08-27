@@ -203,6 +203,27 @@ function extractInteractionText_(data) {
   return texts.join("\n").trim();
 }
 
+function retryDelayMs_(data, rawText, attempt) {
+  let seconds = 0;
+  const details = data && data.error && Array.isArray(data.error.details) ? data.error.details : [];
+  details.forEach(function(d) {
+    if (!d || typeof d !== "object") return;
+    const delay = d.retryDelay || d.retry_delay;
+    if (typeof delay === "string") {
+      const m = delay.match(/([0-9.]+)s/i);
+      if (m) seconds = Math.max(seconds, Number(m[1]) || 0);
+    }
+  });
+  if (!seconds) {
+    const text = String(rawText || "");
+    const m = text.match(/Please retry in\s+([0-9.]+)s/i);
+    if (m) seconds = Number(m[1]) || 0;
+  }
+  if (!seconds) seconds = Math.min(8, Math.pow(2, attempt));
+  seconds = Math.min(Math.max(seconds + 1.5, 2), 45);
+  return Math.ceil(seconds * 1000);
+}
+
 function generateMessage_(p) {
   try {
     const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
@@ -295,10 +316,11 @@ Yalnızca nihai mesajı yaz.`;
       });
 
       const code = response.getResponseCode();
+      const rawText = response.getContentText() || "";
       lastCode = code;
       let data = {};
       try {
-        data = JSON.parse(response.getContentText() || "{}");
+        data = JSON.parse(rawText || "{}");
       } catch (parseErr) {
         lastDetail = "Gemini yanıtı JSON olarak okunamadı: " + String(parseErr);
       }
@@ -325,10 +347,15 @@ Yalnızca nihai mesajı yaz.`;
 
       lastDetail = data && data.error && data.error.message
         ? data.error.message
-        : response.getContentText().slice(0, 1200);
+        : rawText.slice(0, 1200);
 
-      if ((code === 429 || code === 500 || code === 502 || code === 503 || code === 504) && attempt < 3) {
-        Utilities.sleep(700 * attempt);
+      if (code === 429 && attempt < 3) {
+        Utilities.sleep(retryDelayMs_(data, rawText, attempt));
+        continue;
+      }
+
+      if ((code === 500 || code === 502 || code === 503 || code === 504) && attempt < 3) {
+        Utilities.sleep(1000 * attempt);
         continue;
       }
       break;
