@@ -161,6 +161,9 @@ Güncel yapı:
 - eski uygulama kodunu çalıştırmaz
 - doğrudan canlı Apps Script `/exec` adresine yönlendirir
 - GitHub Pages adresini açan kullanıcı gerçek çalışan Mesajmatik’e ulaşır
+- yönlendirme adresi, aktif `/exec` deployment adresiyle birebir aynı tutulur
+- yazım hatalı/eski deployment kimliği bırakılmaz
+- otomatik JavaScript yönlendirmesine ek olarak meta-refresh ve kullanıcıya görünen yedek `Uygulamayı Aç` bağlantısı bulunur
 
 Eski popup, iframe, JSONP veya eski API köprüsü yeniden kullanılmayacaktır.
 
@@ -191,7 +194,8 @@ Instagram için yanlış çalışan sahte metin paylaşım URL’si kullanılmay
 - Gereksiz süs ve karmaşa kullanılmayacaktır.
 - Görsel kalite düşük, düz ve tek tip bırakılmayacaktır; sade çizgi korunarak **daha rafine arka plan, çerçeve, ışık ve geometrik detaylar** kullanılabilir.
 - `Tasarımı Değiştir` için en az **8 ayrı sade görsel varyasyon** bulunacaktır.
-- Varyasyonlar yalnız renk tonu değiştiren kopyalar olmayacak; çerçeve, zemin, ince geometrik motif, vurgu ve kompozisyon detaylarında da fark bulunacaktır.
+- Varyasyonlar yalnız renk tonu değiştiren kopyalar olmayacak; **konsept, kompozisyon, çerçeve, zemin, başlık/simge yerleşimi ve geometrik yapı bakımından da belirgin biçimde farklı** olacaktır.
+- Farklı konsept örnekleri: klasik çift çerçeve, yıldızlı gece, parşömen, mihrap/kemer, bordo geometrik, modern açık tasarım, lacivert bantlı kompozisyon, zümrüt madalyon.
 - Her özel gün/gece için ayrı ve tanınabilir simge olacaktır.
 - Kart mevcut mesaj kutusundaki **son düzenlenmiş metni** kullanır; yeni mesaj üretmez.
 - **Mesajın tamamı karta alınacaktır; metin kesilmeyecektir.**
@@ -289,3 +293,12 @@ Google Apps Script GitHub ile otomatik senkronize değildir.
 > **Paylaşım kartında Mesajmatik, Gemini, model adı veya yapay zekâ üretim etiketi bulunmayacaktır.**
 
 > **Mobil görünüm telefon ekranına taşmadan, tek sütun ve dokunmatik kullanıma uygun şekilde oturacaktır.**
+
+## 20. Kullanıcıya görünen teknik ibareler ve kart konseptleri — SON KARAR
+
+- Başarılı mesaj üretiminden sonra kullanıcıya yalnızca `Mesaj oluşturuldu.` bilgisi gösterilir.
+- Kullanıcı arayüzünde başarılı sonuç satırında `Gemini`, `gemini-3.6-flash`, model adı veya yapay zekâ üretici ibaresi gösterilmez.
+- Teknik model bilgisi yalnız geliştirici/debug verisinde tutulabilir; son kullanıcıya görünür metin haline getirilmez.
+- GitHub Pages yönlendirmesi aktif Apps Script `/exec` adresinin doğru deployment kimliğini kullanacaktır. Yanlış veya eski kimlik kabul edilmez.
+- Kart varyasyonlarında yalnız renk değişimi yeterli değildir. Sekiz tasarımın her biri gözle bakıldığında ayrı bir konsept olarak ayırt edilebilir olmalıdır.
+- Konsept değişse bile ana metin iki yana yaslı, imza sağa hizalı, tam metin görünür ve güne özel simge korunur.
