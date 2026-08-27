@@ -1,104 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Mesajmatik</title>
-<style>
-:root{--y:#2f7d5a;--yk:#1f5d43;--a:#b9943f;--t:#26332c;--s:#6d7871}
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(180deg,#eef5f0,#faf7ef);color:var(--t)}
-.wrap{max-width:780px;margin:auto;padding:14px}.card{background:#fff;border:1px solid #e2e8e3;border-radius:22px;overflow:hidden;box-shadow:0 12px 34px #23452f18}
-header{text-align:center;padding:25px 18px;background:linear-gradient(135deg,#edf7f0,#fff9eb);border-bottom:1px solid #e7ece8}header .moon{font-size:34px}h1{margin:4px 0;color:var(--yk)}header p{margin:4px;color:var(--s);font-size:14px}
-.content{padding:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:800;margin:0 0 6px}
-select,input,textarea{width:100%;padding:12px 13px;border:1px solid #ccd6cf;border-radius:11px;font-size:15px;background:#fff;color:#26332c}textarea{min-height:190px;line-height:1.55;resize:vertical}
-.mainbtn{width:100%;margin-top:14px;background:linear-gradient(135deg,#2f7d5a,#b9943f);color:#fff;border:0;border-radius:12px;padding:15px;font-size:16px;font-weight:900;cursor:pointer}.mainbtn:disabled{opacity:.65}
-.sec{margin-top:20px;padding-top:18px;border-top:1px dashed #d8dfda}.sec h3{margin:0 0 10px;color:var(--yk)}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.sharegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px}
-button{border:0;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer}.blue{background:#2f6da1;color:#fff}.soft{background:#e9f1eb;color:var(--yk)}.gold{background:#b68d2f;color:#fff}.green{background:var(--y);color:#fff}.dark{background:#202124;color:#fff}.fb{background:#315eaa;color:#fff}.tg{background:#2d8fc4;color:#fff}
-.status{min-height:20px;margin-top:9px;color:var(--yk);font-size:13px;font-weight:700;line-height:1.4}canvas{display:none;width:100%;height:auto;border-radius:16px;border:1px solid #dfe6e0}
-.note{font-size:12px;color:#758079;background:#f6f8f6;padding:10px;border-radius:9px;margin-top:10px;line-height:1.45}.footer{text-align:center;color:#828b86;font-size:12px;padding:0 18px 20px}
-@media(max-width:640px){.grid,.three,.sharegrid{grid-template-columns:1fr}.wrap{padding:8px}.content{padding:14px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Mesajmatik</title>
+  <meta http-equiv="refresh" content="0;url=https://script.google.com/macros/s/AKfycb9IM6959cBka4D83g_VGxBhszXbMmpf38x27Pp5KScYaT-xHWINkc-y5QqKXEf0ph2E/exec">
+  <style>
+    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:Arial,sans-serif;background:#f4f8f5;color:#145c46}
+    .box{text-align:center;padding:28px}
+    a{color:#145c46;font-weight:700}
+  </style>
+  <script>
+    location.replace("https://script.google.com/macros/s/AKfycb9IM6959cBka4D83g_VGxBhszXbMmpf38x27Pp5KScYaT-xHWINkc-y5QqKXEf0ph2E/exec");
+  </script>
 </head>
 <body>
-<div class="wrap"><div class="card">
-<header><div class="moon">🌙</div><h1>Mesajmatik</h1><p>Manevi günler için özgün mesaj ve paylaşım kartı oluşturucu</p></header>
-<div class="content">
-<div class="grid">
-<div><label>Özel Gün / Zaman</label><select id="gunSecim"><option>Berat Kandili</option><option>Kadir Gecesi</option><option>Mevlid Kandili</option><option>Regaib Kandili</option><option>Miraç Kandili</option><option>Ramazan Bayramı</option><option>Kurban Bayramı</option><option>Cuma Günü</option><option>Ramazan Ayı</option><option>Arefe Günü</option></select></div>
-<div><label>Üslup</label><select id="uslup"><option value="samimi">Samimi</option><option value="resmi">Resmî</option><option value="kurumsal">Kurumsal</option><option value="dua">Dua ağırlıklı</option><option value="kaynakli">Ayet / Hadis ağırlıklı</option></select></div>
-<div><label>Mesaj Uzunluğu</label><select id="uzunluk"><option value="kisa">Kısa</option><option value="orta" selected>Orta</option><option value="uzun">Uzun</option></select></div>
-<div><label>Hitap</label><select id="hitap"><option value="">Hitap ekleme</option><option>Değerli Dostlarım</option><option>Kıymetli Dostlarım</option><option>Değerli Mesai Arkadaşlarım</option><option>Kıymetli Ailem</option><option>Değerli Çalışma Arkadaşlarımız</option></select></div>
-<div class="full"><label>Özel Vurgu / Anahtar Kelimeler</label><input id="anahtarKelime" autocomplete="off"></div>
-<div class="full"><label>İsim / Kurum / Şirket Adı</label><input id="imza" autocomplete="off"></div>
-</div>
-<button class="mainbtn" id="olusturBtn" onclick="mesajOlustur()">✨ Mesajı Oluştur</button>
-<div class="sec"><h3>Oluşturulan Mesaj</h3><textarea id="sonuc" readonly placeholder="Mesajınız burada görünecek..."></textarea>
-<div class="three"><button class="blue" onclick="kopyala()">📋 Kopyala</button><button class="soft" onclick="genelPaylas()">📤 Paylaş</button><button class="gold" onclick="kartOlustur(false)">🖼️ Görsel Kart Oluştur</button></div>
-<div class="sharegrid"><button class="green" onclick="whatsapp()">WhatsApp</button><button class="fb" onclick="facebook()">Facebook</button><button class="dark" onclick="xPaylas()">X</button><button class="tg" onclick="telegram()">Telegram</button><button class="soft" onclick="instagramVeyaDiger()">Instagram / Diğer</button></div>
-<div class="status" id="status"></div></div>
-<div class="sec"><h3>Paylaşım Kartı</h3><canvas id="kartCanvas" width="1080" height="1080"></canvas>
-<div class="three"><button class="green" onclick="kartIndir()">⬇️ Görseli Kaydet</button><button class="soft" onclick="kartPaylas()">📤 Görseli Paylaş</button><button class="soft" onclick="kartOlustur(true)">🎨 Tasarımı Değiştir</button></div>
-<div class="note">“Tasarımı Değiştir” yalnızca kartın görünümünü değiştirir; mesajı yeniden üretmez.</div></div>
-</div><div class="footer">Mesajmatik</div></div></div>
-<script>
-const API_URL="https://script.google.com/macros/s/AKfycbwZVpAEB4IYujc-yNL2mOLgHnV-t6i2OO32bWgV8r8OeeZeeMYJDh4r58_rfFXXLOTR/exec";
-const $=id=>document.getElementById(id),pick=a=>a[Math.floor(Math.random()*a.length)];
-window.__mesajmatikDebug={engine:null,detail:null,time:null};
-let lastAiText="",lastLocalText="",localCounter=0,vary=0;
-
-const dayLocal={
-"Berat Kandili":["Berat Kandili'nin manevi ikliminde","Gönüllerin arınmaya yöneldiği Berat Kandili'nde","Berat Kandili vesilesiyle gönüllerimizi iyiliğe açtığımız bu vakitte"],
-"Kadir Gecesi":["Kadir Gecesi'nin derin manevi ikliminde","Duaların çoğaldığı Kadir Gecesi'nde","Kadir Gecesi'nin gönüllere dokunan bereketinde"],
-"Mevlid Kandili":["Mevlid Kandili'nin rahmet ve muhabbet ikliminde","Mevlid Kandili'nin manevi güzelliğini yaşadığımız bu gecede","Gönüllerin sevgiyle buluştuğu Mevlid Kandili'nde"],
-"Regaib Kandili":["Regaib Kandili'nin bereketli ikliminde","Güzel niyetlerin çoğaldığı Regaib Kandili'nde","Regaib Kandili'nin gönüllere ferahlık veren atmosferinde"],
-"Miraç Kandili":["Miraç Kandili'nin manevi derinliğinde","Gönüllerin iyiliğe yöneldiği Miraç Kandili'nde","Miraç Kandili'nin huzurunu hissettiğimiz bu kıymetli gecede"],
-"Ramazan Bayramı":["Ramazan Bayramı'nın sevincini paylaşırken","Ramazan Bayramı'nın gönülleri buluşturan güzelliğinde","Birlik ve paylaşma duygusunu büyüten Ramazan Bayramı'nda"],
-"Kurban Bayramı":["Kurban Bayramı'nın paylaşma ve dayanışma ikliminde","Kurban Bayramı'nın gönülleri yakınlaştıran güzelliğinde","Birlik ve kardeşliğin güçlendiği Kurban Bayramı'nda"],
-"Cuma Günü":["Cuma gününün huzurunu yaşadığımız bu güzel vakitte","Gönüllerin duaya yöneldiği Cuma gününde","Cuma gününün bereketini paylaştığımız bu vakitte"],
-"Ramazan Ayı":["Ramazan ayının rahmet ve bereket ikliminde","Ramazan ayının gönülleri iyiliğe yönelten günlerinde","Paylaşma ve sabrın hissedildiği Ramazan ayında"],
-"Arefe Günü":["Arefe gününün manevi huzurunda","Bayrama yaklaşırken Arefe gününün güzel ikliminde","Duaların çoğaldığı Arefe gününde"]};
-const localCore={
-samimi:["gönlünüzün ferahlıkla dolmasını ve sevdiklerinizle güzel anlar paylaşmanızı gönülden diliyorum","bu özel vaktin size ve sevdiklerinize sağlık, huzur ve gönül ferahlığı getirmesini diliyorum","güzel niyetlerin hayatınıza iyilik olarak yansımasını diliyorum"],
-resmi:["bu anlamlı vaktin sağlık, esenlik ve huzura vesile olmasını temenni ederim","bu kıymetli günün birlik, anlayış ve esenlik duygularını güçlendirmesini temenni ederim","bu özel günün hayırlara vesile olmasını dilerim"],
-kurumsal:["bu anlamlı günün çalışanlarımız, paydaşlarımız ve aileleri için sağlık, huzur ve esenliğe vesile olmasını diliyoruz","ortak değerlerimizi güçlendiren bu özel günün birlik ve dayanışmayı artırmasını diliyoruz","bu kıymetli günün toplumumuzda iyilik ve karşılıklı anlayışı güçlendirmesini temenni ediyoruz"],
-dua:["Rabbim gönüllerimize ferahlık, hanelerimize huzur ve hayatımıza hayır ihsan eylesin","Rabbim dualarımızı hayra ulaştırsın, gönüllerimizi iyilik ve merhametten ayırmasın","Rabbim bu kıymetli vakti sağlık, huzur ve güzel başlangıçlara vesile eylesin"],
-kaynakli:["“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu ilahi müjdenin gönüllerimize umut vermesini diliyorum","“Kalpler ancak Allah'ı anmakla huzur bulur.” (Ra'd, 13/28, mealen) Bu güzel vaktin gönüllerimize huzur taşımasını diliyorum"]};
-const localExtra=["Sevdiklerimizle aramızdaki muhabbetin güçlenmesi ve iyiliğin hayatımızda daha fazla yer bulması en güzel dileğimiz olsun.","Kırgınlıkların azaldığı, merhametin ve paylaşmanın çoğaldığı günlere erişelim.","Güzel niyetlerin hayra dönüştüğü, gönüllerin birbirine daha çok yaklaştığı günler nasip olsun.","Sağlık, huzur ve iyiliğin hayatımızda kalıcı olması dileğiyle."];
-const localClose=["Bu güzel vaktin hayırlara vesile olmasını dilerim.","Gönlünüze huzur, hayatınıza güzellik getirmesi dileğiyle.","Sağlık ve huzur içinde nice güzel günlere erişmek nasip olsun."];
-function similarity(a,b){if(!a||!b)return 0;const norm=x=>new Set(x.toLocaleLowerCase("tr-TR").replace(/[^a-zçğıöşü0-9 ]/gi," ").split(/\s+/).filter(w=>w.length>3));const A=norm(a),B=norm(b);let hit=0;A.forEach(x=>{if(B.has(x))hit++});return hit/Math.max(1,Math.min(A.size,B.size));}
-function vurguCumlesi(raw,style){const v=raw.split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);if(!v.length)return"";const j=v.length===1?v[0]:v.slice(0,-1).join(", ")+" ve "+v[v.length-1];return style==="kurumsal"?j+" için iyi dileklerimizi de ifade ediyoruz.":j+" için de gönülden hayır ve iyilik diliyorum.";}
-function localMessage(){const gun=$("gunSecim").value,style=$("uslup").value,z=$("uzunluk").value,h=$("hitap").value.trim(),im=$("imza").value.trim(),raw=$("anahtarKelime").value.trim();let tries=0,m="";localCounter++;do{const parts=[pick(dayLocal[gun]||dayLocal["Cuma Günü"])+", "+pick(localCore[style]||localCore.samimi)+"."];if(raw)parts.push(vurguCumlesi(raw,style));if(z!=="kisa")parts.push(pick(localExtra));if(z==="uzun")parts.push(pick(localExtra));parts.push(pick(localClose));m=parts.join(" ");if(h)m=h+",\n\n"+m;if(im)m+="\n\n"+im;tries++;}while((m===lastLocalText||similarity(lastLocalText,m)>.78)&&tries<20);lastLocalText=m;return m;}
-
-function mesajOlustur(){
- const b=$("olusturBtn");
- b.disabled=true;b.textContent="⏳ Mesaj hazırlanıyor...";$("status").textContent="Yapay zekâ ile yeni mesaj hazırlanıyor...";
- const token="msg_"+Date.now()+"_"+Math.random().toString(36).slice(2);
- const q=new URLSearchParams({bridge:"1",token:token,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:$("anahtarKelime").value.trim(),onceki:lastAiText.slice(0,1500),imza:$("imza").value.trim(),seed:Date.now()+"-"+Math.random().toString(36).slice(2)});
- let popup=null,done=false,timer=null;
- const finish=()=>{clearTimeout(timer);window.removeEventListener("message",onMessage);try{if(popup&&!popup.closed)popup.close();}catch(e){}b.disabled=false;b.textContent="✨ Mesajı Oluştur";};
- const askLocal=detail=>{if(done)return;done=true;finish();window.__mesajmatikDebug={engine:"ai_error",detail:detail||"bridge_error",time:new Date().toISOString()};const ok=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\n\nYapay zekâ ile mesaj üretilemedi. Yerel mesaj üreticisiyle devam etmek ister misiniz?");if(ok){$("sonuc").value=localMessage();$("status").textContent="Yerel mesaj oluşturuldu.";window.__mesajmatikDebug.engine="local";}else{$("status").textContent="Mesaj oluşturulmadı.";}};
- function onMessage(ev){const d=ev.data||{};if(d.type!=="mesajmatik-result"||d.token!==token)return;const r=d.result||{};const text=r.text?String(r.text).trim():"";if(text.length>30){const sim=similarity(lastAiText,text);done=true;lastAiText=text;$("sonuc").value=text;$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:"model:"+(r.model||"gemini-3.6-flash")+" similarity:"+sim.toFixed(2),time:new Date().toISOString()};finish();return;}askLocal([r.error,r.detail].filter(Boolean).join(" — ")||"empty_bridge_response");}
- window.addEventListener("message",onMessage);
- try{popup=window.open(API_URL+"?"+q.toString(),"mesajmatik_ai_"+Date.now(),"popup=yes,width=430,height=320,left=120,top=120");}catch(e){popup=null;}
- if(!popup){askLocal("popup_blocked");return;}
- timer=setTimeout(()=>askLocal("bridge_timeout"),60000);
-}
-
-$("gunSecim").addEventListener("change",()=>{$("sonuc").value="";$("status").textContent="";$("kartCanvas").style.display="none";vary=0;});
-async function kopyala(){if(!$("sonuc").value)return;try{await navigator.clipboard.writeText($("sonuc").value)}catch(e){$("sonuc").select();document.execCommand("copy")}$("status").textContent="Mesaj kopyalandı."}
-function mesajMetni(){return $("sonuc").value.trim()}
-function whatsapp(){const t=mesajMetni();if(t)window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}
-function facebook(){const t=mesajMetni();if(!t)return;window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(location.href)+"&quote="+encodeURIComponent(t),"_blank")}
-function xPaylas(){const t=mesajMetni();if(t)window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(t),"_blank")}
-function telegram(){const t=mesajMetni();if(t)window.open("https://t.me/share/url?url="+encodeURIComponent(location.href)+"&text="+encodeURIComponent(t),"_blank")}
-async function genelPaylas(){const t=mesajMetni();if(!t)return;if(navigator.share){try{await navigator.share({text:t,title:$("gunSecim").value});return}catch(e){if(e&&e.name==="AbortError")return}}await kopyala();$("status").textContent="Doğrudan paylaşım desteklenmiyor; mesaj panoya kopyalandı."}
-async function instagramVeyaDiger(){const t=mesajMetni();if(!t)return;if(navigator.share){try{await navigator.share({text:t,title:$("gunSecim").value});return}catch(e){if(e&&e.name==="AbortError")return}}await kopyala();$("status").textContent="Mesaj panoya kopyalandı. Görsel kartı da kaydedip paylaşabilirsiniz."}
-
-const dayStyle={"Berat Kandili":["#0f3f35","#5f8f76","🌙"],"Kadir Gecesi":["#172c55","#5c6fa3","✨"],"Mevlid Kandili":["#315b48","#8ba58f","☪"],"Regaib Kandili":["#513d67","#8f78a6","✦"],"Miraç Kandili":["#243f69","#7090b4","★"],"Ramazan Bayramı":["#1f6a58","#82ad8e","🎁"],"Kurban Bayramı":["#6a4a2d","#a8865d","☪"],"Cuma Günü":["#28594d","#729484","🕌"],"Ramazan Ayı":["#294f63","#6f99a8","🌙"],"Arefe Günü":["#604d36","#a28a68","📿"]};
-function wrap(ctx,text,w){const words=text.replace(/\s+/g," ").trim().split(" "),lines=[];let line="";for(const word of words){const t=line?line+" "+word:word;if(ctx.measureText(t).width>w&&line){lines.push(line);line=word}else line=t}if(line)lines.push(line);return lines}
-function kartOlustur(change=false){if(!mesajMetni()){$("status").textContent="Önce mesaj oluşturun.";return}if(change)vary=(vary+1)%3;const c=$("kartCanvas"),ctx=c.getContext("2d"),gun=$("gunSecim").value,st=dayStyle[gun]||dayStyle["Cuma Günü"];c.style.display="block";const g=ctx.createLinearGradient(0,0,1080,1080);g.addColorStop(0,st[vary%2]);g.addColorStop(1,st[(vary+1)%2]);ctx.fillStyle=g;ctx.fillRect(0,0,1080,1080);ctx.fillStyle="rgba(255,255,255,.95)";ctx.roundRect(70,70,940,940,34);ctx.fill();ctx.textAlign="center";ctx.fillStyle=st[0];ctx.font="96px serif";ctx.fillText(st[2],540,210);ctx.font="700 48px Georgia";ctx.fillText(gun,540,305);let body=mesajMetni();const h=$("hitap").value.trim(),im=$("imza").value.trim();if(h&&body.startsWith(h))body=body.slice(h.length).replace(/^,?\s*/,"");if(im&&body.endsWith(im))body=body.slice(0,-im.length).trim();let size=30,lines=[];do{ctx.font=size+"px Georgia";lines=wrap(ctx,body,780);size--;}while(lines.length>12&&size>20);ctx.font=(size+1)+"px Georgia";ctx.fillStyle="#26352e";let y=410;for(const line of lines){ctx.fillText(line,540,y);y+=48}if(im){ctx.font="700 30px Georgia";ctx.fillStyle=st[0];ctx.textAlign="right";ctx.fillText(im,920,930)}ctx.textAlign="center";ctx.font="18px Arial";ctx.fillStyle="#8a8f8b";ctx.fillText("Mesajmatik",540,980)}
-function kartIndir(){if($("kartCanvas").style.display==="none")kartOlustur(false);if($("kartCanvas").style.display==="none")return;const a=document.createElement("a");a.download="mesajmatik-kart.png";a.href=$("kartCanvas").toDataURL("image/png");a.click()}
-async function kartPaylas(){if($("kartCanvas").style.display==="none")kartOlustur(false);if($("kartCanvas").style.display==="none")return;$("kartCanvas").toBlob(async blob=>{if(!blob)return;const f=new File([blob],"mesajmatik-kart.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:mesajMetni(),title:$("gunSecim").value})}catch(e){}}else{$("status").textContent="Doğrudan görsel paylaşımı desteklenmiyor. Görseli kaydedebilirsiniz."}},"image/png")}
-</script>
+  <div class="box">
+    <h1>Mesajmatik</h1>
+    <p>Uygulama açılıyor…</p>
+    <p><a href="https://script.google.com/macros/s/AKfycb9IM6959cBka4D83g_VGxBhszXbMmpf38x27Pp5KScYaT-xHWINkc-y5QqKXEf0ph2E/exec">Açılmazsa buraya tıklayın.</a></p>
+  </div>
 </body>
 </html>
