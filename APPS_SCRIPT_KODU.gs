@@ -6,10 +6,11 @@ function doGet(e) {
     const payload = {
       status: "ok",
       service: "Mesajmatik",
-      geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
-      model: "gemini-3.6-flash",
+      xaiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("XAI_API_KEY"),
+      model: "grok-4.3",
       transport: "apps-script-direct",
-      api: "interactions"
+      api: "xai-responses",
+      requestMode: "single-request"
     };
     return jsonpOrJson_(prefix, payload);
   }
@@ -45,7 +46,7 @@ function renderApp_() {
     const status=document.getElementById("status");
     b.disabled=true;
     b.textContent="⏳ Mesaj hazırlanıyor...";
-    status.textContent="Yapay zekâ ile yeni mesaj hazırlanıyor...";
+    status.textContent="Grok ile yeni mesaj hazırlanıyor...";
 
     const params={
       gun:document.getElementById("gunSecim").value,
@@ -53,7 +54,7 @@ function renderApp_() {
       uzunluk:document.getElementById("uzunluk").value,
       hitap:document.getElementById("hitap").value,
       anahtar:document.getElementById("anahtarKelime").value.trim(),
-      onceki:(window.lastAiText||"").slice(0,1500),
+      onceki:(window.__mesajmatikLastAiText||"").slice(0,1500),
       imza:document.getElementById("imza").value.trim(),
       seed:Date.now()+"-"+Math.random().toString(36).slice(2)
     };
@@ -73,6 +74,8 @@ function renderApp_() {
         sonuc.value=window.localMessage();
         status.textContent="Yerel mesaj oluşturuldu.";
         window.__mesajmatikDebug.engine="local";
+      }else{
+        status.textContent="Mesaj oluşturulmadı.";
       }
     };
 
@@ -81,10 +84,14 @@ function renderApp_() {
         r=r||{};
         const text=r.text?String(r.text).trim():"";
         if(text.length>30){
-          window.lastAiText=text;
+          window.__mesajmatikLastAiText=text;
           sonuc.value=text;
           status.textContent="Mesaj oluşturuldu.";
-          window.__mesajmatikDebug={engine:"ai",detail:"model:"+(r.model||"gemini-3.6-flash")+" api:"+(r.api||"interactions"),time:new Date().toISOString()};
+          window.__mesajmatikDebug={
+            engine:"ai",
+            detail:"model:"+(r.model||"grok-4.3")+" api:"+(r.api||"xai-responses")+" requests:"+(r.requestCount||1),
+            time:new Date().toISOString()
+          };
           finish();
           return;
         }
@@ -136,99 +143,28 @@ function doPost(e) {
   }
 }
 
-function normalizeTr_(s) {
-  return String(s || "")
-    .toLocaleLowerCase("tr-TR")
-    .replace(/[’']/g, "")
-    .replace(/[^a-zçğıöşü0-9 ]/gi, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function visibleInText_(term, text) {
-  const t = normalizeTr_(term);
-  const x = normalizeTr_(text);
-  if (!t) return true;
-  if (x.indexOf(t) !== -1) return true;
-  const words = t.split(" ").filter(function(w) { return w.length >= 3; });
-  if (!words.length) return true;
-  return words.every(function(w) {
-    const stem = w.length <= 4 ? w : w.slice(0, Math.max(4, w.length - 3));
-    return x.indexOf(stem) !== -1;
-  });
-}
-
-function missingRequirements_(text, gun, anahtar) {
-  const missing = [];
-  if (!visibleInText_(gun, text)) missing.push("GÜN=" + gun);
-  String(anahtar || "")
-    .split(/[,;\n]+/)
-    .map(function(x) { return x.trim(); })
-    .filter(Boolean)
-    .forEach(function(term) {
-      if (!visibleInText_(term, text)) missing.push("VURGU=" + term);
-    });
-  return missing;
-}
-
-function similarity_(a, b) {
-  if (!a || !b) return 0;
-  function wordSet_(s) {
-    const out = {};
-    normalizeTr_(s).split(" ").forEach(function(w) {
-      if (w.length > 3) out[w] = true;
-    });
-    return out;
-  }
-  const A = wordSet_(a), B = wordSet_(b);
-  const ak = Object.keys(A), bk = Object.keys(B);
-  if (!ak.length || !bk.length) return 0;
-  let hit = 0;
-  ak.forEach(function(w) { if (B[w]) hit++; });
-  return hit / Math.max(1, Math.min(ak.length, bk.length));
-}
-
-function extractInteractionText_(data) {
-  if (data && typeof data.output_text === "string" && data.output_text.trim()) {
-    return data.output_text.trim();
-  }
-  const steps = data && Array.isArray(data.steps) ? data.steps : [];
+function extractXaiText_(data) {
+  if (!data || !Array.isArray(data.output)) return "";
   const texts = [];
-  steps.forEach(function(step) {
-    if (!step || step.type !== "model_output" || !Array.isArray(step.content)) return;
-    step.content.forEach(function(block) {
-      if (block && block.type === "text" && block.text) texts.push(String(block.text));
+  data.output.forEach(function(item) {
+    if (!item || item.type !== "message" || !Array.isArray(item.content)) return;
+    item.content.forEach(function(block) {
+      if (block && block.type === "output_text" && block.text) {
+        texts.push(String(block.text));
+      }
     });
   });
   return texts.join("\n").trim();
 }
 
-function retryDelayMs_(data, rawText, attempt) {
-  let seconds = 0;
-  const details = data && data.error && Array.isArray(data.error.details) ? data.error.details : [];
-  details.forEach(function(d) {
-    if (!d || typeof d !== "object") return;
-    const delay = d.retryDelay || d.retry_delay;
-    if (typeof delay === "string") {
-      const m = delay.match(/([0-9.]+)s/i);
-      if (m) seconds = Math.max(seconds, Number(m[1]) || 0);
-    }
-  });
-  if (!seconds) {
-    const text = String(rawText || "");
-    const m = text.match(/Please retry in\s+([0-9.]+)s/i);
-    if (m) seconds = Number(m[1]) || 0;
-  }
-  if (!seconds) seconds = Math.min(8, Math.pow(2, attempt));
-  seconds = Math.min(Math.max(seconds + 1.5, 2), 45);
-  return Math.ceil(seconds * 1000);
-}
-
 function generateMessage_(p) {
   try {
-    const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
+    const apiKey = PropertiesService.getScriptProperties().getProperty("XAI_API_KEY");
     if (!apiKey) {
-      return { error: "Yapay zekâ mesaj üretim hatası.", detail: "GEMINI_API_KEY Script Property bulunamadı." };
+      return {
+        error: "Yapay zekâ mesaj üretim hatası.",
+        detail: "XAI_API_KEY Script Property bulunamadı."
+      };
     }
 
     const gun = String(p.gun || "").slice(0, 80);
@@ -240,7 +176,12 @@ function generateMessage_(p) {
     const onceki = String(p.onceki || "").slice(0, 1600);
     const seed = String(p.seed || new Date().getTime()).slice(0, 80);
 
-    if (!gun) return { error: "Yapay zekâ mesaj üretim hatası.", detail: "Gün bilgisi eksik." };
+    if (!gun) {
+      return {
+        error: "Yapay zekâ mesaj üretim hatası.",
+        detail: "Gün bilgisi eksik."
+      };
+    }
 
     const uzunlukMetni = uzunluk === "kisa" ? "45-70 kelime" : uzunluk === "uzun" ? "150-210 kelime" : "90-130 kelime";
     const uslupAdi = {
@@ -290,82 +231,72 @@ ${onceki ? `- Aşağıdaki önceki mesajın kopyasını veya yakın varyasyonunu
 
 Yalnızca nihai mesajı yaz.`;
 
-    const model = "gemini-3.6-flash";
-    let lastDetail = "Bilinmeyen servis hatası.";
-    let lastCode = 0;
-    let correction = "";
+    const model = "grok-4.3";
+    const payload = {
+      model: model,
+      input: prompt,
+      max_output_tokens: 1000,
+      store: false
+    };
 
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      const payload = {
-        model: model,
-        input: prompt + correction,
-        store: false,
-        generation_config: {
-          max_output_tokens: 1000,
-          thinking_level: "low"
-        }
+    const response = UrlFetchApp.fetch("https://api.x.ai/v1/responses", {
+      method: "post",
+      contentType: "application/json",
+      headers: {
+        Authorization: "Bearer " + apiKey
+      },
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+
+    const code = response.getResponseCode();
+    const rawText = response.getContentText() || "";
+    let data = {};
+
+    try {
+      data = JSON.parse(rawText || "{}");
+    } catch (parseErr) {
+      return {
+        error: "Yapay zekâ mesaj üretim hatası.",
+        detail: "xAI yanıtı JSON olarak okunamadı. HTTP " + code + " - " + String(parseErr),
+        requestCount: 1
       };
-
-      const url = "https://generativelanguage.googleapis.com/v1beta/interactions";
-      const response = UrlFetchApp.fetch(url, {
-        method: "post",
-        contentType: "application/json",
-        headers: { "x-goog-api-key": apiKey },
-        payload: JSON.stringify(payload),
-        muteHttpExceptions: true
-      });
-
-      const code = response.getResponseCode();
-      const rawText = response.getContentText() || "";
-      lastCode = code;
-      let data = {};
-      try {
-        data = JSON.parse(rawText || "{}");
-      } catch (parseErr) {
-        lastDetail = "Gemini yanıtı JSON olarak okunamadı: " + String(parseErr);
-      }
-
-      if (code >= 200 && code < 300) {
-        const text = extractInteractionText_(data);
-        if (text && text.length >= 35) {
-          const missing = missingRequirements_(text, gun, anahtar);
-          const sim = onceki ? similarity_(onceki, text) : 0;
-          if (!missing.length && sim < 0.78) {
-            return { text: text, engine: "ai", model: model, api: "interactions", attempt: attempt, similarity: sim };
-          }
-          const problems = [];
-          if (missing.length) problems.push("Eksik zorunlu öğe: " + missing.join(", "));
-          if (sim >= 0.78) problems.push("Önceki mesaja fazla benzer: " + sim.toFixed(2));
-          lastDetail = problems.join(" | ") || "Kalite kontrolünden geçmedi.";
-          correction = "\n\nÖNCEKİ DENEME KABUL EDİLMEDİ: " + lastDetail + ". Mesajı baştan ve belirgin biçimde farklı yaz.";
-          continue;
-        }
-
-        lastDetail = "Gemini boş/yetersiz yanıt döndürdü; status=" + String(data.status || "bilinmiyor") + "; interaction=" + String(data.id || "yok");
-        continue;
-      }
-
-      lastDetail = data && data.error && data.error.message
-        ? data.error.message
-        : rawText.slice(0, 1200);
-
-      if (code === 429 && attempt < 3) {
-        Utilities.sleep(retryDelayMs_(data, rawText, attempt));
-        continue;
-      }
-
-      if ((code === 500 || code === 502 || code === 503 || code === 504) && attempt < 3) {
-        Utilities.sleep(1000 * attempt);
-        continue;
-      }
-      break;
     }
+
+    if (code >= 200 && code < 300) {
+      const text = extractXaiText_(data);
+      if (text && text.length >= 35) {
+        return {
+          text: text,
+          engine: "ai",
+          model: model,
+          api: "xai-responses",
+          requestCount: 1
+        };
+      }
+
+      return {
+        error: "Yapay zekâ mesaj üretim hatası.",
+        detail: "xAI başarılı HTTP yanıtı verdi ancak mesaj metni boş veya yetersiz geldi.",
+        requestCount: 1
+      };
+    }
+
+    const detail = data && data.error
+      ? (data.error.message || JSON.stringify(data.error))
+      : rawText.slice(0, 1200);
 
     return {
       error: "Yapay zekâ mesaj üretim hatası.",
-      detail: "Interactions API; model=" + model + "; HTTP " + lastCode + " - " + lastDetail
+      detail: "xAI Responses API; model=" + model + "; HTTP " + code + " - " + detail,
+      requestCount: 1
     };
+
   } catch (err) {
-    return { error: "Yapay zekâ mesaj üretim hatası.", detail: String(err) };
+    return {
+      error: "Yapay zekâ mesaj üretim hatası.",
+      detail: String(err),
+      requestCount: 1
+    };
   }
 }
