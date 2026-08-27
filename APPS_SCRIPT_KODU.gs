@@ -98,48 +98,43 @@ function metin(){return el("sonuc").value.trim()} function kopyala(){var t=metin
 function whatsapp(){var t=metin();if(t)window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")} function facebook(){var t=metin();if(t)window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(location.href)+"&quote="+encodeURIComponent(t),"_blank")} function xPaylas(){var t=metin();if(t)window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(t),"_blank")} function telegram(){var t=metin();if(t)window.open("https://t.me/share/url?url="+encodeURIComponent(location.href)+"&text="+encodeURIComponent(t),"_blank")} function instagram(){paylas()}
 function gunSimgesi(gun){var m={"Arefe Günü":"✦","Berat Kandili":"☾✧","Cuma Günü":"۞","Kadir Gecesi":"✧","Kurban Bayramı":"◈","Mevlid Kandili":"❁","Miraç Kandili":"↟","Ramazan Ayı":"☾★","Ramazan Bayramı":"☾✦","Regaib Kandili":"✧☾"};return m[gun]||"☾"}
 function satirlaraBol(ctx,text,maxWidth){var paragraphs=String(text||"").split(/\n/),lines=[];for(var p=0;p<paragraphs.length;p++){var paragraph=paragraphs[p].trim();if(!paragraph){lines.push("");continue}var words=paragraph.split(/\s+/),line="";for(var i=0;i<words.length;i++){var test=line?line+" "+words[i]:words[i];if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=words[i]}else{line=test}}if(line)lines.push(line)}return lines}
-function metniKartaSigdir(ctx,text,maxWidth,maxHeight){for(var size=40;size>=18;size--){ctx.font=size+"px Georgia";var lines=satirlaraBol(ctx,text,maxWidth),lineHeight=Math.round(size*1.46),height=lines.length*lineHeight;if(height<=maxHeight)return{size:size,lines:lines,lineHeight:lineHeight}}ctx.font="18px Georgia";return{size:18,lines:satirlaraBol(ctx,text,maxWidth),lineHeight:27}}
+function metniKartaSigdir(ctx,text,maxWidth,maxHeight){for(var size=40;size>=15;size--){ctx.font=size+"px Georgia";var lines=satirlaraBol(ctx,text,maxWidth),lineHeight=Math.round(size*1.4),height=lines.length*lineHeight;if(height<=maxHeight)return{size:size,lines:lines,lineHeight:lineHeight}}ctx.font="15px Georgia";return{size:15,lines:satirlaraBol(ctx,text,maxWidth),lineHeight:21}}
 function ikiYanaYaz(ctx,line,x,y,width,isLastLine){var words=String(line||"").trim().split(/\s+/);if(isLastLine||words.length<2){ctx.fillText(line,x,y);return}var wordsWidth=0;for(var i=0;i<words.length;i++)wordsWidth+=ctx.measureText(words[i]).width;var gap=(width-wordsWidth)/(words.length-1);var cursor=x;for(var j=0;j<words.length;j++){ctx.fillText(words[j],cursor,y);cursor+=ctx.measureText(words[j]).width+gap}}
 function kartMetniniAyir(){var tam=metin(),imza=el("imza").value.trim();if(imza&&tam.slice(-imza.length)===imza){var govde=tam.slice(0,-imza.length).replace(/\s+$/g,"");return{govde:govde,imza:imza}}return{govde:tam,imza:""}}
 function kartTemasi(no){var t=[
-{konsept:"zümrüt-klasik",bg1:"#083d32",bg2:"#0f6955",accent:"#e6c86e",text:"#fffdf6",panel:"rgba(255,255,255,.07)"},
-{konsept:"gece-yıldız",bg1:"#071428",bg2:"#183e63",accent:"#f2d27f",text:"#ffffff",panel:"rgba(255,255,255,.06)"},
-{konsept:"krem-hat",bg1:"#f7f0df",bg2:"#ead8b5",accent:"#8c6a35",text:"#27352f",panel:"rgba(255,255,255,.62)"},
-{konsept:"mihrap",bg1:"#193f34",bg2:"#526f5c",accent:"#e1c779",text:"#fffdf7",panel:"rgba(0,0,0,.10)"},
-{konsept:"bordo",bg1:"#40182b",bg2:"#7b3853",accent:"#efcb7b",text:"#fff9f2",panel:"rgba(255,255,255,.06)"},
-{konsept:"modern-açık",bg1:"#edf7f3",bg2:"#dcece5",accent:"#1e735f",text:"#1d352e",panel:"#ffffff"},
-{konsept:"lacivert",bg1:"#102838",bg2:"#365f76",accent:"#e0bc6e",text:"#fffdf7",panel:"rgba(255,255,255,.07)"},
-{konsept:"turkuaz",bg1:"#0d4c46",bg2:"#1f8074",accent:"#f0d17f",text:"#fffdf7",panel:"rgba(255,255,255,.07)"}
+{bg:"#f8f4e8",text:"#173f35",accent:"#b8943e",border:"#0d5a46",double:true},
+{bg:"#10283f",text:"#fffaf0",accent:"#d8b35e",border:"#d8b35e",double:false},
+{bg:"#ffffff",text:"#20342e",accent:"#1d725d",border:"#cbded6",double:false},
+{bg:"#eaf1e9",text:"#233a32",accent:"#587463",border:"#587463",double:true},
+{bg:"#f1e6d4",text:"#47382a",accent:"#936f3e",border:"#936f3e",double:false},
+{bg:"#242b2a",text:"#f8f3e7",accent:"#c7ab68",border:"#c7ab68",double:true},
+{bg:"#5a2638",text:"#fff8ed",accent:"#d9b76a",border:"#d9b76a",double:false},
+{bg:"#0f625c",text:"#fffdf6",accent:"#e2c46e",border:"#e2c46e",double:true}
 ];return t[no%t.length]}
-function yuvarlakDikdortgen(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
 function kartZeminCiz(ctx,t,no){
-  var g=ctx.createLinearGradient(0,0,1080,1080);g.addColorStop(0,t.bg1);g.addColorStop(1,t.bg2);ctx.fillStyle=g;ctx.fillRect(0,0,1080,1080);
-  ctx.save();
-  if(no===0){ctx.strokeStyle=t.accent;ctx.lineWidth=5;ctx.strokeRect(54,54,972,972);ctx.lineWidth=1.5;ctx.strokeRect(78,78,924,924);ctx.globalAlpha=.18;ctx.strokeStyle="#fff";for(var i=0;i<4;i++){ctx.beginPath();ctx.arc(120+i*280,120,14,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(960-i*280,960,14,0,Math.PI*2);ctx.stroke()}}
-  else if(no===1){ctx.fillStyle="rgba(255,255,255,.9)";for(var s=0;s<70;s++){var sx=(s*167)%980+50,sy=(s*113)%900+45;ctx.beginPath();ctx.arc(sx,sy,s%9===0?3:1.4,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=.12;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(540,250,430,0,Math.PI*2);ctx.fill()}
-  else if(no===2){ctx.fillStyle=t.panel;yuvarlakDikdortgen(ctx,70,70,940,940,28);ctx.fill();ctx.strokeStyle=t.accent;ctx.lineWidth=3;yuvarlakDikdortgen(ctx,70,70,940,940,28);ctx.stroke();ctx.fillStyle=t.accent;ctx.fillRect(70,70,940,108);ctx.globalAlpha=.12;ctx.strokeStyle=t.accent;for(var y=250;y<950;y+=46){ctx.beginPath();ctx.moveTo(130,y);ctx.lineTo(950,y);ctx.stroke()}}
-  else if(no===3){ctx.strokeStyle=t.accent;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(120,990);ctx.lineTo(120,360);ctx.quadraticCurveTo(120,130,540,86);ctx.quadraticCurveTo(960,130,960,360);ctx.lineTo(960,990);ctx.stroke();ctx.lineWidth=2;ctx.globalAlpha=.25;ctx.beginPath();ctx.moveTo(150,950);ctx.lineTo(150,375);ctx.quadraticCurveTo(150,165,540,125);ctx.quadraticCurveTo(930,165,930,375);ctx.lineTo(930,950);ctx.stroke()}
-  else if(no===4){ctx.fillStyle="rgba(255,255,255,.05)";ctx.fillRect(0,0,150,1080);ctx.fillRect(930,0,150,1080);ctx.strokeStyle=t.accent;ctx.lineWidth=3;for(var y2=125;y2<990;y2+=145){ctx.beginPath();ctx.moveTo(42,y2);ctx.lineTo(76,y2-24);ctx.lineTo(110,y2);ctx.lineTo(76,y2+24);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(970,y2);ctx.lineTo(1004,y2-24);ctx.lineTo(1038,y2);ctx.lineTo(1004,y2+24);ctx.closePath();ctx.stroke()}ctx.strokeRect(176,64,728,952)}
-  else if(no===5){ctx.fillStyle=t.panel;yuvarlakDikdortgen(ctx,70,70,940,940,32);ctx.fill();ctx.strokeStyle="rgba(30,115,95,.22)";ctx.lineWidth=2;yuvarlakDikdortgen(ctx,70,70,940,940,32);ctx.stroke();ctx.fillStyle="rgba(30,115,95,.08)";ctx.fillRect(70,70,940,210);ctx.fillStyle=t.accent;ctx.fillRect(70,70,18,940)}
-  else if(no===6){ctx.fillStyle="rgba(0,0,0,.18)";ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(1080,0);ctx.lineTo(1080,255);ctx.lineTo(0,380);ctx.closePath();ctx.fill();ctx.strokeStyle=t.accent;ctx.lineWidth=5;ctx.strokeRect(58,58,964,964);ctx.globalAlpha=.18;for(var z=0;z<6;z++){ctx.beginPath();ctx.arc(145+z*155,115,18,0,Math.PI*2);ctx.stroke()}}
-  else{ctx.globalAlpha=.10;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(540,540,430,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle=t.accent;ctx.lineWidth=3;ctx.beginPath();ctx.arc(540,150,82,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(540,150,62,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(170,310);ctx.lineTo(910,310);ctx.stroke();ctx.beginPath();ctx.moveTo(170,900);ctx.lineTo(910,900);ctx.stroke()}
-  ctx.restore()
+  ctx.fillStyle=t.bg;ctx.fillRect(0,0,1080,1080);
+  ctx.strokeStyle=t.border;ctx.lineWidth=4;ctx.strokeRect(55,55,970,970);
+  if(t.double){ctx.lineWidth=1.5;ctx.strokeRect(76,76,928,928)}
+  ctx.strokeStyle=t.accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(210,270);ctx.lineTo(870,270);ctx.stroke();
+  if(no===2){ctx.fillStyle="rgba(29,114,93,.07)";ctx.fillRect(76,76,928,185)}
+  if(no===4){ctx.fillStyle="rgba(147,111,62,.08)";ctx.fillRect(76,76,928,185)}
+  if(no===6){ctx.fillStyle="rgba(255,255,255,.045)";ctx.fillRect(76,76,928,185)}
 }
 function gorselKartOlustur(){if(!metin())return;el("cardBox").style.display="block";kartCiz();el("cardBox").scrollIntoView({behavior:"smooth",block:"start"})}
 function kartCiz(){
-  var c=el("cardCanvas"),ctx=c.getContext("2d"),no=__tasarimNo%8,t=kartTemasi(no),gun=el("gunSecim").value,parca=kartMetniniAyir();ctx.clearRect(0,0,1080,1080);ctx.globalAlpha=1;kartZeminCiz(ctx,t,no);ctx.globalAlpha=1;
-  var iconY=150,titleY=238,startY=350,textX=145,textW=790,maxH=parca.imza?500:575,titleAlign="center",titleX=540;
-  if(no===2){iconY=135;titleY=145;startY=300;textX=145;textW=790;titleAlign="left";titleX=145}
-  if(no===3){iconY=155;titleY=250;startY=360;textX=170;textW=740}
-  if(no===4){iconY=150;titleY=232;startY=340;textX=205;textW=670}
-  if(no===5){iconY=130;titleY=175;startY=300;textX=150;textW=780;titleAlign="left";titleX=150}
-  if(no===6){iconY=145;titleY=210;startY=340;textX=160;textW=760}
-  if(no===7){iconY=168;titleY=255;startY=360;textX=150;textW=780}
-  ctx.fillStyle=t.accent;ctx.textAlign=titleAlign;ctx.font=(no===2||no===5?"52px Georgia":"60px Georgia");ctx.fillText(gunSimgesi(gun),titleAlign==="left"?titleX:540,iconY);
-  ctx.fillStyle=t.text;ctx.font="bold 48px Arial";ctx.fillText(gun,titleX,titleY);
-  var fit=metniKartaSigdir(ctx,parca.govde,textW,maxH);ctx.font=fit.size+"px Georgia";ctx.textAlign="left";ctx.fillStyle=t.text;
-  for(var i=0;i<fit.lines.length;i++){var line=fit.lines[i];if(line===""){startY+=Math.round(fit.lineHeight*.72)}else{var isLast=(i===fit.lines.length-1||fit.lines[i+1]==="");ikiYanaYaz(ctx,line,textX,startY,textW,isLast);startY+=fit.lineHeight}}
-  if(parca.imza){ctx.textAlign="right";ctx.fillStyle=t.accent;ctx.font="italic "+Math.max(26,Math.min(34,fit.size))+"px Georgia";ctx.fillText(parca.imza,textX+textW,935)}
+  var c=el("cardCanvas"),ctx=c.getContext("2d"),no=__tasarimNo%8,t=kartTemasi(no),gun=el("gunSecim").value,parca=kartMetniniAyir();
+  ctx.clearRect(0,0,1080,1080);kartZeminCiz(ctx,t,no);
+  ctx.textAlign="center";ctx.fillStyle=t.accent;ctx.font="56px Georgia";ctx.fillText(gunSimgesi(gun),540,145);
+  ctx.fillStyle=t.text;ctx.font="bold 46px Georgia";ctx.fillText(gun,540,225);
+  var textX=140,textW=800,startY=335,maxH=parca.imza?555:620;
+  var fit=metniKartaSigdir(ctx,parca.govde,textW,maxH);
+  ctx.font=fit.size+"px Georgia";ctx.textAlign="left";ctx.fillStyle=t.text;
+  for(var i=0;i<fit.lines.length;i++){
+    var line=fit.lines[i];
+    if(line===""){startY+=Math.round(fit.lineHeight*.7)}
+    else{var isLast=(i===fit.lines.length-1||fit.lines[i+1]==="");ikiYanaYaz(ctx,line,textX,startY,textW,isLast);startY+=fit.lineHeight}
+  }
+  if(parca.imza){ctx.textAlign="right";ctx.fillStyle=t.accent;ctx.font="italic "+Math.max(24,Math.min(32,fit.size))+"px Georgia";ctx.fillText(parca.imza,940,955)}
 }
 function tasarimDegistir(){__tasarimNo=(__tasarimNo+1)%8;kartCiz()} function gorselKaydet(){kartCiz();var a=document.createElement("a");a.href=el("cardCanvas").toDataURL("image/png");a.download="mesajmatik-kart.png";a.click()} function gorselPaylas(){kartCiz();el("cardCanvas").toBlob(function(blob){if(!blob)return;var f=new File([blob],"mesajmatik-kart.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:"Mesajmatik"}).catch(function(){});else gorselKaydet()},"image/png")}
 </script></body></html>`;
