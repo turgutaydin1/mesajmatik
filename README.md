@@ -4,18 +4,36 @@ Bu dosya Mesajmatik projesinin **ana ve bağlayıcı referansıdır**. Bundan so
 
 ## 1. Projenin amacı
 
-Mesajmatik; manevi günler ve özel zamanlar için kullanıcı seçimlerine göre özgün, doğal ve düzgün Türkçe mesajlar oluşturan, bu mesajları kopyalama/paylaşma imkânı veren ve 1080×1080 sosyal medya paylaşım kartına dönüştüren mobil uyumlu web uygulamasıdır.
+Mesajmatik; manevi günler ve özel zamanlar için kullanıcı seçimlerine göre özgün, doğal ve düzgün Türkçe mesajlar oluşturan, mesajı kullanıcı tarafından düzenlenebilir bırakan, kopyalama/paylaşma imkânı veren ve 1080×1080 sosyal medya paylaşım kartına dönüştüren mobil uyumlu web uygulamasıdır.
 
 ## 2. Kullanıcıdan alınan bilgiler
+
+Uygulamada yalnızca şu ana girişler bulunacaktır:
 
 - Özel gün / zaman
 - Üslup
 - Mesaj uzunluğu
-- Hitap
-- Özel vurgu / anahtar ifadeler
+- Hitap — boş gelen serbest metin alanı
 - İsim / kurum / şirket adı
 
-## 3. Desteklenen günler ve sıralama
+**Özel Vurgu / Anahtar Kelimeler alanı kaldırılmıştır ve yeniden eklenmeyecektir.** Kullanıcı oluşturulan mesaj üzerinde istediği ekleme veya düzeltmeyi doğrudan sonuç kutusunda yapabilir.
+
+## 3. Hitap alanı — SABİT KURAL
+
+- Hitap bir açılır seçim kutusu olmayacaktır.
+- Hazır hitap seçenekleri gösterilmeyecektir.
+- Alan ilk açılışta tamamen boş gelecektir.
+- Kullanıcı isterse istediği hitabı kendisi yazacaktır.
+- Kullanıcı boş bırakırsa mesaja hitap eklenmeyecektir.
+- Girilen hitap varsa mesajın ilk satırında, kullanıcının yazdığı biçime mümkün olduğunca sadık kalınarak kullanılacaktır.
+
+## 4. Oluşturulan mesajın düzenlenmesi
+
+`Oluşturulan Mesaj` kutusu **düzenlenebilir** olacaktır; `readonly` yapılmayacaktır.
+
+Kullanıcı Gemini tarafından oluşturulan mesajı paylaşmadan veya karta dönüştürmeden önce istediği gibi değiştirebilir. Kopyalama, sosyal medya paylaşımı ve görsel kart üretimi, kutuda o anda bulunan son düzenlenmiş metni kullanır.
+
+## 5. Desteklenen günler ve sıralama
 
 Özel Gün / Zaman açılır listesi **daima Türkçe A→Z alfabetik sırada** gösterilecektir:
 
@@ -32,7 +50,7 @@ Mesajmatik; manevi günler ve özel zamanlar için kullanıcı seçimlerine gör
 
 Yeni gün eklenirse liste yeniden A→Z sıralanacaktır.
 
-## 4. Mesaj üslupları
+## 6. Mesaj üslupları
 
 - Samimi
 - Resmî
@@ -40,11 +58,11 @@ Yeni gün eklenirse liste yeniden A→Z sıralanacaktır.
 - Dua ağırlıklı
 - Ayet / Hadis ağırlıklı
 
-Bu üsluplar yalnızca birkaç kelime değiştirilerek birbirine benzetilmeyecek. Giriş, özne, cümle yapısı, vurgu sırası ve kapanış da üsluba göre değişmelidir.
+Bu üsluplar yalnız birkaç kelime değiştirilerek birbirine benzetilmeyecek. Giriş, özne, cümle yapısı, ritim ve kapanış üsluba göre gerçekten değişmelidir.
 
-## 5. Çalışan Gemini yapısı — KORUNACAK
+## 7. Çalışan Gemini yapısı — KESİNLİKLE KORUNACAK
 
-Mesajmatik’in halen çalışan yapısı:
+Halen çalışan yapı:
 
 - Model: `gemini-3.6-flash`
 - API: `generateContent`
@@ -58,29 +76,25 @@ Mesajmatik’in halen çalışan yapısı:
 - `STOP` dışındaki tamamlanmamış cevaplar başarılı mesaj olarak gösterilmez
 - Yarım cevap kullanıcıya nihai mesaj diye verilmez
 
-**Arayüz, kart, ikon, sıralama veya paylaşım düzeni değiştirilirken bu çalışan Gemini bölümü değiştirilmeyecektir.** Gemini tarafında değişiklik ancak doğrudan Gemini problemi için ayrıca karar verilirse yapılacaktır.
+**Arayüz, hitap alanı, gün sıralaması, kart, ikon veya paylaşım düzeni değiştirilirken bu çalışan Gemini taşıma/model yapısına dokunulmayacaktır.**
 
-## 6. Mesaj üretimindeki ana kural
-
-Her mesaj isteğinde ilk ve zorunlu üretici Gemini’dir.
-
-Doğru akış:
+## 8. Mesaj üretim akışı
 
 1. Kullanıcı `Mesajı Oluştur` der.
-2. Gemini ile yeni mesaj üretilir.
-3. Gemini başarılıysa tamamlanmış mesaj gösterilir.
+2. Gemini ile tek API isteğinde yeni mesaj üretilir.
+3. Gemini tamamlanmış ve geçerli cevap verirse mesaj gösterilir.
 4. Gemini başarısızsa yerel üretici otomatik devreye girmez.
-5. Kullanıcıya “Yapay zekâ ile mesaj üretilemedi. Yerel mesaj üreticisiyle devam etmek ister misiniz?” mantığında açık onay sorulur.
+5. Kullanıcıya yerel mesaj üreticisiyle devam etmek isteyip istemediği sorulur.
 6. Kullanıcı açıkça onaylarsa yerel üretici çalışır.
-7. Kullanıcı istemezse mesaj üretilmez.
+7. Kullanıcı istemezse işlem biter.
 
 **Otomatik fallback yasaktır.**
 
-## 7. Her tıklamada yeni mesaj zorunluluğu
+## 9. Her tıklamada yeni mesaj zorunluluğu
 
-Her `Mesajı Oluştur` tıklaması yeni bir mesaj isteğidir. Aynı gün, aynı üslup, aynı hitap, aynı özel vurgu ve aynı imza seçili olsa bile yeni ve belirgin biçimde farklı bir mesaj üretilmelidir.
+Aynı gün, aynı üslup, aynı uzunluk, aynı hitap ve aynı imza kullanılsa bile her yeni tıklamada belirgin biçimde yeni mesaj üretilmelidir.
 
-Yeni üretimde mümkün olduğunca şu unsurlar değişmelidir:
+Mümkün olduğunca değişmesi gerekenler:
 
 - giriş yapısı
 - cümle ritmi
@@ -89,26 +103,9 @@ Yeni üretimde mümkün olduğunca şu unsurlar değişmelidir:
 - paragraf akışı
 - kapanış biçimi
 
-Önceki mesaj yalnızca çeşitliliği artırmak için bağlam olarak verilebilir. Bunun için ikinci bir API çağrısı yapılmayacaktır.
+Önceki mesaj yalnızca çeşitliliği artırmak için bağlam olarak verilebilir; bunun için ikinci API çağrısı yapılmaz.
 
-## 8. Özel vurgu / anahtar ifadeler
-
-Kullanıcı bu alana herhangi bir ifade yazabilir. Kod içinde sabit semantik sözlükler veya kelime haritaları oluşturulmayacaktır.
-
-Gemini her girdiyi bağlam içinde dinamik olarak yorumlamalıdır.
-
-Özel vurgu alanına yazılan her ayrı ifade nihai mesajda tanınabilir biçimde yer almalıdır. Türkçenin doğal akışı için uygun ekler kullanılabilir.
-
-Şu tip mekanik kullanımlar yasaktır:
-
-- “Özel olarak belirttiğiniz ...”
-- “... konusundaki hassasiyetiniz ...”
-- “Bu vurgu ...”
-- Kullanıcı girdisini tırnak içine alıp yapay biçimde cümleye yapıştırmak
-
-Yer, topluluk, kişi, kurum, unvan, nesne, duygu, değer veya soyut kavram gibi farklı anlam türleri aynı dilbilgisel kalıba zorlanmayacaktır.
-
-## 9. Türkçe ve içerik kalitesi
+## 10. Türkçe ve içerik kalitesi
 
 Mesajlarda:
 
@@ -119,12 +116,10 @@ Mesajlarda:
 - aynı dilek fiilleri gereksiz tekrarlanmamalı
 - hazır ve mekanik kalıplar azaltılmalı
 - dinî, tarihî, kurumsal veya toplumsal bilgi uydurulmamalı
-- parantez içinde anlamsız sayı, token numarası, teknik işaret vb. bulunmamalı
+- parantez içinde anlamsız sayı, token numarası veya teknik işaret bulunmamalı
 - cümleler yarım bırakılmamalı
 
-Sabit kapanışlar otomatik olarak her mesaja eklenmeyecektir.
-
-## 10. Mesaj uzunluğu
+## 11. Mesaj uzunluğu
 
 Yaklaşık hedefler:
 
@@ -134,15 +129,13 @@ Yaklaşık hedefler:
 
 Doğal anlatım kelime sayısından daha önemlidir.
 
-## 11. Hitap ve imza düzeni
+## 12. Hitap ve imza düzeni
 
-Hitap seçilmişse ilk satırda bulunur, ardından bir boş satır bırakılır.
+Hitap girilmişse ilk satırda bulunur ve ardından bir boş satır bırakılır.
 
-İsim / kurum / şirket girilmişse mesaj sonunda bir boş satırdan sonra yalnızca imza yer alır.
+İsim / kurum / şirket adı girilmişse mesaj sonunda bir boş satırdan sonra yalnızca imza yer alır.
 
-## 12. Teknik mimari — GÜNCEL
-
-Gerçek çalışan uygulama artık GitHub Pages içindeki eski uygulama değildir.
+## 13. Teknik mimari — GÜNCEL
 
 Güncel yapı:
 
@@ -152,24 +145,24 @@ Güncel yapı:
 
 ### Google Apps Script `Kod.gs`
 
-- uygulamanın gerçek arayüzünü doğrudan üretir
-- HTML içeriği `String.raw` ile güvenli biçimde gömülür
+- gerçek uygulama arayüzünü doğrudan üretir
+- HTML içeriği `String.raw` ile gömülür
 - kullanıcı seçimlerini toplar
 - `google.script.run` ile sunucu fonksiyonunu çağırır
 - `GEMINI_API_KEY` değerini Script Properties’ten okur
 - Gemini API çağrısını yapar
 - tamamlanmamış cevabı reddeder
-- mesajı, paylaşımı ve kart sistemini çalıştırır
+- mesaj, paylaşım ve kart sistemini çalıştırır
 
 ### GitHub `index.html`
 
-- artık eski uygulama kodunu çalıştırmaz
+- eski uygulama kodunu çalıştırmaz
 - doğrudan canlı Apps Script `/exec` adresine yönlendirir
-- böylece GitHub Pages adresini açan kullanıcı da gerçek çalışan Mesajmatik’e ulaşır
+- GitHub Pages adresini açan kullanıcı gerçek çalışan Mesajmatik’e ulaşır
 
-GitHub Pages üzerinde eski popup, iframe, JSONP veya eski API köprüsü yeniden kullanılmayacaktır.
+Eski popup, iframe, JSONP veya eski API köprüsü yeniden kullanılmayacaktır.
 
-## 13. Sosyal medya paylaşımı
+## 14. Sosyal medya paylaşımı
 
 Desteklenecek platformlar:
 
@@ -180,38 +173,30 @@ Desteklenecek platformlar:
 - Telegram
 - cihazın desteklediği diğer uygulamalar
 
-Tarayıcı ve işletim sistemi izin verdiğinde Web Share API / yerel paylaşım menüsü tercih edilir.
+Sosyal medya platformları büyük metin butonlarıyla değil, **küçük, kompakt, ikon/logo ağırlıklı butonlarla** gösterilecektir.
 
-### Sosyal medya butonlarının görünümü
+Ana `Kopyala`, `Paylaş` ve `Görsel Kart` işlemleri ayrı ana işlem butonları olarak kalabilir.
 
-- Büyük, satır genişliğinde sosyal medya butonları kullanılmayacaktır.
-- Sosyal platformlar **küçük, kompakt, ikon/logo ağırlıklı butonlarla** gösterilecektir.
-- WhatsApp, Facebook, X, Telegram ve Instagram kendi tanınabilir simge/işaretleriyle temsil edilecektir.
-- Ana `Kopyala`, `Paylaş` ve `Görsel Kart` işlemleri ayrı ana işlem butonları olarak kalabilir.
-- Sosyal medya ikonları mobil ekranda gereksiz alan kaplamamalıdır.
+Instagram için yanlış çalışan sahte metin paylaşım URL’si kullanılmayacak; yerel paylaşım veya görsel paylaşım yolu tercih edilecektir.
 
-Instagram için tarayıcıdan sahte/doğrudan metin paylaşım URL’si uydurulmayacak; yerel paylaşım veya görsel paylaşım yolu kullanılacaktır.
-
-## 14. Paylaşım kartı — SABİT TASARIM KURALLARI
+## 15. Paylaşım kartı — SABİT TASARIM KURALLARI
 
 - Kart boyutu kesin olarak 1080×1080’dir.
 - Tasarım sade, temiz ve manevi çizgide olacaktır.
-- Gereksiz süs, karmaşa ve yoğun dekor kullanılmayacaktır.
-- Her özel gün/gece için **ayrı ve tanınabilir bir simge** olacaktır.
-- Gün simgesi yalnız dekor değil, seçilen günü ayırt eden sabit görsel kimlik unsurudur.
-- Kart mevcut mesajı kullanır; yeni mesaj üretmez.
-- Kart üretimi Gemini mesaj motorundan bağımsızdır.
+- Gereksiz süs ve karmaşa kullanılmayacaktır.
+- Her özel gün/gece için ayrı ve tanınabilir simge olacaktır.
+- Kart mevcut mesaj kutusundaki **son düzenlenmiş metni** kullanır; yeni mesaj üretmez.
 - **Mesajın tamamı karta alınacaktır; metin kesilmeyecektir.**
-- Metin uzun olduğunda yazı boyutu ve satır aralığı otomatik küçültülerek 1080×1080 alana sığdırılacaktır.
+- Metin uzun olduğunda yazı boyutu ve satır aralığı otomatik küçültülerek karta sığdırılacaktır.
 - Mesajın son kısmını kesmek, `...` ile kırpmak veya belirli satır sayısından sonra durdurmak yasaktır.
 - Hitap, paragraf boşlukları ve imza düzeni mümkün olduğunca korunacaktır.
 - **Kartın ana gövde metni iki yana yaslı (justify) olacaktır.**
-- Paragrafın son satırı doğal biçimde sola hizalı kalabilir; diğer satırlar sol ve sağ metin sınırlarına dengeli oturmalıdır.
-- Daha önce mutabık kalınan iki yana yaslı metin düzeni sonraki tasarım değişikliklerinde bozulmayacaktır.
+- Paragrafın son satırı doğal biçimde sola hizalı kalabilir; diğer satırlar sol ve sağ sınırlara dengeli oturmalıdır.
+- Bu iki yana yaslı düzen sonraki tasarım değişikliklerinde bozulmayacaktır.
 
 ### Günlere özel simge zorunluluğu
 
-Mevcut desteklenen her gün için farklı simge tanımlanacaktır. Yeni gün eklenirse ona da ayrı simge tanımlanması zorunludur.
+Mevcut her gün için farklı simge tanımlanır. Yeni gün eklenirse ona da ayrı simge tanımlanması zorunludur.
 
 ### `Tasarımı Değiştir`
 
@@ -223,16 +208,6 @@ Bu buton:
 - yalnızca kartın sade görsel varyasyonunu değiştirir
 - iki yana yaslı metin, tam metni gösterme ve güne özel simge kurallarını bozmaz
 
-## 15. Kopyalama ve paylaşım
-
-Kullanıcı oluşturulan metni:
-
-- panoya kopyalayabilir
-- desteklenen sosyal ağlara paylaşabilir
-- görsel karta dönüştürebilir
-- PNG olarak kaydedebilir
-- cihaz destekliyorsa görseli doğrudan paylaşım menüsüne gönderebilir
-
 ## 16. Geliştirme sırasında korunacak temel kural
 
 **Çalışan bir özellik, başka bir özellik düzeltilirken değiştirilmez.**
@@ -243,6 +218,7 @@ Kullanıcı oluşturulan metni:
 - sosyal medya butonları değiştirilirken mesaj motoruna dokunulmaz
 - gün sıralaması değiştirilirken API akışına dokunulmaz
 - simge değiştirilirken metin hizası veya tam metin kuralı bozulmaz
+- hitap alanı değiştirilirken Gemini taşıma/model ayarları değiştirilmez
 - daha önce açıkça mutabık kalınmış tasarım/işlev kararları yeni bir talimat onları değiştirmedikçe korunur
 
 Her değişiklik cerrahi ve sınırlı olmalıdır.
@@ -264,28 +240,14 @@ Google Apps Script GitHub ile otomatik senkronize değildir.
 3. Kullanıcıya **tam ve güncel Kod.gs içeriği** doğrudan verilir.
 4. Kullanıcı Apps Script’e yapıştırır ve yeni sürüm dağıtır.
 
-Kullanıcıya yalnızca “GitHub’a koydum” denmeyecektir.
-
-## 18. Değişmez nihai akış
-
-`Mesajı Oluştur`
-
-→ Gemini 3.6 Flash ile **tek API isteğinde** yeni ve özgün mesaj üret
-
-→ cevap `STOP` ile tamamlandıysa mesajı göster
-
-→ tamamlanmadıysa yarım metni göstermeden hata kabul et
-
-→ başarısızsa kullanıcıya yerel üretim isteyip istemediğini sor
-
-→ kullanıcı onaylarsa yerel mesaj üret
-
-→ kullanıcı onaylamazsa işlemi bitir
-
-Değişmez ana kurallar:
+## 18. Değişmez ana kurallar
 
 > **Her yeni mesaj isteği, aynı girdiler kullanılsa bile yeni ve belirgin biçimde farklı bir mesaj üretmelidir.**
 
 > **Çalışan Gemini yapısı, arayüz ve görsel geliştirmeleri sırasında bozulmayacaktır.**
+
+> **Hitap alanı boş ve serbest metin olacaktır; hazır seçenek olmayacaktır.**
+
+> **Özel Vurgu / Anahtar Kelimeler alanı bulunmayacaktır; kullanıcı mesajı sonuç kutusunda kendisi düzenleyebilir.**
 
 > **Paylaşım kartı mesajın tamamını göstermeli, ana metni iki yana yaslı olmalı ve seçilen güne özel simge kullanmalıdır.**
