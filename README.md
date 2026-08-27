@@ -177,6 +177,9 @@ Desteklenecek platformlar:
 
 Sosyal medya platformları büyük metin butonlarıyla değil, **küçük, kompakt, ikon/logo ağırlıklı butonlarla** gösterilecektir.
 
+- WhatsApp butonunda telefon ahizesi veya genel telefon simgesi kullanılmayacaktır; **tanınabilir WhatsApp konuşma balonu/telefon logosu** gösterilecektir.
+- Sosyal ikonlar mobil ekranda taşmayacak, birbirini ezmeyecek ve dokunmatik kullanım için yeterli hedef alanına sahip olacaktır.
+
 Ana `Kopyala`, `Paylaş` ve `Görsel Kart` işlemleri ayrı ana işlem butonları olarak kalabilir.
 
 Instagram için yanlış çalışan sahte metin paylaşım URL’si kullanılmayacak; yerel paylaşım veya görsel paylaşım yolu tercih edilecektir.
@@ -201,6 +204,9 @@ Instagram için yanlış çalışan sahte metin paylaşım URL’si kullanılmay
 - İmza iki yana yaslanmayacak, sola veya ortaya hizalanmayacaktır.
 - İmza için ana metinden görsel olarak ayrışan ancak abartısız tipografik vurgu kullanılabilir.
 - Bu iki yana yaslı ana metin ve sağa hizalı imza düzeni sonraki tasarım değişikliklerinde bozulmayacaktır.
+- **Paylaşım kartının üzerinde `Mesajmatik` yazısı bulunmayacaktır.**
+- **Paylaşım kartının üzerinde `Gemini tarafından üretildi`, model adı, yapay zekâ etiketi, watermark veya benzeri üretici ibaresi bulunmayacaktır.**
+- Uygulama ekranındaki teknik durum bilgileri karta basılmayacaktır.
 
 ### Günlere özel simge zorunluluğu
 
@@ -216,8 +222,23 @@ Bu buton:
 - yalnızca kartın görsel varyasyonunu değiştirir
 - en az 8 farklı tasarım arasında dolaşır
 - iki yana yaslı metin, sağa hizalı imza, tam metni gösterme ve güne özel simge kurallarını bozmaz
+- karta marka, yapay zekâ veya model etiketi eklemez
 
-## 16. Geliştirme sırasında korunacak temel kural
+## 16. Mobil görünüm — SABİT KURAL
+
+Uygulama cep telefonunda masaüstü sayfasının küçültülmüş hali gibi görünmeyecektir.
+
+- Sayfa yatay taşma yapmayacaktır.
+- Ana uygulama kartı telefon ekranına sağ ve solda küçük güvenli boşluklarla oturacaktır.
+- Form alanları mobilde tek sütuna düşecektir.
+- Giriş alanları mobil tarayıcıların otomatik yakınlaştırmasını tetiklemeyecek okunabilir yazı boyutunda olacaktır.
+- `Kopyala`, `Paylaş` ve `Görsel Kart` butonları dar ekranda sıkışmayacak şekilde yeniden dizilecektir.
+- Sosyal medya ikonları ekrana sığacak, düzenli aralıklarla yerleşecek ve dokunmatik kullanım için yeterli büyüklükte olacaktır.
+- 1080×1080 kart önizlemesi ekran genişliğine orantılı küçülecek; sayfanın dışına taşmayacaktır.
+- Çok dar telefonlarda ana işlem butonları tek sütuna düşebilir.
+- iPhone güvenli alanları dahil mobil ekran kenarları dikkate alınacaktır.
+
+## 17. Geliştirme sırasında korunacak temel kural
 
 **Çalışan bir özellik, başka bir özellik düzeltilirken değiştirilmez.**
 
@@ -230,11 +251,13 @@ Bu buton:
 - hitap alanı değiştirilirken Gemini taşıma/model ayarları değiştirilmez
 - imza hizası değiştirilirken ana metnin iki yana yaslı yapısı bozulmaz
 - kart tasarım çeşitliliği artırılırken mesaj üretimi, paylaşım akışı ve diğer çalışan alanlara dokunulmaz
+- mobil görünüm değiştirilirken Gemini kodu, mesaj üretim mantığı ve kart içeriği değiştirilmez
+- karttan marka/AI etiketi kaldırılırken mesaj metni veya imza düzeni değiştirilmez
 - daha önce açıkça mutabık kalınmış tasarım/işlev kararları yeni bir talimat onları değiştirmedikçe korunur
 
 Her değişiklik cerrahi ve sınırlı olmalıdır.
 
-## 17. GitHub / Google Apps Script çalışma yöntemi
+## 18. GitHub / Google Apps Script çalışma yöntemi
 
 Ana dosyalar:
 
@@ -251,7 +274,7 @@ Google Apps Script GitHub ile otomatik senkronize değildir.
 3. Kullanıcıya **tam ve güncel Kod.gs içeriği** doğrudan verilir.
 4. Kullanıcı Apps Script’e yapıştırır ve yeni sürüm dağıtır.
 
-## 18. Değişmez ana kurallar
+## 19. Değişmez ana kurallar
 
 > **Her yeni mesaj isteği, aynı girdiler kullanılsa bile yeni ve belirgin biçimde farklı bir mesaj üretmelidir.**
 
@@ -262,3 +285,7 @@ Google Apps Script GitHub ile otomatik senkronize değildir.
 > **Özel Vurgu / Anahtar Kelimeler alanı bulunmayacaktır; kullanıcı mesajı sonuç kutusunda kendisi düzenleyebilir.**
 
 > **Paylaşım kartı mesajın tamamını göstermeli, ana metni iki yana yaslı, imzayı sağa hizalı göstermeli ve seçilen güne özel simge kullanmalıdır.**
+
+> **Paylaşım kartında Mesajmatik, Gemini, model adı veya yapay zekâ üretim etiketi bulunmayacaktır.**
+
+> **Mobil görünüm telefon ekranına taşmadan, tek sütun ve dokunmatik kullanıma uygun şekilde oturacaktır.**
