@@ -24,7 +24,7 @@ function doGet(e) {
 }
 
 function getAppHtml_() {
-  return `<!doctype html>
+  return String.raw`<!doctype html>
 <html lang="tr">
 <head>
 <meta charset="utf-8">
