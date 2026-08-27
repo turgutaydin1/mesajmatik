@@ -2,13 +2,17 @@ function doGet(e) {
   const p = e && e.parameter ? e.parameter : {};
   const prefix = String(p.prefix || "").replace(/[^a-zA-Z0-9_.$]/g, "");
 
+  if (String(p.bridge || "") === "1") {
+    return bridgePage_(p);
+  }
+
   if (String(p.ping || "") === "1") {
     const payload = {
       status: "ok",
       service: "Mesajmatik",
       geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
       model: "gemini-3.6-flash",
-      transport: "jsonp"
+      transport: "popup-bridge"
     };
     return jsonpOrJson_(prefix, payload);
   }
@@ -19,11 +23,64 @@ function doGet(e) {
       service: "Mesajmatik",
       geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
       model: "gemini-3.6-flash",
-      transport: "jsonp"
+      transport: "popup-bridge"
     })).setMimeType(ContentService.MimeType.JSON);
   }
 
   return jsonpOrJson_(prefix, generateMessage_(p));
+}
+
+function bridgePage_(p) {
+  const token = String(p.token || "").slice(0, 120);
+  const params = {
+    gun: String(p.gun || "").slice(0, 80),
+    uslup: String(p.uslup || "samimi").slice(0, 40),
+    uzunluk: String(p.uzunluk || "orta").slice(0, 20),
+    hitap: String(p.hitap || "").slice(0, 120),
+    anahtar: String(p.anahtar || "").slice(0, 900),
+    onceki: String(p.onceki || "").slice(0, 1600),
+    imza: String(p.imza || "").slice(0, 160),
+    seed: String(p.seed || new Date().getTime()).slice(0, 80)
+  };
+
+  const html = `<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mesaj hazırlanıyor</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;display:grid;place-items:center;min-height:100vh;background:#f5f8f6;color:#1f5d43}
+.box{text-align:center;padding:24px}.spin{font-size:30px;margin-bottom:10px}.txt{font-size:14px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="box"><div class="spin">⏳</div><div class="txt">Mesaj hazırlanıyor...</div></div>
+<script>
+const TOKEN=${JSON.stringify(token)};
+const PARAMS=${JSON.stringify(params)};
+function sendBack(result){
+  try{
+    if(window.opener && !window.opener.closed){
+      window.opener.postMessage({type:"mesajmatik-result",token:TOKEN,result:result},"*");
+    }
+  }finally{
+    setTimeout(function(){ window.close(); },120);
+  }
+}
+google.script.run
+  .withSuccessHandler(function(result){ sendBack(result || {error:"Yapay zekâ mesaj üretim hatası.",detail:"Boş köprü yanıtı."}); })
+  .withFailureHandler(function(err){ sendBack({error:"Yapay zekâ mesaj üretim hatası.",detail:String(err && err.message ? err.message : err)}); })
+  .generateMessageBridge(PARAMS);
+</script>
+</body>
+</html>`;
+
+  return HtmlService.createHtmlOutput(html).setTitle("Mesaj hazırlanıyor");
+}
+
+function generateMessageBridge(p) {
+  return generateMessage_(p || {});
 }
 
 function jsonpOrJson_(prefix, payload) {
