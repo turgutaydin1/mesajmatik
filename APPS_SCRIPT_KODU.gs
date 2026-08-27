@@ -2,13 +2,19 @@ function doGet(e) {
   const p = e && e.parameter ? e.parameter : {};
   const callback = String(p.callback || "").replace(/[^a-zA-Z0-9_.$]/g, "");
 
+  if (String(p.bridge || "") === "1") {
+    const result = generateMessage_(p);
+    return bridgeOutput_(p.requestId || "", result);
+  }
+
   if (!p.gun && !callback) {
     const keyOk = !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
     return ContentService.createTextOutput(JSON.stringify({
       status: "ok",
       service: "Mesajmatik",
       geminiKeyConfigured: keyOk,
-      model: "gemini-2.5-flash"
+      model: "gemini-2.5-flash",
+      transport: "iframe-postMessage"
     })).setMimeType(ContentService.MimeType.JSON);
   }
 
@@ -22,6 +28,21 @@ function doGet(e) {
 
   return ContentService.createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function bridgeOutput_(requestId, payload) {
+  const packet = JSON.stringify({
+    type: "mesajmatik-bridge",
+    requestId: String(requestId || ""),
+    payload: payload || {}
+  }).replace(/</g, "\\u003c");
+
+  const html = '<!doctype html><html><head><meta charset="utf-8"></head><body>' +
+    '<script>parent.postMessage(' + packet + ',"*");<\/script>' +
+    '</body></html>';
+
+  return HtmlService.createHtmlOutput(html)
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function doPost(e) {
