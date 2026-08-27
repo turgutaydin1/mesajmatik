@@ -93,15 +93,19 @@ function localMessage(){
 function similarity(a,b){if(!a||!b)return 0;const norm=x=>new Set(x.toLocaleLowerCase("tr-TR").replace(/[^a-zçğıöşü0-9 ]/gi," ").split(/\s+/).filter(w=>w.length>3));const A=norm(a),B=norm(b);let hit=0;A.forEach(x=>{if(B.has(x))hit++});return hit/Math.max(1,Math.min(A.size,B.size));}
 function mesajOlustur(){
  const b=$("olusturBtn");b.disabled=true;b.textContent="⏳ Mesaj hazırlanıyor...";$("status").textContent="Yapay zekâ ile yeni mesaj hazırlanıyor...";
- const raw=$("anahtarKelime").value.trim();let done=false,attempt=0,timer=null,currentId="",currentFrame=null;
- const clearActive=()=>{clearTimeout(timer);timer=null;if(currentFrame){currentFrame.remove();currentFrame=null;}};
- const finish=()=>{clearActive();window.removeEventListener("message",onMessage);b.disabled=false;b.textContent="✨ Mesajı Oluştur"};
+ const raw=$("anahtarKelime").value.trim();let done=false,attempt=0,timer=null,currentId="";
+ const clearActive=()=>{clearTimeout(timer);if(currentId){const s=document.getElementById(currentId);if(s)s.remove();try{delete window[currentId]}catch(e){}currentId="";}};
+ const finish=()=>{clearActive();b.disabled=false;b.textContent="✨ Mesajı Oluştur"};
  const askLocal=detail=>{if(done)return;done=true;finish();window.__mesajmatikDebug={engine:"ai_error",detail:detail||"api_unavailable",attempts:attempt,time:new Date().toISOString()};const ok=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\n\nYapay zekâ ile mesaj üretilemedi. Yerel mesaj üreticisiyle devam etmek ister misiniz?");if(ok){const text=localMessage();$("sonuc").value=text;$("status").textContent="Yerel mesaj oluşturuldu.";window.__mesajmatikDebug.engine="local";}else{$("status").textContent="Mesaj oluşturulmadı.";}};
  const succeed=text=>{if(done)return;const sim=similarity(lastAiText,text);if(lastAiText&&sim>=.78){retryOrAsk("Önceki mesaja fazla benzer yanıt döndü.");return;}done=true;lastAiText=text;$("sonuc").value=text;$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:"similarity:"+sim.toFixed(2),attempts:attempt,time:new Date().toISOString()};finish();};
- const retryOrAsk=reason=>{if(done)return;clearActive();if(attempt<2){setTimeout(requestAI,300);return;}askLocal(reason);};
- function onMessage(ev){const packet=ev.data;if(!packet||packet.type!=="mesajmatik-bridge"||packet.requestId!==currentId)return;const data=packet.payload||{};const text=data&&data.text?String(data.text).trim():"";if(text.length>30){succeed(text);return;}const reason=data&&data.error?[data.error,data.detail].filter(Boolean).join(" — "):"empty_response";retryOrAsk(reason);}
- window.addEventListener("message",onMessage);
- function requestAI(){if(done)return;attempt++;currentId="mreq_"+Date.now()+"_"+attempt+"_"+Math.random().toString(36).slice(2);const q=new URLSearchParams({bridge:"1",requestId:currentId,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:raw,onceki:lastAiText.slice(0,1500),imza:$("imza").value.trim(),seed:Date.now()+"-"+Math.random().toString(36).slice(2),_:String(Date.now())});const f=document.createElement("iframe");f.style.display="none";f.setAttribute("aria-hidden","true");f.src=API_URL+"?"+q.toString();currentFrame=f;document.body.appendChild(f);timer=setTimeout(()=>retryOrAsk("bridge_timeout"),45000);}
+ const retryOrAsk=reason=>{if(done)return;clearActive();if(attempt<2){setTimeout(requestAI,350);return;}askLocal(reason);};
+ function requestAI(){
+   if(done)return;attempt++;
+   const cb="mesajmatikCb_"+Date.now()+"_"+attempt+"_"+Math.floor(Math.random()*99999);currentId=cb;
+   window[cb]=data=>{if(done)return;const text=data&&data.text?String(data.text).trim():"";if(text.length>30){succeed(text);return;}const reason=data&&data.error?[data.error,data.detail].filter(Boolean).join(" — "):"empty_response";retryOrAsk(reason);};
+   const q=new URLSearchParams({prefix:cb,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:raw,onceki:lastAiText.slice(0,1500),imza:$("imza").value.trim(),seed:Date.now()+"-"+Math.random().toString(36).slice(2),_:String(Date.now())});
+   const s=document.createElement("script");s.id=cb;s.async=true;s.src=API_URL+"?"+q.toString();s.onerror=()=>retryOrAsk("jsonp_network_error");document.body.appendChild(s);timer=setTimeout(()=>retryOrAsk("jsonp_timeout"),30000);
+ }
  requestAI();
 }
 $("gunSecim").addEventListener("change",()=>{$("sonuc").value="";$("status").textContent="";$("kartCanvas").style.display="none";vary=0;});
