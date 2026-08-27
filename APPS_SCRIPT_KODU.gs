@@ -79,7 +79,7 @@ function getAppHtml_() {
 <div><label for="uslup">Üslup</label><select id="uslup"><option value="samimi">Samimi</option><option value="resmi">Resmî</option><option value="kurumsal">Kurumsal</option><option value="dua">Dua Ağırlıklı</option><option value="kaynakli">Ayet / Hadis Ağırlıklı</option></select></div>
 <div><label for="uzunluk">Mesaj Uzunluğu</label><select id="uzunluk"><option value="kisa">Kısa</option><option value="orta" selected>Orta</option><option value="uzun">Uzun</option></select></div>
 <div><label for="hitap">Hitap</label><input id="hitap" autocomplete="off"></div>
-<div class="full"><label for="imza">İsim / Kurum / Şirket Adı</label><input id="imza" autocomplete="off"></div>
+<div class="full"><label for="imza">İsim / Kurum / Şirket Adı</label><input id="imza" autocomplete="off" onblur="imzayiDuzenle()"></div>
 <div class="full"><button id="olusturBtn" class="primary" onclick="mesajOlustur()">✨ Mesajı Oluştur</button></div>
 </div>
 <div class="section"><h2>Oluşturulan Mesaj</h2><textarea id="sonuc" placeholder="Mesajınız burada görünecek..."></textarea><div id="status" class="status"></div>
@@ -90,7 +90,10 @@ function getAppHtml_() {
 <script>
 var __mesajmatikLastAiText="",__tasarimNo=0;
 function el(id){return document.getElementById(id)}
-function paramsOku(){return{gun:el("gunSecim").value,uslup:el("uslup").value,uzunluk:el("uzunluk").value,hitap:el("hitap").value.trim(),imza:el("imza").value.trim(),onceki:(__mesajmatikLastAiText||"").slice(0,1500),seed:Date.now()+"-"+Math.random().toString(36).slice(2)}}
+function trKelime(w){var l=String(w||"").toLocaleLowerCase("tr-TR");return l?l.charAt(0).toLocaleUpperCase("tr-TR")+l.slice(1):""}
+function duzenliImza(v){v=String(v||"").trim().replace(/\s+/g," ");if(!v)return"";var p=v.split(" "),kurum=/(^|\s)(a\.?\s*ş\.?|ltd\.?|şti\.?|şirketi|holding|grup|group|üniversitesi|belediyesi|bakanlığı|müdürlüğü|derneği|vakfı|ticaret|sanayi|bankası|hastanesi|havalimanı|otel|ajans|teknoloji|enerji|inşaat|otomotiv|gıda|turizm|lojistik|medya|yayınları)(\s|$)/i,kisi=p.length>=2&&p.length<=4&&!kurum.test(v)&&p.every(function(x){return /^[A-Za-zÇĞİÖŞÜçğıöşü'-]+$/.test(x)});if(!kisi)return v;return p.map(function(x,i){return i===p.length-1?String(x).toLocaleUpperCase("tr-TR"):trKelime(x)}).join(" ")}
+function imzayiDuzenle(){var i=el("imza");i.value=duzenliImza(i.value);return i.value}
+function paramsOku(){var imza=imzayiDuzenle();return{gun:el("gunSecim").value,uslup:el("uslup").value,uzunluk:el("uzunluk").value,hitap:el("hitap").value.trim(),imza:imza,onceki:(__mesajmatikLastAiText||"").slice(0,1500),seed:Date.now()+"-"+Math.random().toString(36).slice(2)}}
 function butonBekle(v){var b=el("olusturBtn");b.disabled=v;b.textContent=v?"⏳ Mesaj hazırlanıyor...":"✨ Mesajı Oluştur"}
 function mesajOlustur(){butonBekle(true);el("status").textContent="Mesaj hazırlanıyor...";google.script.run.withSuccessHandler(function(r){r=r||{};butonBekle(false);if(r.text&&String(r.text).trim().length>=35){var t=String(r.text).trim();__mesajmatikLastAiText=t;el("sonuc").value=t;el("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:r.model||"Gemini",requestCount:r.requestCount||1,finishReason:r.finishReason||"STOP"};return}var d=[r.error,r.detail].filter(Boolean).join(" — ")||"Bilinmeyen hata";window.__mesajmatikDebug={engine:"ai_error",detail:d,requestCount:r.requestCount||1,finishReason:r.finishReason||""};el("status").textContent="AI hatası: "+d.slice(0,300);var devam=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\n\n"+d+"\n\nYerel mesaj üreticisiyle devam etmek ister misiniz?");if(devam){el("sonuc").value=localMessage();el("status").textContent="Yerel mesaj oluşturuldu."}}).withFailureHandler(function(err){butonBekle(false);var d=String(err&&err.message?err.message:err);el("status").textContent="Sistem hatası: "+d.slice(0,300);window.alert("Mesaj oluşturulamadı.\n\n"+d)}).generateMessageBridge(paramsOku())}
 function localMessage(){var p=paramsOku(),bas=p.hitap?p.hitap+"\n\n":"",imza=p.imza?"\n\n"+p.imza:"",s=[p.gun+" vesilesiyle gönlünüzün huzurla, hanenizin bereketle dolmasını; dualarınızın hayırlara vesile olmasını diliyorum.","Mübarek "+p.gun+" gününün gönüllerimize ferahlık, hayatımıza sağlık, huzur ve bereket getirmesini diliyorum.",p.gun+"ın manevi ikliminin kalplerimizi iyilikte buluşturmasını, umutlarımızı tazelemesini ve dualarımızı güzelliklere ulaştırmasını diliyorum."];return bas+s[Math.floor(Math.random()*s.length)]+imza}
@@ -100,7 +103,7 @@ function gunSimgesi(gun){var m={"Arefe Günü":"✦","Berat Kandili":"☾✧","C
 function satirlaraBol(ctx,text,maxWidth){var paragraphs=String(text||"").split(/\n/),lines=[];for(var p=0;p<paragraphs.length;p++){var paragraph=paragraphs[p].trim();if(!paragraph){lines.push("");continue}var words=paragraph.split(/\s+/),line="";for(var i=0;i<words.length;i++){var test=line?line+" "+words[i]:words[i];if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=words[i]}else{line=test}}if(line)lines.push(line)}return lines}
 function metniKartaSigdir(ctx,text,maxWidth,maxHeight){for(var size=40;size>=15;size--){ctx.font=size+"px Georgia";var lines=satirlaraBol(ctx,text,maxWidth),lineHeight=Math.round(size*1.4),height=lines.length*lineHeight;if(height<=maxHeight)return{size:size,lines:lines,lineHeight:lineHeight}}ctx.font="15px Georgia";return{size:15,lines:satirlaraBol(ctx,text,maxWidth),lineHeight:21}}
 function ikiYanaYaz(ctx,line,x,y,width,isLastLine){var words=String(line||"").trim().split(/\s+/);if(isLastLine||words.length<2){ctx.fillText(line,x,y);return}var wordsWidth=0;for(var i=0;i<words.length;i++)wordsWidth+=ctx.measureText(words[i]).width;var gap=(width-wordsWidth)/(words.length-1);var cursor=x;for(var j=0;j<words.length;j++){ctx.fillText(words[j],cursor,y);cursor+=ctx.measureText(words[j]).width+gap}}
-function kartMetniniAyir(){var tam=metin(),imza=el("imza").value.trim();if(imza&&tam.slice(-imza.length)===imza){var govde=tam.slice(0,-imza.length).replace(/\s+$/g,"");return{govde:govde,imza:imza}}return{govde:tam,imza:""}}
+function kartMetniniAyir(){var tam=metin(),imza=duzenliImza(el("imza").value);if(imza&&tam.slice(-imza.length)===imza){var govde=tam.slice(0,-imza.length).replace(/\s+$/g,"");return{govde:govde,imza:imza}}return{govde:tam,imza:""}}
 function kartTemasi(no){var t=[
 {bg:"#f8f4e8",text:"#173f35",accent:"#b8943e",border:"#0d5a46",double:true},
 {bg:"#10283f",text:"#fffaf0",accent:"#d8b35e",border:"#d8b35e",double:false},
@@ -120,7 +123,7 @@ function kartZeminCiz(ctx,t,no){
   if(no===4){ctx.fillStyle="rgba(147,111,62,.08)";ctx.fillRect(76,76,928,185)}
   if(no===6){ctx.fillStyle="rgba(255,255,255,.045)";ctx.fillRect(76,76,928,185)}
 }
-function gorselKartOlustur(){if(!metin())return;el("cardBox").style.display="block";kartCiz();el("cardBox").scrollIntoView({behavior:"smooth",block:"start"})}
+function gorselKartOlustur(){if(!metin())return;imzayiDuzenle();el("cardBox").style.display="block";kartCiz();el("cardBox").scrollIntoView({behavior:"smooth",block:"start"})}
 function kartCiz(){
   var c=el("cardCanvas"),ctx=c.getContext("2d"),no=__tasarimNo%8,t=kartTemasi(no),gun=el("gunSecim").value,parca=kartMetniniAyir();
   ctx.clearRect(0,0,1080,1080);kartZeminCiz(ctx,t,no);
