@@ -12,11 +12,11 @@ header{text-align:center;padding:25px 18px;background:linear-gradient(135deg,#ed
 .content{padding:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:800;margin:0 0 6px}
 select,input,textarea{width:100%;padding:12px 13px;border:1px solid #ccd6cf;border-radius:11px;font-size:15px;background:#fff;color:#26332c}textarea{min-height:190px;line-height:1.55;resize:vertical}
 .mainbtn{width:100%;margin-top:14px;background:linear-gradient(135deg,#2f7d5a,#b9943f);color:#fff;border:0;border-radius:12px;padding:15px;font-size:16px;font-weight:900;cursor:pointer}.mainbtn:disabled{opacity:.65}
-.sec{margin-top:20px;padding-top:18px;border-top:1px dashed #d8dfda}.sec h3{margin:0 0 10px;color:var(--yk)}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
-button{border:0;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer}.blue{background:#2f6da1;color:#fff}.soft{background:#e9f1eb;color:var(--yk)}.gold{background:#b68d2f;color:#fff}.green{background:var(--y);color:#fff}
-.status{min-height:20px;margin-top:9px;color:var(--yk);font-size:13px;font-weight:700}canvas{display:none;width:100%;height:auto;border-radius:16px;border:1px solid #dfe6e0}
+.sec{margin-top:20px;padding-top:18px;border-top:1px dashed #d8dfda}.sec h3{margin:0 0 10px;color:var(--yk)}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.sharegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px}
+button{border:0;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer}.blue{background:#2f6da1;color:#fff}.soft{background:#e9f1eb;color:var(--yk)}.gold{background:#b68d2f;color:#fff}.green{background:var(--y);color:#fff}.dark{background:#202124;color:#fff}.fb{background:#315eaa;color:#fff}.tg{background:#2d8fc4;color:#fff}
+.status{min-height:20px;margin-top:9px;color:var(--yk);font-size:13px;font-weight:700;line-height:1.4}canvas{display:none;width:100%;height:auto;border-radius:16px;border:1px solid #dfe6e0}
 .note{font-size:12px;color:#758079;background:#f6f8f6;padding:10px;border-radius:9px;margin-top:10px;line-height:1.45}.footer{text-align:center;color:#828b86;font-size:12px;padding:0 18px 20px}
-@media(max-width:640px){.grid,.three{grid-template-columns:1fr}.wrap{padding:8px}.content{padding:14px}}
+@media(max-width:640px){.grid,.three,.sharegrid{grid-template-columns:1fr}.wrap{padding:8px}.content{padding:14px}}
 </style>
 </head>
 <body>
@@ -33,75 +33,84 @@ button{border:0;border-radius:10px;padding:13px;font-size:14px;font-weight:800;c
 </div>
 <button class="mainbtn" id="olusturBtn" onclick="mesajOlustur()">✨ Mesajı Oluştur</button>
 <div class="sec"><h3>Oluşturulan Mesaj</h3><textarea id="sonuc" readonly placeholder="Mesajınız burada görünecek..."></textarea>
-<div class="three"><button class="blue" onclick="kopyala()">📋 Kopyala</button><button class="soft" onclick="whatsapp()">🟢 WhatsApp</button><button class="gold" onclick="kartOlustur(false)">🖼️ Görsel Kart Oluştur</button></div><div class="status" id="status"></div></div>
+<div class="three"><button class="blue" onclick="kopyala()">📋 Kopyala</button><button class="soft" onclick="genelPaylas()">📤 Paylaş</button><button class="gold" onclick="kartOlustur(false)">🖼️ Görsel Kart Oluştur</button></div>
+<div class="sharegrid"><button class="green" onclick="whatsapp()">WhatsApp</button><button class="fb" onclick="facebook()">Facebook</button><button class="dark" onclick="xPaylas()">X</button><button class="tg" onclick="telegram()">Telegram</button><button class="soft" onclick="instagramVeyaDiger()">Instagram / Diğer</button></div>
+<div class="status" id="status"></div></div>
 <div class="sec"><h3>Paylaşım Kartı</h3><canvas id="kartCanvas" width="1080" height="1080"></canvas>
 <div class="three"><button class="green" onclick="kartIndir()">⬇️ Görseli Kaydet</button><button class="soft" onclick="kartPaylas()">📤 Görseli Paylaş</button><button class="soft" onclick="kartOlustur(true)">🎨 Tasarımı Değiştir</button></div>
-<div class="note">Her özel gün için farklı simge ve görsel dil kullanılır. “Tasarımı Değiştir” mesajı bozmadan alternatif kart görünümüne geçer.</div></div>
+<div class="note">“Tasarımı Değiştir” yalnızca kartın görünümünü değiştirir; mesajı yeniden üretmez.</div></div>
 </div><div class="footer">Mesajmatik</div></div></div>
 <script>
 const API_URL="https://script.google.com/macros/s/AKfycbwZVpAEB4IYujc-yNL2mOLgHnV-t6i2OO32bWgV8r8OeeZeeMYJDh4r58_rfFXXLOTR/exec";
 const $=id=>document.getElementById(id),pick=a=>a[Math.floor(Math.random()*a.length)];
 window.__mesajmatikDebug={engine:null,detail:null,time:null};
-let lastAiText="",lastLocalText="";
+let lastAiText="",lastLocalText="",localCounter=0;
 
 const dayLocal={
-"Berat Kandili":{open:["Berat Kandili'nin manevi ikliminde","Berat Kandili'nin rahmet ve bağışlanma umudunu taşıdığı bu gecede","Gönüllerin arınmaya yöneldiği Berat Kandili'nde"],close:["Berat Kandiliniz mübarek olsun.","Berat Kandili gönlünüze ferahlık getirsin.","Bu mübarek Berat Kandili hayırlara vesile olsun."]},
-"Kadir Gecesi":{open:["Kadir Gecesi'nin derin manevi ikliminde","Duaların ve güzel niyetlerin çoğaldığı Kadir Gecesi'nde","Kadir Gecesi'nin huzurunu hissettiğimiz bu kıymetli vakitte"],close:["Kadir Geceniz mübarek olsun.","Kadir Gecesi gönlünüze huzur versin.","Bu mübarek Kadir Gecesi hayırlara vesile olsun."]},
-"Mevlid Kandili":{open:["Mevlid Kandili'nin rahmet ve muhabbet ikliminde","Gönüllerin sevgi ve merhametle buluştuğu Mevlid Kandili'nde","Mevlid Kandili'nin manevi güzelliğini yaşadığımız bu gecede"],close:["Mevlid Kandiliniz mübarek olsun.","Mevlid Kandili gönüllerimize güzellik katsın.","Bu mübarek Mevlid Kandili hayırlara vesile olsun."]},
-"Regaib Kandili":{open:["Regaib Kandili'nin bereketli ikliminde","Güzel niyetlerin ve duaların çoğaldığı Regaib Kandili'nde","Regaib Kandili'nin manevi huzurunu yaşadığımız bu gecede"],close:["Regaib Kandiliniz mübarek olsun.","Regaib Kandili gönlünüze ferahlık getirsin.","Bu mübarek Regaib Kandili hayırlara vesile olsun."]},
-"Miraç Kandili":{open:["Miraç Kandili'nin manevi derinliğinde","Gönüllerin iyiliğe yöneldiği Miraç Kandili'nde","Miraç Kandili'nin huzurunu hissettiğimiz bu kıymetli gecede"],close:["Miraç Kandiliniz mübarek olsun.","Miraç Kandili gönlünüze huzur versin.","Bu mübarek Miraç Kandili hayırlara vesile olsun."]},
-"Ramazan Bayramı":{open:["Ramazan Bayramı'nın sevincini paylaşırken","Ramazan Bayramı'nın gönülleri buluşturan güzelliğinde","Birlik ve paylaşma duygusunu büyüten Ramazan Bayramı'nda"],close:["Ramazan Bayramınız mübarek olsun.","Ramazan Bayramı sağlık ve huzur getirsin.","Nice güzel Ramazan Bayramlarına erişmek dileğiyle."]},
-"Kurban Bayramı":{open:["Kurban Bayramı'nın paylaşma ve dayanışma ikliminde","Kurban Bayramı'nın gönülleri yakınlaştıran güzelliğinde","Birlik ve kardeşliğin güçlendiği Kurban Bayramı'nda"],close:["Kurban Bayramınız mübarek olsun.","Kurban Bayramı sağlık ve huzur getirsin.","Nice güzel Kurban Bayramlarına erişmek dileğiyle."]},
-"Cuma Günü":{open:["Cuma gününün huzurunu yaşadığımız bu güzel vakitte","Gönüllerin duaya yöneldiği Cuma gününde","Cuma gününün bereketini paylaştığımız bu vakitte"],close:["Cumanız mübarek olsun.","Hayırlı ve huzurlu cumalar dilerim.","Bu Cuma günü gönlünüze ferahlık getirsin."]},
-"Ramazan Ayı":{open:["Ramazan ayının rahmet ve bereket ikliminde","Ramazan ayının gönülleri iyiliğe yönelten günlerinde","Paylaşma ve sabrın daha derinden hissedildiği Ramazan ayında"],close:["Ramazan-ı Şerifiniz mübarek olsun.","Ramazan ayı gönlünüze huzur getirsin.","Hayırlı ve bereketli bir Ramazan ayı dilerim."]},
-"Arefe Günü":{open:["Arefe gününün manevi huzurunda","Bayrama yaklaşırken Arefe gününün güzel ikliminde","Duaların ve güzel niyetlerin çoğaldığı Arefe gününde"],close:["Arefe gününüz mübarek olsun.","Arefe günü gönlünüze huzur getirsin.","Hayırlı ve huzurlu bir Arefe günü dilerim."]}
+"Berat Kandili":{open:["Berat Kandili'nin manevi ikliminde","Berat Kandili'nin rahmet ve bağışlanma umudunu taşıdığı bu gecede","Gönüllerin arınmaya yöneldiği Berat Kandili'nde","Berat Kandili vesilesiyle gönüllerimizi iyiliğe açtığımız bu vakitte"]},
+"Kadir Gecesi":{open:["Kadir Gecesi'nin derin manevi ikliminde","Duaların ve güzel niyetlerin çoğaldığı Kadir Gecesi'nde","Kadir Gecesi'nin huzurunu hissettiğimiz bu kıymetli vakitte","Kadir Gecesi'nin gönüllere dokunan bereketinde"]},
+"Mevlid Kandili":{open:["Mevlid Kandili'nin rahmet ve muhabbet ikliminde","Gönüllerin sevgi ve merhametle buluştuğu Mevlid Kandili'nde","Mevlid Kandili'nin manevi güzelliğini yaşadığımız bu gecede","Mevlid Kandili vesilesiyle gönüllerimizi güzel ahlaka yönelttiğimiz bu vakitte"]},
+"Regaib Kandili":{open:["Regaib Kandili'nin bereketli ikliminde","Güzel niyetlerin ve duaların çoğaldığı Regaib Kandili'nde","Regaib Kandili'nin manevi huzurunu yaşadığımız bu gecede","Regaib Kandili'nin gönüllere ferahlık veren atmosferinde"]},
+"Miraç Kandili":{open:["Miraç Kandili'nin manevi derinliğinde","Gönüllerin iyiliğe yöneldiği Miraç Kandili'nde","Miraç Kandili'nin huzurunu hissettiğimiz bu kıymetli gecede","Miraç Kandili vesilesiyle gönüllerimizi umut ve duaya açtığımız bu vakitte"]},
+"Ramazan Bayramı":{open:["Ramazan Bayramı'nın sevincini paylaşırken","Ramazan Bayramı'nın gönülleri buluşturan güzelliğinde","Birlik ve paylaşma duygusunu büyüten Ramazan Bayramı'nda","Ramazan Bayramı'nın sıcaklığını sevdiklerimizle paylaşırken"]},
+"Kurban Bayramı":{open:["Kurban Bayramı'nın paylaşma ve dayanışma ikliminde","Kurban Bayramı'nın gönülleri yakınlaştıran güzelliğinde","Birlik ve kardeşliğin güçlendiği Kurban Bayramı'nda","Kurban Bayramı vesilesiyle paylaşmanın değerini yeniden hatırlarken"]},
+"Cuma Günü":{open:["Cuma gününün huzurunu yaşadığımız bu güzel vakitte","Gönüllerin duaya yöneldiği Cuma gününde","Cuma gününün bereketini paylaştığımız bu vakitte","Cuma günü vesilesiyle gönüllerimizi iyiliğe ve duaya açarken"]},
+"Ramazan Ayı":{open:["Ramazan ayının rahmet ve bereket ikliminde","Ramazan ayının gönülleri iyiliğe yönelten günlerinde","Paylaşma ve sabrın daha derinden hissedildiği Ramazan ayında","Ramazan ayının manevi zenginliğini yaşadığımız bu günlerde"]},
+"Arefe Günü":{open:["Arefe gününün manevi huzurunda","Bayrama yaklaşırken Arefe gününün güzel ikliminde","Duaların ve güzel niyetlerin çoğaldığı Arefe gününde","Arefe gününün gönülleri arındıran sükûnetinde"]}
 };
 const localCore={
-samimi:["gönlünüzün ferahlıkla dolmasını ve sevdiklerinizle güzel anlar paylaşmanızı gönülden diliyorum","kalbinizdeki güzel niyetlerin çoğalmasını, hayatınıza huzur ve iyilik yansımasını diliyorum","bu özel vaktin size ve sevdiklerinize sağlık, huzur ve gönül ferahlığı getirmesini diliyorum"],
-resmi:["bu anlamlı vaktin sağlık, esenlik ve huzura vesile olmasını temenni ederim","manevi değerlerimizin güçlendiği bu özel günün hayırlara vesile olmasını dilerim","bu kıymetli günün birlik, karşılıklı anlayış ve esenlik duygularını güçlendirmesini temenni ederim"],
-kurumsal:["bu anlamlı günün çalışanlarımız, paydaşlarımız ve aileleri için sağlık, huzur ve esenliğe vesile olmasını diliyoruz","ortak değerlerimizi güçlendiren bu özel günün birlik ve dayanışmayı artırmasını diliyoruz","bu kıymetli günün toplumumuzda iyilik, dayanışma ve karşılıklı anlayışı güçlendirmesini temenni ediyoruz"],
-dua:["Rabbim gönüllerimize ferahlık, hanelerimize huzur ve hayatımıza hayır ihsan eylesin","Rabbim dualarımızı hayra ulaştırsın, gönüllerimizi iyilik ve merhametten ayırmasın","Rabbim bu kıymetli vakti sağlık, huzur, afiyet ve güzel başlangıçlara vesile eylesin"],
+samimi:["gönlünüzün ferahlıkla dolmasını, sevdiklerinizle güzel anlar paylaşmanızı gönülden diliyorum","kalbinizdeki güzel niyetlerin çoğalmasını ve hayatınıza iyilik olarak yansımasını diliyorum","bu özel vaktin size ve sevdiklerinize sağlık, huzur ve gönül ferahlığı getirmesini diliyorum","gönülden edilen duaların ve güzel niyetlerin hayatınıza umut ve iyilik katmasını diliyorum"],
+resmi:["bu anlamlı vaktin sağlık, esenlik ve huzura vesile olmasını temenni ederim","manevi değerlerimizin güçlendiği bu özel günün hayırlara vesile olmasını dilerim","bu kıymetli günün birlik, karşılıklı anlayış ve esenlik duygularını güçlendirmesini temenni ederim","bu müstesna vaktin toplumsal dayanışmaya ve gönül huzuruna katkı sunmasını temenni ederim"],
+kurumsal:["bu anlamlı günün çalışanlarımız, paydaşlarımız ve aileleri için sağlık, huzur ve esenliğe vesile olmasını diliyoruz","ortak değerlerimizi güçlendiren bu özel günün birlik ve dayanışmayı artırmasını diliyoruz","bu kıymetli günün toplumumuzda iyilik, dayanışma ve karşılıklı anlayışı güçlendirmesini temenni ediyoruz","bu özel zamanın ortak değerlerimizi pekiştirmesini ve gönül bağlarımızı güçlendirmesini diliyoruz"],
+dua:["Rabbim gönüllerimize ferahlık, hanelerimize huzur ve hayatımıza hayır ihsan eylesin","Rabbim dualarımızı hayra ulaştırsın, gönüllerimizi iyilik ve merhametten ayırmasın","Rabbim bu kıymetli vakti sağlık, huzur, afiyet ve güzel başlangıçlara vesile eylesin","Rabbim kalplerimize sükûnet, hayatımıza bereket ve niyetlerimize hayır nasip eylesin"],
 kaynakli:["“Şüphesiz zorlukla beraber bir kolaylık vardır.” (İnşirah, 94/6) Bu ilahi müjdenin gönüllerimize umut ve metanet vermesini diliyorum","“Kalpler ancak Allah'ı anmakla huzur bulur.” (Ra'd, 13/28, mealen) Bu güzel vaktin gönüllerimize huzur taşımasını diliyorum"]
 };
-const localExtra=["Sevdiklerimizle aramızdaki muhabbetin güçlenmesi ve iyiliğin hayatımızda daha fazla yer bulması en güzel dileğimiz olsun.","Kırgınlıkların azaldığı, merhametin ve paylaşmanın çoğaldığı günlere erişelim.","Güzel niyetlerin hayra dönüştüğü, gönüllerin birbirine daha çok yaklaştığı günler nasip olsun.","Sağlık, huzur ve iyiliğin hayatımızda kalıcı olması dileğiyle."];
+const localExtra=["Sevdiklerimizle aramızdaki muhabbetin güçlenmesi ve iyiliğin hayatımızda daha fazla yer bulması en güzel dileğimiz olsun.","Kırgınlıkların azaldığı, merhametin ve paylaşmanın çoğaldığı günlere erişelim.","Güzel niyetlerin hayra dönüştüğü, gönüllerin birbirine daha çok yaklaştığı günler nasip olsun.","Sağlık, huzur ve iyiliğin hayatımızda kalıcı olması dileğiyle.","İyiliğin çoğaldığı, gönüllerin birbirine daha anlayışla yaklaştığı güzel günlere erişmek nasip olsun.","Duaların umutla, güzel niyetlerin hayırla karşılık bulduğu günler dilerim."];
+const localClose=["Bu güzel vaktin hayırlara vesile olmasını dilerim.","Gönlünüze huzur, hayatınıza güzellik getirmesi dileğiyle.","Sağlık ve huzur içinde nice güzel günlere erişmek nasip olsun.","Bu kıymetli zamanın gönüllerimize iyilik ve ferahlık taşıması dileğiyle."];
+function vurguCumlesi(raw,style){
+ const v=raw.split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);if(!v.length)return "";
+ const joined=v.length===1?v[0]:v.slice(0,-1).join(", ")+" ve "+v[v.length-1];
+ const options=style==="kurumsal"?["Bu vesileyle "+joined+" için taşıdığımız iyi dilekleri de paylaşmayı önemsiyoruz.",joined+" için barış, huzur ve iyilik temennilerimizi de ifade ediyoruz."]:["Bu vesileyle "+joined+" için de gönülden hayır ve iyilik diliyorum.",joined+" için edilen güzel dileklerin hayra ulaşmasını diliyorum.","Dualarımızda "+joined+" için de huzur, iyilik ve esenlik niyaz ediyorum."];
+ return pick(options);
+}
 function localMessage(){
  const gun=$("gunSecim").value,style=$("uslup").value,z=$("uzunluk").value,h=$("hitap").value.trim(),im=$("imza").value.trim(),raw=$("anahtarKelime").value.trim();
  const d=dayLocal[gun]||dayLocal["Cuma Günü"];
- let tries=0,m="";
+ let tries=0,m="";localCounter++;
  do{
    const parts=[pick(d.open)+", "+pick(localCore[style]||localCore.samimi)+"."];
-   if(raw){
-     const vurgular=raw.split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);
-     if(vurgular.length===1)parts.push("Bu vesileyle "+vurgular[0]+" için de hayır, huzur ve güzellik diliyorum.");
-     else if(vurgular.length>1)parts.push("Bu vesileyle "+vurgular.join(", ")+" için taşıdığımız güzel dileklerin hayra ulaşmasını diliyorum.");
-   }
+   if(raw)parts.push(vurguCumlesi(raw,style));
    if(z!=="kisa")parts.push(pick(localExtra));
-   if(z==="uzun")parts.push(pick(localExtra.filter(x=>!parts.includes(x))));
-   parts.push(pick(d.close));
-   m=parts.join(" ");
-   if(style==="kurumsal")m=m.replace(/diliyorum/g,"diliyoruz").replace(/temenni ederim/g,"temenni ediyoruz");
+   if(z==="uzun"){const extra2=pick(localExtra.filter(x=>!parts.includes(x)));parts.push(extra2);}
+   parts.push(pick(localClose));
+   m=parts.filter(Boolean).join(" ");
    if(h)m=h+",\n\n"+m;
    if(im)m+="\n\n"+im;
    tries++;
- }while(m===lastLocalText&&tries<8);
- lastLocalText=m;
- return m;
+ }while((m===lastLocalText||similarity(lastLocalText,m)>.78)&&tries<20);
+ lastLocalText=m;return m;
 }
 function similarity(a,b){if(!a||!b)return 0;const norm=x=>new Set(x.toLocaleLowerCase("tr-TR").replace(/[^a-zçğıöşü0-9 ]/gi," ").split(/\s+/).filter(w=>w.length>3));const A=norm(a),B=norm(b);let hit=0;A.forEach(x=>{if(B.has(x))hit++});return hit/Math.max(1,Math.min(A.size,B.size));}
 function mesajOlustur(){
- const b=$("olusturBtn");b.disabled=true;b.textContent="⏳ Mesaj hazırlanıyor...";$("status").textContent="Mesaj hazırlanıyor...";
+ const b=$("olusturBtn");b.disabled=true;b.textContent="⏳ Mesaj hazırlanıyor...";$("status").textContent="Yapay zekâ ile yeni mesaj hazırlanıyor...";
  const raw=$("anahtarKelime").value.trim();let done=false,attempt=0,timer=null,currentId="";
  const clearActive=()=>{clearTimeout(timer);if(currentId){const s=document.getElementById(currentId);if(s)s.remove();try{delete window[currentId]}catch(e){}currentId="";}};
  const finish=()=>{clearActive();b.disabled=false;b.textContent="✨ Mesajı Oluştur"};
- const useLocal=detail=>{if(done)return;done=true;const text=localMessage();$("sonuc").value=text;$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"local",detail:detail||"api_unavailable",attempts:attempt,time:new Date().toISOString()};finish();};
- const succeed=text=>{if(done)return;done=true;const sim=similarity(lastAiText,text);lastAiText=text;$("sonuc").value=text;$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:"similarity:"+sim.toFixed(2),attempts:attempt,time:new Date().toISOString()};finish();};
- const retryOrLocal=reason=>{if(done)return;clearActive();if(attempt<2){setTimeout(requestAI,350);return;}useLocal(reason);};
- function requestAI(){if(done)return;attempt++;const cb="mesajmatikCb_"+Date.now()+"_"+attempt+"_"+Math.floor(Math.random()*99999);currentId=cb;window[cb]=data=>{if(done)return;const text=data&&data.text?String(data.text).trim():"";if(text.length>20){succeed(text);return;}const reason=data&&data.error?[data.error,data.detail].filter(Boolean).join(" — "):"empty_response";retryOrLocal(reason);};const q=new URLSearchParams({callback:cb,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:raw,onceki:lastAiText.slice(0,1000),imza:$("imza").value.trim(),_:String(Date.now())});const s=document.createElement("script");s.id=cb;s.src=API_URL+"?"+q.toString();s.onerror=()=>retryOrLocal("network_error");document.body.appendChild(s);timer=setTimeout(()=>retryOrLocal("timeout"),30000);}
+ const askLocal=detail=>{if(done)return;done=true;finish();window.__mesajmatikDebug={engine:"ai_error",detail:detail||"api_unavailable",attempts:attempt,time:new Date().toISOString()};const ok=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\n\nYapay zekâ ile mesaj üretilemedi. Yerel mesaj üreticisiyle devam etmek ister misiniz?");if(ok){const text=localMessage();$("sonuc").value=text;$("status").textContent="Yerel mesaj oluşturuldu.";window.__mesajmatikDebug.engine="local";}else{$("status").textContent="Mesaj oluşturulmadı.";}};
+ const succeed=text=>{if(done)return;const sim=similarity(lastAiText,text);if(lastAiText&&sim>=.78){retryOrAsk("Önceki mesaja fazla benzer yanıt döndü.");return;}done=true;lastAiText=text;$("sonuc").value=text;$("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:"similarity:"+sim.toFixed(2),attempts:attempt,time:new Date().toISOString()};finish();};
+ const retryOrAsk=reason=>{if(done)return;clearActive();if(attempt<2){setTimeout(requestAI,300);return;}askLocal(reason);};
+ function requestAI(){if(done)return;attempt++;const cb="mesajmatikCb_"+Date.now()+"_"+attempt+"_"+Math.floor(Math.random()*99999);currentId=cb;window[cb]=data=>{if(done)return;const text=data&&data.text?String(data.text).trim():"";if(text.length>30){succeed(text);return;}const reason=data&&data.error?[data.error,data.detail].filter(Boolean).join(" — "):"empty_response";retryOrAsk(reason);};const q=new URLSearchParams({callback:cb,gun:$("gunSecim").value,uslup:$("uslup").value,uzunluk:$("uzunluk").value,hitap:$("hitap").value,anahtar:raw,onceki:lastAiText.slice(0,1500),imza:$("imza").value.trim(),seed:Date.now()+"-"+Math.random().toString(36).slice(2),_:String(Date.now())});const s=document.createElement("script");s.id=cb;s.src=API_URL+"?"+q.toString();s.onerror=()=>retryOrAsk("network_error");document.body.appendChild(s);timer=setTimeout(()=>retryOrAsk("timeout"),30000);}
  requestAI();
 }
-$("gunSecim").addEventListener("change",()=>{lastAiText="";lastLocalText="";$("sonuc").value="";$("status").textContent="";$("kartCanvas").style.display="none";vary=0;});
+$("gunSecim").addEventListener("change",()=>{$("sonuc").value="";$("status").textContent="";$("kartCanvas").style.display="none";vary=0;});
 async function kopyala(){if(!$("sonuc").value)return;try{await navigator.clipboard.writeText($("sonuc").value)}catch(e){$("sonuc").select();document.execCommand("copy")}$("status").textContent="Mesaj kopyalandı."}
-function whatsapp(){if($("sonuc").value)window.open("https://wa.me/?text="+encodeURIComponent($("sonuc").value),"_blank")}
+function mesajMetni(){return $("sonuc").value.trim()}
+function whatsapp(){const t=mesajMetni();if(t)window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}
+function facebook(){const t=mesajMetni();if(!t)return;const u=location.href;window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(u)+"&quote="+encodeURIComponent(t),"_blank")}
+function xPaylas(){const t=mesajMetni();if(t)window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(t),"_blank")}
+function telegram(){const t=mesajMetni();if(t)window.open("https://t.me/share/url?url="+encodeURIComponent(location.href)+"&text="+encodeURIComponent(t),"_blank")}
+async function genelPaylas(){const t=mesajMetni();if(!t)return;if(navigator.share){try{await navigator.share({text:t,title:$("gunSecim").value});return}catch(e){if(e&&e.name==="AbortError")return}}await kopyala();$("status").textContent="Doğrudan paylaşım desteklenmiyor; mesaj panoya kopyalandı."}
+async function instagramVeyaDiger(){const t=mesajMetni();if(!t)return;if(navigator.share){try{await navigator.share({text:t,title:$("gunSecim").value});return}catch(e){if(e&&e.name==="AbortError")return}}await kopyala();$("status").textContent="Instagram için doğrudan web paylaşımı desteklenmiyor; mesaj panoya kopyalandı. Görsel kartı da kaydedip paylaşabilirsiniz."}
 
 const dayStyle={
 "Berat Kandili":{c1:"#0f3f35",c2:"#5f8f76",gold:"#d6b45a",icon:"stars",sub:"Af ve rahmet gecesi"},"Kadir Gecesi":{c1:"#172c55",c2:"#5c6fa3",gold:"#e0c575",icon:"lantern",sub:"Bin aydan hayırlı gece"},"Mevlid Kandili":{c1:"#315b48",c2:"#8ba58f",gold:"#d3b36a",icon:"dome",sub:"Rahmet ve muhabbet"},"Regaib Kandili":{c1:"#513d67",c2:"#8f78a6",gold:"#e1c68d",icon:"starcrescent",sub:"Rahmet ve bereket"},"Miraç Kandili":{c1:"#243f69",c2:"#7090b4",gold:"#d8bc6d",icon:"ascend",sub:"Manevi yükseliş"},"Ramazan Bayramı":{c1:"#1f6a58",c2:"#82ad8e",gold:"#efd07a",icon:"gift",sub:"Sevinç ve kardeşlik"},"Kurban Bayramı":{c1:"#6a4a2d",c2:"#a8865d",gold:"#ead08b",icon:"kaaba",sub:"Paylaşma ve teslimiyet"},"Cuma Günü":{c1:"#28594d",c2:"#729484",gold:"#d7bb74",icon:"mosque",sub:"Huzur ve bereket"},"Ramazan Ayı":{c1:"#294f63",c2:"#6f99a8",gold:"#e0c174",icon:"lantern2",sub:"Rahmet ve bereket ayı"},"Arefe Günü":{c1:"#604d36",c2:"#a28a68",gold:"#e0c483",icon:"beads",sub:"Dua ve hazırlık vakti"}};
@@ -114,8 +123,8 @@ function wrap(ctx,text,w){const words=text.replace(/\s+/g," ").trim().split(" ")
 function justify(ctx,line,x,y,w,last){const a=line.split(" ");ctx.textAlign="left";if(last||a.length<2){ctx.fillText(line,x,y);return}const tw=a.reduce((n,q)=>n+ctx.measureText(q).width,0),gap=(w-tw)/(a.length-1);let cx=x;for(const q of a){ctx.fillText(q,cx,y);cx+=ctx.measureText(q).width+gap}}
 function fitLines(ctx,text,w,startY,maxY){let size=29,lh=43,lines=[];do{ctx.font=size+"px Georgia";lines=wrap(ctx,text,w);if(startY+lines.length*lh<=maxY)break;size--;lh-=1.05}while(size>19);return{size,lh,lines}}
 function kartOlustur(change=false){if(!$("sonuc").value.trim()){$("status").textContent="Önce mesaj oluşturun.";return;}if(change)vary=(vary+1)%3;const c=$("kartCanvas"),ctx=c.getContext("2d"),gun=$("gunSecim").value,st=dayStyle[gun]||dayStyle["Cuma Günü"];c.style.display="block";const grad=ctx.createLinearGradient(0,0,1080,1080);grad.addColorStop(0,st.c1);grad.addColorStop(1,st.c2);ctx.fillStyle=grad;ctx.fillRect(0,0,1080,1080);ctx.save();ctx.globalAlpha=.10;ctx.fillStyle="#fff";for(let yy=90;yy<1080;yy+=120){for(let xx=70+(Math.floor(yy/120)%2)*40;xx<1080;xx+=140){star(ctx,xx,yy,11+vary*2)}}ctx.restore();ctx.fillStyle="rgba(255,255,255,.94)";rr(ctx,70,70,940,940,34);ctx.fill();ctx.strokeStyle=st.gold;ctx.lineWidth=4;ctx.stroke();ctx.fillStyle=st.c1;rr(ctx,390,105,300,165,28);ctx.fill();drawIcon(ctx,st.icon,540,178,135,"#f7e5a8");ctx.textAlign="center";ctx.fillStyle=st.c1;ctx.font="700 48px Georgia";ctx.fillText(gun,540,335);ctx.fillStyle="#8b7645";ctx.font="italic 25px Georgia";ctx.fillText(st.sub,540,374);ctx.strokeStyle=st.gold;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(vary===2?250:310,402);ctx.lineTo(vary===2?830:770,402);ctx.stroke();const raw=$("sonuc").value.trim(),hit=$("hitap").value.trim(),im=$("imza").value.trim();let body=raw;if(hit&&body.startsWith(hit))body=body.slice(hit.length).replace(/^,?\s*/,"");if(im&&body.endsWith(im))body=body.slice(0,-im.length).trim();const x=145,w=790;let y=465;ctx.fillStyle="#26352e";if(hit){ctx.font="700 31px Arial";ctx.textAlign="left";ctx.fillText(hit+",",x,y);y+=58}const fitted=fitLines(ctx,body,w,y,875);ctx.font=fitted.size+"px Georgia";for(let i=0;i<fitted.lines.length;i++){if(y>875)break;justify(ctx,fitted.lines[i],x,y,w,i===fitted.lines.length-1);y+=fitted.lh}if(im){ctx.fillStyle=st.c1;ctx.font="700 30px Georgia";ctx.textAlign="right";ctx.fillText(im,920,935)}ctx.textAlign="center";ctx.fillStyle="#8a8f8b";ctx.font="18px Arial";ctx.fillText("Mesajmatik",540,980)}
-function kartIndir(){if($("kartCanvas").style.display==="none")kartOlustur(false);const a=document.createElement("a");a.download="mesajmatik-kart.png";a.href=$("kartCanvas").toDataURL("image/png");a.click()}
-async function kartPaylas(){if($("kartCanvas").style.display==="none")kartOlustur(false);$("kartCanvas").toBlob(async blob=>{if(!blob)return;const f=new File([blob],"mesajmatik-kart.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]})}catch(e){}}else kartIndir()},"image/png")}
+function kartIndir(){if($("kartCanvas").style.display==="none")kartOlustur(false);if($("kartCanvas").style.display==="none")return;const a=document.createElement("a");a.download="mesajmatik-kart.png";a.href=$("kartCanvas").toDataURL("image/png");a.click()}
+async function kartPaylas(){if($("kartCanvas").style.display==="none")kartOlustur(false);if($("kartCanvas").style.display==="none")return;$("kartCanvas").toBlob(async blob=>{if(!blob)return;const f=new File([blob],"mesajmatik-kart.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:mesajMetni(),title:$("gunSecim").value})}catch(e){}}else{$("status").textContent="Doğrudan görsel paylaşımı desteklenmiyor. Görseli kaydedebilirsiniz."}},"image/png")}
 </script>
 </body>
 </html>
