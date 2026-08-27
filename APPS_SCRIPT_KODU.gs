@@ -44,29 +44,29 @@ function getAppHtml_() {
   select:focus,input:focus,textarea:focus{border-color:#63a88c;box-shadow:0 0 0 3px rgba(47,138,102,.10)}
   .primary{width:100%;border:0;border-radius:12px;padding:14px 16px;font-weight:800;font-size:16px;cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--green2),var(--gold))}.primary:disabled{opacity:.62;cursor:wait}
   .section{border-top:1px dashed #dce5e1;margin-top:18px;padding-top:18px}h2{font-size:18px;margin:0 0 10px;color:var(--green)}
-  #sonuc{min-height:185px;resize:vertical;line-height:1.6;font-family:Georgia,"Times New Roman",serif}.status{margin:9px 0 0;font-size:12px;color:var(--green);font-weight:700;min-height:18px;overflow-wrap:anywhere}
-  .mainActions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:11px}.mainActions button{min-width:0;border:0;border-radius:10px;padding:10px 8px;font-weight:700;cursor:pointer;color:#fff}.mainActions button:nth-child(1){background:#2d6ea3}.mainActions button:nth-child(2){background:#7da493}.mainActions button:nth-child(3){background:#c49325}
+  #sonuc{min-height:185px;resize:vertical;line-height:1.65;font-size:16px;font-family:Georgia,"Times New Roman",serif}.status{margin:9px 0 0;font-size:12px;color:var(--green);font-weight:700;min-height:18px;overflow-wrap:anywhere}
+  .mainActions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:11px}.mainActions button{min-width:0;border:0;border-radius:10px;padding:10px 8px;font-weight:700;cursor:pointer;color:#fff;font-size:13px}.mainActions button:nth-child(1){background:#2d6ea3}.mainActions button:nth-child(2){background:#7da493}.mainActions button:nth-child(3){background:#c49325}
   .socialActions{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}.socialBtn{width:44px;height:44px;flex:0 0 44px;border:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:800;font-size:20px;line-height:1;box-shadow:0 3px 10px rgba(0,0,0,.10)}.socialBtn:hover{transform:translateY(-1px)}.socialBtn svg{width:23px;height:23px;display:block;fill:currentColor}.wa{background:#25D366}.fb{background:#1877F2}.xx{background:#111}.tg{background:#229ED9}.ig{background:radial-gradient(circle at 30% 110%,#feda75 0 25%,#d62976 45%,#962fbf 65%,#4f5bd5 100%)}
   .cardBox{display:none;margin-top:14px}canvas{width:100%;height:auto;max-width:540px;display:block;margin:0 auto;border-radius:18px;border:1px solid #d8e2dd}.cardActions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px}.cardActions button{min-width:0;border:0;border-radius:10px;padding:11px 8px;font-weight:700;cursor:pointer}.note{font-size:12px;color:var(--muted);margin-top:10px}
   @media(max-width:900px),(hover:none) and (pointer:coarse){
     body{background:#fff}
     .wrap{width:100%;max-width:none;margin:0;border-radius:0;border-left:0;border-right:0;box-shadow:none}
-    header{padding:18px 14px 16px}.moon{font-size:27px}h1{font-size:27px;margin-top:6px}header p{font-size:12px;line-height:1.35}
-    main{padding:12px}.grid{grid-template-columns:1fr;gap:10px}.full{grid-column:auto}
-    label{font-size:12px;margin-bottom:5px}
-    select,input,textarea{font-size:16px;padding:12px 11px;border-radius:10px}
-    .primary{font-size:15px;padding:14px 12px}
-    #sonuc{min-height:190px}.section{margin-top:14px;padding-top:14px}
-    .mainActions{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.mainActions button{padding:11px 5px;font-size:12px}
-    .socialActions{gap:9px;margin-top:11px}.socialBtn{width:44px;height:44px;flex-basis:44px}.socialBtn svg{width:23px;height:23px}
-    .cardActions{grid-template-columns:1fr;gap:7px}.cardActions button{padding:12px 10px}
-    canvas{max-width:100%;border-radius:10px}
+    header{padding:20px 14px 18px}.moon{font-size:30px}h1{font-size:30px;margin-top:6px}header p{font-size:14px;line-height:1.45}
+    main{padding:14px}.grid{grid-template-columns:1fr;gap:12px}.full{grid-column:auto}
+    label{font-size:15px;margin-bottom:6px;line-height:1.25}
+    select,input,textarea{font-size:17px;padding:13px 12px;border-radius:10px;line-height:1.35}
+    .primary{font-size:17px;padding:15px 12px}
+    #sonuc{min-height:205px;font-size:17px;line-height:1.7}.section{margin-top:16px;padding-top:16px}h2{font-size:20px}.status{font-size:14px;line-height:1.4}
+    .mainActions{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.mainActions button{padding:13px 6px;font-size:14px}
+    .socialActions{gap:10px;margin-top:13px}.socialBtn{width:46px;height:46px;flex-basis:46px}.socialBtn svg{width:24px;height:24px}
+    .cardActions{grid-template-columns:1fr;gap:8px}.cardActions button{padding:13px 10px;font-size:15px}
+    .note{font-size:13px;line-height:1.45}canvas{max-width:100%;border-radius:10px}
   }
   @media(max-width:480px){
-    .mainActions{grid-template-columns:1fr 1fr}.mainActions button:nth-child(3){grid-column:1/-1}
+    .mainActions{grid-template-columns:1fr 1fr}.mainActions button:nth-child(3){grid-column:1/-1}.mainActions button{font-size:15px}
   }
   @media(max-width:360px){
-    main{padding:10px}.mainActions{grid-template-columns:1fr}.mainActions button:nth-child(3){grid-column:auto}.socialActions{gap:7px}.socialBtn{width:40px;height:40px;flex-basis:40px}
+    main{padding:11px}.mainActions{grid-template-columns:1fr}.mainActions button:nth-child(3){grid-column:auto}.socialActions{gap:8px}.socialBtn{width:42px;height:42px;flex-basis:42px}
   }
 </style>
 </head>
@@ -98,46 +98,48 @@ function metin(){return el("sonuc").value.trim()} function kopyala(){var t=metin
 function whatsapp(){var t=metin();if(t)window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")} function facebook(){var t=metin();if(t)window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(location.href)+"&quote="+encodeURIComponent(t),"_blank")} function xPaylas(){var t=metin();if(t)window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(t),"_blank")} function telegram(){var t=metin();if(t)window.open("https://t.me/share/url?url="+encodeURIComponent(location.href)+"&text="+encodeURIComponent(t),"_blank")} function instagram(){paylas()}
 function gunSimgesi(gun){var m={"Arefe Günü":"✦","Berat Kandili":"☾✧","Cuma Günü":"۞","Kadir Gecesi":"✧","Kurban Bayramı":"◈","Mevlid Kandili":"❁","Miraç Kandili":"↟","Ramazan Ayı":"☾★","Ramazan Bayramı":"☾✦","Regaib Kandili":"✧☾"};return m[gun]||"☾"}
 function satirlaraBol(ctx,text,maxWidth){var paragraphs=String(text||"").split(/\n/),lines=[];for(var p=0;p<paragraphs.length;p++){var paragraph=paragraphs[p].trim();if(!paragraph){lines.push("");continue}var words=paragraph.split(/\s+/),line="";for(var i=0;i<words.length;i++){var test=line?line+" "+words[i]:words[i];if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=words[i]}else{line=test}}if(line)lines.push(line)}return lines}
-function metniKartaSigdir(ctx,text,maxWidth,maxHeight){for(var size=38;size>=16;size--){ctx.font=size+"px Georgia";var lines=satirlaraBol(ctx,text,maxWidth),lineHeight=Math.round(size*1.42),height=lines.length*lineHeight;if(height<=maxHeight)return{size:size,lines:lines,lineHeight:lineHeight}}ctx.font="16px Georgia";return{size:16,lines:satirlaraBol(ctx,text,maxWidth),lineHeight:23}}
+function metniKartaSigdir(ctx,text,maxWidth,maxHeight){for(var size=40;size>=18;size--){ctx.font=size+"px Georgia";var lines=satirlaraBol(ctx,text,maxWidth),lineHeight=Math.round(size*1.46),height=lines.length*lineHeight;if(height<=maxHeight)return{size:size,lines:lines,lineHeight:lineHeight}}ctx.font="18px Georgia";return{size:18,lines:satirlaraBol(ctx,text,maxWidth),lineHeight:27}}
 function ikiYanaYaz(ctx,line,x,y,width,isLastLine){var words=String(line||"").trim().split(/\s+/);if(isLastLine||words.length<2){ctx.fillText(line,x,y);return}var wordsWidth=0;for(var i=0;i<words.length;i++)wordsWidth+=ctx.measureText(words[i]).width;var gap=(width-wordsWidth)/(words.length-1);var cursor=x;for(var j=0;j<words.length;j++){ctx.fillText(words[j],cursor,y);cursor+=ctx.measureText(words[j]).width+gap}}
 function kartMetniniAyir(){var tam=metin(),imza=el("imza").value.trim();if(imza&&tam.slice(-imza.length)===imza){var govde=tam.slice(0,-imza.length).replace(/\s+$/g,"");return{govde:govde,imza:imza}}return{govde:tam,imza:""}}
 function kartTemasi(no){var t=[
-{konsept:"klasik",a:"#063b31",b:"#0b7156",c:"#e4c86b",d:"#fffdf6",e:"#95d0b4"},
-{konsept:"gece",a:"#06152f",b:"#264f78",c:"#f0d27d",d:"#ffffff",e:"#8eb6da"},
-{konsept:"parşomen",a:"#f4ecd9",b:"#d9c9a7",c:"#80663b",d:"#28352f",e:"#b19a70"},
-{konsept:"mihrap",a:"#143d34",b:"#476b55",c:"#e0c270",d:"#fffdf5",e:"#a5c7aa"},
-{konsept:"bordo-geometri",a:"#3d1829",b:"#7a3150",c:"#f0c674",d:"#fff8ee",e:"#d49ab1"},
-{konsept:"modern-açık",a:"#edf7f3",b:"#d6ebe3",c:"#16715d",d:"#19352e",e:"#7fb4a5"},
-{konsept:"lacivert-bant",a:"#112839",b:"#31586e",c:"#deb96c",d:"#fffdf6",e:"#8db1c2"},
-{konsept:"zümrüt-medalyon",a:"#084c42",b:"#0d7865",c:"#f2d17b",d:"#fffdf7",e:"#98d3c4"}
+{konsept:"zümrüt-klasik",bg1:"#083d32",bg2:"#0f6955",accent:"#e6c86e",text:"#fffdf6",panel:"rgba(255,255,255,.07)"},
+{konsept:"gece-yıldız",bg1:"#071428",bg2:"#183e63",accent:"#f2d27f",text:"#ffffff",panel:"rgba(255,255,255,.06)"},
+{konsept:"krem-hat",bg1:"#f7f0df",bg2:"#ead8b5",accent:"#8c6a35",text:"#27352f",panel:"rgba(255,255,255,.62)"},
+{konsept:"mihrap",bg1:"#193f34",bg2:"#526f5c",accent:"#e1c779",text:"#fffdf7",panel:"rgba(0,0,0,.10)"},
+{konsept:"bordo",bg1:"#40182b",bg2:"#7b3853",accent:"#efcb7b",text:"#fff9f2",panel:"rgba(255,255,255,.06)"},
+{konsept:"modern-açık",bg1:"#edf7f3",bg2:"#dcece5",accent:"#1e735f",text:"#1d352e",panel:"#ffffff"},
+{konsept:"lacivert",bg1:"#102838",bg2:"#365f76",accent:"#e0bc6e",text:"#fffdf7",panel:"rgba(255,255,255,.07)"},
+{konsept:"turkuaz",bg1:"#0d4c46",bg2:"#1f8074",accent:"#f0d17f",text:"#fffdf7",panel:"rgba(255,255,255,.07)"}
 ];return t[no%t.length]}
+function yuvarlakDikdortgen(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
 function kartZeminCiz(ctx,t,no){
-  var g=ctx.createLinearGradient(no%2?1080:0,0,no%2?0:1080,1080);g.addColorStop(0,t.a);g.addColorStop(1,t.b);ctx.fillStyle=g;ctx.fillRect(0,0,1080,1080);ctx.save();
-  if(no===0){ctx.strokeStyle=t.c;ctx.lineWidth=5;ctx.strokeRect(50,50,980,980);ctx.lineWidth=1.5;ctx.strokeRect(72,72,936,936);for(var i=0;i<4;i++){ctx.beginPath();ctx.arc(95+i*297,95,10,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(985-i*297,985,10,0,Math.PI*2);ctx.stroke()}}
-  else if(no===1){ctx.fillStyle="rgba(255,255,255,.88)";for(var s=0;s<50;s++){var sx=(s*193)%1000+40,sy=(s*137)%780+35;ctx.beginPath();ctx.arc(sx,sy,s%5===0?3:1.5,0,Math.PI*2);ctx.fill()}ctx.strokeStyle=t.c;ctx.lineWidth=2;ctx.beginPath();ctx.arc(540,135,72,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.16;var rg=ctx.createRadialGradient(540,280,20,540,280,500);rg.addColorStop(0,"#ffffff");rg.addColorStop(1,"rgba(255,255,255,0)");ctx.fillStyle=rg;ctx.fillRect(0,0,1080,1080);ctx.globalAlpha=1}
-  else if(no===2){ctx.fillStyle="rgba(255,255,255,.42)";ctx.fillRect(75,75,930,930);ctx.strokeStyle=t.c;ctx.lineWidth=3;ctx.strokeRect(75,75,930,930);ctx.fillStyle=t.c;ctx.fillRect(75,75,930,105);ctx.globalAlpha=.16;for(var y=225;y<960;y+=42){ctx.fillStyle="#6e5a35";ctx.fillRect(120,y,840,1)}ctx.globalAlpha=1;ctx.strokeStyle=t.e;ctx.beginPath();ctx.moveTo(100,205);ctx.quadraticCurveTo(540,420,980,205);ctx.stroke()}
-  else if(no===3){ctx.strokeStyle=t.c;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(120,980);ctx.lineTo(120,325);ctx.quadraticCurveTo(120,130,540,90);ctx.quadraticCurveTo(960,130,960,325);ctx.lineTo(960,980);ctx.stroke();ctx.strokeStyle="rgba(255,255,255,.22)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(148,950);ctx.lineTo(148,340);ctx.quadraticCurveTo(148,165,540,125);ctx.quadraticCurveTo(932,165,932,340);ctx.lineTo(932,950);ctx.stroke()}
-  else if(no===4){ctx.fillStyle="rgba(255,255,255,.055)";ctx.fillRect(0,0,155,1080);ctx.fillRect(925,0,155,1080);ctx.strokeStyle=t.c;ctx.lineWidth=3;for(var y2=105;y2<1010;y2+=120){ctx.beginPath();ctx.moveTo(40,y2);ctx.lineTo(78,y2-25);ctx.lineTo(116,y2);ctx.lineTo(78,y2+25);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(964,y2);ctx.lineTo(1002,y2-25);ctx.lineTo(1040,y2);ctx.lineTo(1002,y2+25);ctx.closePath();ctx.stroke()}ctx.strokeRect(175,65,730,950)}
-  else if(no===5){ctx.fillStyle="#ffffff";ctx.fillRect(70,70,940,940);ctx.fillStyle=t.c;ctx.fillRect(70,70,24,940);ctx.fillStyle="rgba(22,113,93,.08)";ctx.fillRect(94,70,916,185);ctx.strokeStyle=t.e;ctx.lineWidth=2;ctx.strokeRect(70,70,940,940);for(var q=0;q<6;q++){ctx.beginPath();ctx.arc(910,145+q*145,7+q*2,0,Math.PI*2);ctx.stroke()}}
-  else if(no===6){ctx.fillStyle="rgba(0,0,0,.18)";ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(1080,0);ctx.lineTo(1080,245);ctx.lineTo(0,365);ctx.closePath();ctx.fill();ctx.strokeStyle=t.c;ctx.lineWidth=5;ctx.strokeRect(55,55,970,970);for(var z=0;z<7;z++){var xx=120+z*140;ctx.beginPath();ctx.moveTo(xx,85);ctx.lineTo(xx+14,99);ctx.lineTo(xx,113);ctx.lineTo(xx-14,99);ctx.closePath();ctx.stroke()}}
-  else{ctx.fillStyle="rgba(255,255,255,.06)";ctx.beginPath();ctx.arc(540,540,430,0,Math.PI*2);ctx.fill();ctx.strokeStyle=t.c;ctx.lineWidth=3;ctx.beginPath();ctx.arc(540,145,76,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(540,145,58,0,Math.PI*2);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(170,300);ctx.lineTo(910,300);ctx.stroke();ctx.beginPath();ctx.moveTo(170,900);ctx.lineTo(910,900);ctx.stroke()}
+  var g=ctx.createLinearGradient(0,0,1080,1080);g.addColorStop(0,t.bg1);g.addColorStop(1,t.bg2);ctx.fillStyle=g;ctx.fillRect(0,0,1080,1080);
+  ctx.save();
+  if(no===0){ctx.strokeStyle=t.accent;ctx.lineWidth=5;ctx.strokeRect(54,54,972,972);ctx.lineWidth=1.5;ctx.strokeRect(78,78,924,924);ctx.globalAlpha=.18;ctx.strokeStyle="#fff";for(var i=0;i<4;i++){ctx.beginPath();ctx.arc(120+i*280,120,14,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(960-i*280,960,14,0,Math.PI*2);ctx.stroke()}}
+  else if(no===1){ctx.fillStyle="rgba(255,255,255,.9)";for(var s=0;s<70;s++){var sx=(s*167)%980+50,sy=(s*113)%900+45;ctx.beginPath();ctx.arc(sx,sy,s%9===0?3:1.4,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=.12;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(540,250,430,0,Math.PI*2);ctx.fill()}
+  else if(no===2){ctx.fillStyle=t.panel;yuvarlakDikdortgen(ctx,70,70,940,940,28);ctx.fill();ctx.strokeStyle=t.accent;ctx.lineWidth=3;yuvarlakDikdortgen(ctx,70,70,940,940,28);ctx.stroke();ctx.fillStyle=t.accent;ctx.fillRect(70,70,940,108);ctx.globalAlpha=.12;ctx.strokeStyle=t.accent;for(var y=250;y<950;y+=46){ctx.beginPath();ctx.moveTo(130,y);ctx.lineTo(950,y);ctx.stroke()}}
+  else if(no===3){ctx.strokeStyle=t.accent;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(120,990);ctx.lineTo(120,360);ctx.quadraticCurveTo(120,130,540,86);ctx.quadraticCurveTo(960,130,960,360);ctx.lineTo(960,990);ctx.stroke();ctx.lineWidth=2;ctx.globalAlpha=.25;ctx.beginPath();ctx.moveTo(150,950);ctx.lineTo(150,375);ctx.quadraticCurveTo(150,165,540,125);ctx.quadraticCurveTo(930,165,930,375);ctx.lineTo(930,950);ctx.stroke()}
+  else if(no===4){ctx.fillStyle="rgba(255,255,255,.05)";ctx.fillRect(0,0,150,1080);ctx.fillRect(930,0,150,1080);ctx.strokeStyle=t.accent;ctx.lineWidth=3;for(var y2=125;y2<990;y2+=145){ctx.beginPath();ctx.moveTo(42,y2);ctx.lineTo(76,y2-24);ctx.lineTo(110,y2);ctx.lineTo(76,y2+24);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(970,y2);ctx.lineTo(1004,y2-24);ctx.lineTo(1038,y2);ctx.lineTo(1004,y2+24);ctx.closePath();ctx.stroke()}ctx.strokeRect(176,64,728,952)}
+  else if(no===5){ctx.fillStyle=t.panel;yuvarlakDikdortgen(ctx,70,70,940,940,32);ctx.fill();ctx.strokeStyle="rgba(30,115,95,.22)";ctx.lineWidth=2;yuvarlakDikdortgen(ctx,70,70,940,940,32);ctx.stroke();ctx.fillStyle="rgba(30,115,95,.08)";ctx.fillRect(70,70,940,210);ctx.fillStyle=t.accent;ctx.fillRect(70,70,18,940)}
+  else if(no===6){ctx.fillStyle="rgba(0,0,0,.18)";ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(1080,0);ctx.lineTo(1080,255);ctx.lineTo(0,380);ctx.closePath();ctx.fill();ctx.strokeStyle=t.accent;ctx.lineWidth=5;ctx.strokeRect(58,58,964,964);ctx.globalAlpha=.18;for(var z=0;z<6;z++){ctx.beginPath();ctx.arc(145+z*155,115,18,0,Math.PI*2);ctx.stroke()}}
+  else{ctx.globalAlpha=.10;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(540,540,430,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle=t.accent;ctx.lineWidth=3;ctx.beginPath();ctx.arc(540,150,82,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(540,150,62,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(170,310);ctx.lineTo(910,310);ctx.stroke();ctx.beginPath();ctx.moveTo(170,900);ctx.lineTo(910,900);ctx.stroke()}
   ctx.restore()
 }
 function gorselKartOlustur(){if(!metin())return;el("cardBox").style.display="block";kartCiz();el("cardBox").scrollIntoView({behavior:"smooth",block:"start"})}
 function kartCiz(){
   var c=el("cardCanvas"),ctx=c.getContext("2d"),no=__tasarimNo%8,t=kartTemasi(no),gun=el("gunSecim").value,parca=kartMetniniAyir();ctx.clearRect(0,0,1080,1080);ctx.globalAlpha=1;kartZeminCiz(ctx,t,no);ctx.globalAlpha=1;
-  var iconY=150,titleY=235,startY=325,textX=130,textW=820,maxH=parca.imza?540:610,titleAlign="center",titleX=540;
-  if(no===2){iconY=138;titleY=155;startY=285;textX=145;textW=790;titleAlign="left";titleX=145}
-  if(no===3){iconY=155;titleY=245;startY=340;textX=160;textW=760}
-  if(no===4){iconY=145;titleY=225;startY=315;textX=205;textW=670}
-  if(no===5){iconY=132;titleY=175;startY=285;textX=150;textW=790;titleAlign="left";titleX=150}
-  if(no===6){iconY=135;titleY=205;startY=315;textX=155;textW=770}
-  if(no===7){iconY=165;titleY=250;startY=340;textX=145;textW=790}
-  ctx.fillStyle=t.c;ctx.textAlign=titleAlign;ctx.font=(no===2||no===5?"50px Georgia":"58px Georgia");ctx.fillText(gunSimgesi(gun),titleAlign==="left"?titleX:540,iconY);
-  ctx.fillStyle=t.d;ctx.font="bold 46px Arial";ctx.fillText(gun,titleX,titleY);
-  var fit=metniKartaSigdir(ctx,parca.govde,textW,maxH);ctx.font=fit.size+"px Georgia";ctx.textAlign="left";ctx.fillStyle=t.d;
-  for(var i=0;i<fit.lines.length;i++){var line=fit.lines[i];if(line===""){startY+=Math.round(fit.lineHeight*.65)}else{var isLast=(i===fit.lines.length-1||fit.lines[i+1]==="");ikiYanaYaz(ctx,line,textX,startY,textW,isLast);startY+=fit.lineHeight}}
-  if(parca.imza){ctx.textAlign="right";ctx.fillStyle=t.c;ctx.font="italic "+Math.max(24,Math.min(32,fit.size))+"px Georgia";ctx.fillText(parca.imza,textX+textW,930)}
+  var iconY=150,titleY=238,startY=350,textX=145,textW=790,maxH=parca.imza?500:575,titleAlign="center",titleX=540;
+  if(no===2){iconY=135;titleY=145;startY=300;textX=145;textW=790;titleAlign="left";titleX=145}
+  if(no===3){iconY=155;titleY=250;startY=360;textX=170;textW=740}
+  if(no===4){iconY=150;titleY=232;startY=340;textX=205;textW=670}
+  if(no===5){iconY=130;titleY=175;startY=300;textX=150;textW=780;titleAlign="left";titleX=150}
+  if(no===6){iconY=145;titleY=210;startY=340;textX=160;textW=760}
+  if(no===7){iconY=168;titleY=255;startY=360;textX=150;textW=780}
+  ctx.fillStyle=t.accent;ctx.textAlign=titleAlign;ctx.font=(no===2||no===5?"52px Georgia":"60px Georgia");ctx.fillText(gunSimgesi(gun),titleAlign==="left"?titleX:540,iconY);
+  ctx.fillStyle=t.text;ctx.font="bold 48px Arial";ctx.fillText(gun,titleX,titleY);
+  var fit=metniKartaSigdir(ctx,parca.govde,textW,maxH);ctx.font=fit.size+"px Georgia";ctx.textAlign="left";ctx.fillStyle=t.text;
+  for(var i=0;i<fit.lines.length;i++){var line=fit.lines[i];if(line===""){startY+=Math.round(fit.lineHeight*.72)}else{var isLast=(i===fit.lines.length-1||fit.lines[i+1]==="");ikiYanaYaz(ctx,line,textX,startY,textW,isLast);startY+=fit.lineHeight}}
+  if(parca.imza){ctx.textAlign="right";ctx.fillStyle=t.accent;ctx.font="italic "+Math.max(26,Math.min(34,fit.size))+"px Georgia";ctx.fillText(parca.imza,textX+textW,935)}
 }
 function tasarimDegistir(){__tasarimNo=(__tasarimNo+1)%8;kartCiz()} function gorselKaydet(){kartCiz();var a=document.createElement("a");a.href=el("cardCanvas").toDataURL("image/png");a.download="mesajmatik-kart.png";a.click()} function gorselPaylas(){kartCiz();el("cardCanvas").toBlob(function(blob){if(!blob)return;var f=new File([blob],"mesajmatik-kart.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:"Mesajmatik"}).catch(function(){});else gorselKaydet()},"image/png")}
 </script></body></html>`;
