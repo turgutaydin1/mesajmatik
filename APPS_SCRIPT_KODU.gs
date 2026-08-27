@@ -58,6 +58,7 @@ function missingRequirements_(text, gun, anahtar) {
 
 function similarity_(a, b) {
   if (!a || !b) return 0;
+
   function words_(s) {
     const out = {};
     normalizeTr_(s).split(" ").forEach(function(w) {
@@ -65,9 +66,11 @@ function similarity_(a, b) {
     });
     return out;
   }
+
   const A = words_(a), B = words_(b);
   const ak = Object.keys(A), bk = Object.keys(B);
   if (!ak.length || !bk.length) return 0;
+
   let hit = 0;
   ak.forEach(function(w) { if (B[w]) hit++; });
   return hit / Math.max(1, Math.min(ak.length, bk.length));
@@ -78,6 +81,23 @@ function extractText_(data) {
   return Array.isArray(parts)
     ? parts.map(function(x) { return x.text || ""; }).join("\n").trim()
     : "";
+}
+
+function generationConfigForModel_(model) {
+  if (model.indexOf("gemini-3.") === 0) {
+    return {
+      maxOutputTokens: 1000,
+      thinkingConfig: {
+        thinkingLevel: "low"
+      }
+    };
+  }
+
+  return {
+    temperature: 1.12,
+    topP: 0.95,
+    maxOutputTokens: 1000
+  };
 }
 
 function generateMessage_(p) {
@@ -96,7 +116,9 @@ function generateMessage_(p) {
     const onceki = String(p.onceki || "").slice(0, 1600);
     const istekKimligi = String(p.seed || new Date().getTime()).slice(0, 80);
 
-    if (!gun) return { error: "Yapay zekâ mesaj üretim hatası.", detail: "Gün bilgisi eksik." };
+    if (!gun) {
+      return { error: "Yapay zekâ mesaj üretim hatası.", detail: "Gün bilgisi eksik." };
+    }
 
     const uzunlukMetni = uzunluk === "kisa" ? "45-70 kelime" : uzunluk === "uzun" ? "150-210 kelime" : "90-130 kelime";
     const uslupAdi = {
@@ -111,7 +133,7 @@ function generateMessage_(p) {
       samimi: "Metni kişiden kişiye yazılmış gibi kur. İçten, sıcak ve doğal ol; kurumsal veya protokol dili kullanma.",
       resmi: "Metni baştan resmî kur. Saygılı, mesafeli, dengeli ve profesyonel hitabet kullan. Samimi metnin birkaç kelimesini değiştirmiş gibi görünmesin.",
       kurumsal: "Metni baştan kurum adına tasarla. Temsil dili, ortak değerler ve çoğul bakış kullan. Bireysel bir mesajı sadece çoğul eklerle kurumsallaştırma.",
-      dua: "Metnin ana omurgası dua olsun. Dua kiplerini ve fiillerini çeşitlendir; aynı kalıbı tekrar etme.",
+      dua: "Metnin ana omurgası dua olsun. Dua kiplerini ve fiilleri çeşitlendir; aynı kalıbı tekrar etme.",
       kaynakli: "Doğruluğundan yüksek derecede emin olduğun kısa bir ayet meali veya sahih hadis kullan ve kaynağını belirt. Emin olmadığın alıntıyı kullanma."
     }[uslup] || "";
 
@@ -163,11 +185,7 @@ Yalnızca nihai mesajı yaz.`;
       for (let attempt = 1; attempt <= 3; attempt++) {
         const payload = {
           contents: [{ parts: [{ text: basePrompt + correction }] }],
-          generationConfig: {
-            temperature: 1.18,
-            topP: 0.95,
-            maxOutputTokens: 1000
-          }
+          generationConfig: generationConfigForModel_(model)
         };
 
         const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
@@ -192,6 +210,7 @@ Yalnızca nihai mesajı yaz.`;
 
         if (code >= 200 && code < 300) {
           const text = extractText_(data);
+
           if (text && text.length >= 35) {
             const missing = missingRequirements_(text, gun, anahtar);
             const sim = onceki ? similarity_(onceki, text) : 0;
@@ -209,8 +228,10 @@ Yalnızca nihai mesajı yaz.`;
             const problems = [];
             if (missing.length) problems.push("Eksik zorunlu öğe: " + missing.join(", "));
             if (sim >= 0.72) problems.push("Önceki mesaja fazla benziyor; benzerlik=" + sim.toFixed(2));
+
             lastDetail = problems.join(" | ") || "Kalite kontrolünden geçmedi.";
             correction = `\n\nÖNCEKİ DENEME KABUL EDİLMEDİ: ${lastDetail}. Mesajı baştan, belirgin biçimde farklı bir yapı ve anlatımla yeniden yaz.`;
+
             if (attempt < 3) Utilities.sleep(250 + attempt * 150);
             continue;
           }
@@ -218,6 +239,7 @@ Yalnızca nihai mesajı yaz.`;
           const finishReason = data && data.candidates && data.candidates[0] && data.candidates[0].finishReason;
           const blockReason = data && data.promptFeedback && data.promptFeedback.blockReason;
           lastDetail = "Boş veya yetersiz yanıt" + (finishReason ? "; finishReason=" + finishReason : "") + (blockReason ? "; blockReason=" + blockReason : "");
+
           if (attempt < 3) Utilities.sleep(400 * attempt);
           continue;
         }
