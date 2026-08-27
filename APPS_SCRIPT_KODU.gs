@@ -202,11 +202,14 @@ Yalnızca nihai mesajı yaz.`;
         }
       };
 
-      const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(apiKey);
+      const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
 
       const response = UrlFetchApp.fetch(url, {
         method: "post",
         contentType: "application/json",
+        headers: {
+          "x-goog-api-key": apiKey
+        },
         payload: JSON.stringify(payload),
         muteHttpExceptions: true
       });
