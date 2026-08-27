@@ -2,81 +2,112 @@ function doGet(e) {
   const p = e && e.parameter ? e.parameter : {};
   const prefix = String(p.prefix || "").replace(/[^a-zA-Z0-9_.$]/g, "");
 
-  if (String(p.bridge || "") === "1") {
-    return bridgePage_(p);
-  }
-
   if (String(p.ping || "") === "1") {
     const payload = {
       status: "ok",
       service: "Mesajmatik",
       geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
       model: "gemini-3.6-flash",
-      transport: "popup-bridge"
+      transport: "apps-script-direct"
     };
     return jsonpOrJson_(prefix, payload);
   }
 
-  if (!p.gun && !prefix) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "ok",
-      service: "Mesajmatik",
-      geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
-      model: "gemini-3.6-flash",
-      transport: "popup-bridge"
-    })).setMimeType(ContentService.MimeType.JSON);
+  if (p.gun || prefix) {
+    return jsonpOrJson_(prefix, generateMessage_(p));
   }
 
-  return jsonpOrJson_(prefix, generateMessage_(p));
+  return renderApp_();
 }
 
-function bridgePage_(p) {
-  const token = String(p.token || "").slice(0, 120);
-  const params = {
-    gun: String(p.gun || "").slice(0, 80),
-    uslup: String(p.uslup || "samimi").slice(0, 40),
-    uzunluk: String(p.uzunluk || "orta").slice(0, 20),
-    hitap: String(p.hitap || "").slice(0, 120),
-    anahtar: String(p.anahtar || "").slice(0, 900),
-    onceki: String(p.onceki || "").slice(0, 1600),
-    imza: String(p.imza || "").slice(0, 160),
-    seed: String(p.seed || new Date().getTime()).slice(0, 80)
-  };
+function renderApp_() {
+  const sourceUrl = "https://turgutaydin1.github.io/mesajmatik/?appsScriptSource=" + new Date().getTime();
+  const response = UrlFetchApp.fetch(sourceUrl, {
+    muteHttpExceptions: true,
+    followRedirects: true
+  });
 
-  const html = `<!doctype html>
-<html lang="tr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mesaj hazırlanıyor</title>
-<style>
-body{font-family:Arial,sans-serif;margin:0;display:grid;place-items:center;min-height:100vh;background:#f5f8f6;color:#1f5d43}
-.box{text-align:center;padding:24px}.spin{font-size:30px;margin-bottom:10px}.txt{font-size:14px;font-weight:700}
-</style>
-</head>
-<body>
-<div class="box"><div class="spin">⏳</div><div class="txt">Mesaj hazırlanıyor...</div></div>
+  if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+    return HtmlService.createHtmlOutput(
+      "<!doctype html><html><body style='font-family:Arial;padding:24px'>Mesajmatik arayüzü yüklenemedi. HTTP " +
+      response.getResponseCode() + "</body></html>"
+    ).setTitle("Mesajmatik");
+  }
+
+  let html = response.getContentText();
+  const directBridge = `
 <script>
-const TOKEN=${JSON.stringify(token)};
-const PARAMS=${JSON.stringify(params)};
-function sendBack(result){
-  try{
-    if(window.opener && !window.opener.closed){
-      window.opener.postMessage({type:"mesajmatik-result",token:TOKEN,result:result},"*");
-    }
-  }finally{
-    setTimeout(function(){ window.close(); },120);
-  }
-}
-google.script.run
-  .withSuccessHandler(function(result){ sendBack(result || {error:"Yapay zekâ mesaj üretim hatası.",detail:"Boş köprü yanıtı."}); })
-  .withFailureHandler(function(err){ sendBack({error:"Yapay zekâ mesaj üretim hatası.",detail:String(err && err.message ? err.message : err)}); })
-  .generateMessageBridge(PARAMS);
-</script>
-</body>
-</html>`;
+(function(){
+  window.mesajOlustur=function(){
+    const b=document.getElementById("olusturBtn");
+    const sonuc=document.getElementById("sonuc");
+    const status=document.getElementById("status");
+    b.disabled=true;
+    b.textContent="⏳ Mesaj hazırlanıyor...";
+    status.textContent="Yapay zekâ ile yeni mesaj hazırlanıyor...";
 
-  return HtmlService.createHtmlOutput(html).setTitle("Mesaj hazırlanıyor");
+    const params={
+      gun:document.getElementById("gunSecim").value,
+      uslup:document.getElementById("uslup").value,
+      uzunluk:document.getElementById("uzunluk").value,
+      hitap:document.getElementById("hitap").value,
+      anahtar:document.getElementById("anahtarKelime").value.trim(),
+      onceki:(window.lastAiText||"").slice(0,1500),
+      imza:document.getElementById("imza").value.trim(),
+      seed:Date.now()+"-"+Math.random().toString(36).slice(2)
+    };
+
+    const finish=function(){
+      b.disabled=false;
+      b.textContent="✨ Mesajı Oluştur";
+    };
+
+    google.script.run
+      .withSuccessHandler(function(r){
+        r=r||{};
+        const text=r.text?String(r.text).trim():"";
+        if(text.length>30){
+          window.lastAiText=text;
+          sonuc.value=text;
+          status.textContent="Mesaj oluşturuldu.";
+          window.__mesajmatikDebug={engine:"ai",detail:"model:"+(r.model||"gemini-3.6-flash"),time:new Date().toISOString()};
+          finish();
+          return;
+        }
+        finish();
+        const detail=[r.error,r.detail].filter(Boolean).join(" — ")||"empty_response";
+        window.__mesajmatikDebug={engine:"ai_error",detail:detail,time:new Date().toISOString()};
+        const ok=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\\n\\nYapay zekâ ile mesaj üretilemedi. Yerel mesaj üreticisiyle devam etmek ister misiniz?");
+        if(ok && typeof window.localMessage==="function"){
+          sonuc.value=window.localMessage();
+          status.textContent="Yerel mesaj oluşturuldu.";
+          window.__mesajmatikDebug.engine="local";
+        }else{
+          status.textContent="Mesaj oluşturulmadı.";
+        }
+      })
+      .withFailureHandler(function(err){
+        finish();
+        const detail=String(err&&err.message?err.message:err);
+        window.__mesajmatikDebug={engine:"ai_error",detail:detail,time:new Date().toISOString()};
+        const ok=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\\n\\nYapay zekâ ile mesaj üretilemedi. Yerel mesaj üreticisiyle devam etmek ister misiniz?");
+        if(ok && typeof window.localMessage==="function"){
+          sonuc.value=window.localMessage();
+          status.textContent="Yerel mesaj oluşturuldu.";
+          window.__mesajmatikDebug.engine="local";
+        }else{
+          status.textContent="Mesaj oluşturulmadı.";
+        }
+      })
+      .generateMessageBridge(params);
+  };
+})();
+</script>`;
+
+  html = html.replace(/<\/body>/i, directBridge + "</body>");
+  return HtmlService.createHtmlOutput(html)
+    .setTitle("Mesajmatik")
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function generateMessageBridge(p) {
