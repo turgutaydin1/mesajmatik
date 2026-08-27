@@ -4,21 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Mesajmatik</title>
-  <meta http-equiv="refresh" content="0;url=https://script.google.com/macros/s/AKfycb9IM6959cBka4D83g_VGxBhszXbMmpf38x27Pp5KScYaT-xHWINkc-y5QqKXEf0ph2E/exec?source=github&v=20260827-2347">
   <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:Arial,sans-serif;background:#f4f8f5;color:#145c46}
-    .box{text-align:center;padding:24px;max-width:420px}
-    a{display:inline-block;margin-top:10px;padding:12px 18px;border-radius:10px;background:#145c46;color:#fff;text-decoration:none;font-weight:700}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif}
+    body{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#edf8f2,#fffaf0);color:#173d32}
+    .box{width:min(520px,100%);background:#fff;border:1px solid #dfe9e4;border-radius:22px;padding:34px 24px;text-align:center;box-shadow:0 18px 50px rgba(21,92,70,.12)}
+    .moon{font-size:38px}.title{font-size:34px;font-weight:800;color:#145c46;margin:8px 0}.sub{font-size:15px;line-height:1.55;color:#65766f;margin:0 auto 22px;max-width:390px}
+    a{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:13px 22px;border-radius:12px;background:linear-gradient(90deg,#2f8a66,#c89b2b);color:#fff;text-decoration:none;font-size:16px;font-weight:800}
+    .note{margin-top:18px;font-size:12px;color:#849089;line-height:1.5}
+    @media(max-width:520px){body{padding:12px}.box{border-radius:16px;padding:28px 18px}.title{font-size:29px}.sub{font-size:14px}a{width:100%;font-size:17px}}
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>Mesajmatik</h1>
-    <p>Uygulama açılıyor…</p>
-    <a href="https://script.google.com/macros/s/AKfycb9IM6959cBka4D83g_VGxBhszXbMmpf38x27Pp5KScYaT-xHWINkc-y5QqKXEf0ph2E/exec?source=github&v=20260827-2347">Uygulamayı Aç</a>
-  </div>
-  <script>
-    window.location.replace("https://script.google.com/macros/s/AKfycb9IM6959cBka4D83g_VGxBhszXbMmpf38x27Pp5KScYaT-xHWINkc-y5QqKXEf0ph2E/exec?source=github&v=20260827-2347");
-  </script>
+  <main class="box">
+    <div class="moon">🌙</div>
+    <div class="title">Mesajmatik</div>
+    <p class="sub">Manevi günler için özgün mesaj ve paylaşım kartı oluşturucu.</p>
+    <a href="https://script.google.com/macros/s/AKfycb9IM6959cBka4D83g_VGxBhszXbMmpf38x27Pp5KScYaT-xHWINkc-y5QqKXEf0ph2E/exec" target="_self" rel="noopener">Uygulamayı Aç</a>
+    <div class="note">GitHub sayfası artık otomatik yönlendirme yapmaz; böylece hatalı veya değişmiş bir Apps Script dağıtımı GitHub adresinin açılmasını engellemez.</div>
+  </main>
 </body>
 </html>
