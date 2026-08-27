@@ -6,10 +6,10 @@ function doGet(e) {
     const payload = {
       status: "ok",
       service: "Mesajmatik",
-      xaiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("XAI_API_KEY"),
-      model: "grok-4.3",
+      geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
+      model: "gemini-3.6-flash",
       transport: "apps-script-direct",
-      api: "xai-responses",
+      api: "generateContent",
       requestMode: "single-request"
     };
     return jsonpOrJson_(prefix, payload);
@@ -46,7 +46,7 @@ function renderApp_() {
     const status=document.getElementById("status");
     b.disabled=true;
     b.textContent="⏳ Mesaj hazırlanıyor...";
-    status.textContent="Grok ile yeni mesaj hazırlanıyor...";
+    status.textContent="Gemini ile yeni mesaj hazırlanıyor...";
 
     const params={
       gun:document.getElementById("gunSecim").value,
@@ -89,7 +89,7 @@ function renderApp_() {
           status.textContent="Mesaj oluşturuldu.";
           window.__mesajmatikDebug={
             engine:"ai",
-            detail:"model:"+(r.model||"grok-4.3")+" api:"+(r.api||"xai-responses")+" requests:"+(r.requestCount||1),
+            detail:"model:"+(r.model||"gemini-3.6-flash")+" api:"+(r.api||"generateContent")+" requests:"+(r.requestCount||1),
             time:new Date().toISOString()
           };
           finish();
@@ -143,27 +143,22 @@ function doPost(e) {
   }
 }
 
-function extractXaiText_(data) {
-  if (!data || !Array.isArray(data.output)) return "";
-  const texts = [];
-  data.output.forEach(function(item) {
-    if (!item || item.type !== "message" || !Array.isArray(item.content)) return;
-    item.content.forEach(function(block) {
-      if (block && block.type === "output_text" && block.text) {
-        texts.push(String(block.text));
-      }
-    });
-  });
-  return texts.join("\n").trim();
+function extractGeminiText_(data) {
+  const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
+  if (!Array.isArray(parts)) return "";
+  return parts.map(function(part) {
+    return part && part.text ? String(part.text) : "";
+  }).join("\n").trim();
 }
 
 function generateMessage_(p) {
   try {
-    const apiKey = PropertiesService.getScriptProperties().getProperty("XAI_API_KEY");
+    const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
     if (!apiKey) {
       return {
         error: "Yapay zekâ mesaj üretim hatası.",
-        detail: "XAI_API_KEY Script Property bulunamadı."
+        detail: "GEMINI_API_KEY Script Property bulunamadı.",
+        requestCount: 0
       };
     }
 
@@ -179,7 +174,8 @@ function generateMessage_(p) {
     if (!gun) {
       return {
         error: "Yapay zekâ mesaj üretim hatası.",
-        detail: "Gün bilgisi eksik."
+        detail: "Gün bilgisi eksik.",
+        requestCount: 0
       };
     }
 
@@ -231,23 +227,33 @@ ${onceki ? `- Aşağıdaki önceki mesajın kopyasını veya yakın varyasyonunu
 
 Yalnızca nihai mesajı yaz.`;
 
-    const model = "grok-4.3";
+    const model = "gemini-3.6-flash";
     const payload = {
-      model: model,
-      input: prompt,
-      max_output_tokens: 1000,
-      store: false
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: prompt }
+          ]
+        }
+      ],
+      generationConfig: {
+        maxOutputTokens: 1000
+      }
     };
 
-    const response = UrlFetchApp.fetch("https://api.x.ai/v1/responses", {
-      method: "post",
-      contentType: "application/json",
-      headers: {
-        Authorization: "Bearer " + apiKey
-      },
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    });
+    const response = UrlFetchApp.fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent",
+      {
+        method: "post",
+        contentType: "application/json",
+        headers: {
+          "x-goog-api-key": apiKey
+        },
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      }
+    );
 
     const code = response.getResponseCode();
     const rawText = response.getContentText() || "";
@@ -258,26 +264,26 @@ Yalnızca nihai mesajı yaz.`;
     } catch (parseErr) {
       return {
         error: "Yapay zekâ mesaj üretim hatası.",
-        detail: "xAI yanıtı JSON olarak okunamadı. HTTP " + code + " - " + String(parseErr),
+        detail: "Gemini yanıtı JSON olarak okunamadı. HTTP " + code + " - " + String(parseErr),
         requestCount: 1
       };
     }
 
     if (code >= 200 && code < 300) {
-      const text = extractXaiText_(data);
+      const text = extractGeminiText_(data);
       if (text && text.length >= 35) {
         return {
           text: text,
           engine: "ai",
           model: model,
-          api: "xai-responses",
+          api: "generateContent",
           requestCount: 1
         };
       }
 
       return {
         error: "Yapay zekâ mesaj üretim hatası.",
-        detail: "xAI başarılı HTTP yanıtı verdi ancak mesaj metni boş veya yetersiz geldi.",
+        detail: "Gemini başarılı HTTP yanıtı verdi ancak mesaj metni boş veya yetersiz geldi.",
         requestCount: 1
       };
     }
@@ -288,7 +294,7 @@ Yalnızca nihai mesajı yaz.`;
 
     return {
       error: "Yapay zekâ mesaj üretim hatası.",
-      detail: "xAI Responses API; model=" + model + "; HTTP " + code + " - " + detail,
+      detail: "Gemini generateContent; model=" + model + "; HTTP " + code + " - " + detail,
       requestCount: 1
     };
 
