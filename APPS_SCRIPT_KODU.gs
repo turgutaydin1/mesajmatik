@@ -8,7 +8,8 @@ function doGet(e) {
       service: "Mesajmatik",
       geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
       model: "gemini-3.6-flash",
-      transport: "apps-script-direct"
+      transport: "apps-script-direct",
+      api: "interactions"
     };
     return jsonpOrJson_(prefix, payload);
   }
@@ -62,6 +63,19 @@ function renderApp_() {
       b.textContent="✨ Mesajı Oluştur";
     };
 
+    const handleError=function(detail){
+      finish();
+      detail=String(detail||"Bilinmeyen hata");
+      window.__mesajmatikDebug={engine:"ai_error",detail:detail,time:new Date().toISOString()};
+      status.textContent="AI hatası: "+detail.slice(0,300);
+      const ok=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\\n\\n"+detail+"\\n\\nYerel mesaj üreticisiyle devam etmek ister misiniz?");
+      if(ok && typeof window.localMessage==="function"){
+        sonuc.value=window.localMessage();
+        status.textContent="Yerel mesaj oluşturuldu.";
+        window.__mesajmatikDebug.engine="local";
+      }
+    };
+
     google.script.run
       .withSuccessHandler(function(r){
         r=r||{};
@@ -70,34 +84,14 @@ function renderApp_() {
           window.lastAiText=text;
           sonuc.value=text;
           status.textContent="Mesaj oluşturuldu.";
-          window.__mesajmatikDebug={engine:"ai",detail:"model:"+(r.model||"gemini-3.6-flash"),time:new Date().toISOString()};
+          window.__mesajmatikDebug={engine:"ai",detail:"model:"+(r.model||"gemini-3.6-flash")+" api:"+(r.api||"interactions"),time:new Date().toISOString()};
           finish();
           return;
         }
-        finish();
-        const detail=[r.error,r.detail].filter(Boolean).join(" — ")||"empty_response";
-        window.__mesajmatikDebug={engine:"ai_error",detail:detail,time:new Date().toISOString()};
-        const ok=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\\n\\nYapay zekâ ile mesaj üretilemedi. Yerel mesaj üreticisiyle devam etmek ister misiniz?");
-        if(ok && typeof window.localMessage==="function"){
-          sonuc.value=window.localMessage();
-          status.textContent="Yerel mesaj oluşturuldu.";
-          window.__mesajmatikDebug.engine="local";
-        }else{
-          status.textContent="Mesaj oluşturulmadı.";
-        }
+        handleError([r.error,r.detail].filter(Boolean).join(" — ")||"empty_response");
       })
       .withFailureHandler(function(err){
-        finish();
-        const detail=String(err&&err.message?err.message:err);
-        window.__mesajmatikDebug={engine:"ai_error",detail:detail,time:new Date().toISOString()};
-        const ok=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\\n\\nYapay zekâ ile mesaj üretilemedi. Yerel mesaj üreticisiyle devam etmek ister misiniz?");
-        if(ok && typeof window.localMessage==="function"){
-          sonuc.value=window.localMessage();
-          status.textContent="Yerel mesaj oluşturuldu.";
-          window.__mesajmatikDebug.engine="local";
-        }else{
-          status.textContent="Mesaj oluşturulmadı.";
-        }
+        handleError(String(err&&err.message?err.message:err));
       })
       .generateMessageBridge(params);
   };
@@ -194,11 +188,19 @@ function similarity_(a, b) {
   return hit / Math.max(1, Math.min(ak.length, bk.length));
 }
 
-function extractText_(data) {
-  const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
-  return Array.isArray(parts)
-    ? parts.map(function(x) { return x.text || ""; }).join("\n").trim()
-    : "";
+function extractInteractionText_(data) {
+  if (data && typeof data.output_text === "string" && data.output_text.trim()) {
+    return data.output_text.trim();
+  }
+  const steps = data && Array.isArray(data.steps) ? data.steps : [];
+  const texts = [];
+  steps.forEach(function(step) {
+    if (!step || step.type !== "model_output" || !Array.isArray(step.content)) return;
+    step.content.forEach(function(block) {
+      if (block && block.type === "text" && block.text) texts.push(String(block.text));
+    });
+  });
+  return texts.join("\n").trim();
 }
 
 function generateMessage_(p) {
@@ -274,13 +276,16 @@ Yalnızca nihai mesajı yaz.`;
 
     for (let attempt = 1; attempt <= 3; attempt++) {
       const payload = {
-        contents: [{ role: "user", parts: [{ text: prompt + correction }] }],
-        generationConfig: {
-          maxOutputTokens: 1000
+        model: model,
+        input: prompt + correction,
+        store: false,
+        generation_config: {
+          max_output_tokens: 1000,
+          thinking_level: "low"
         }
       };
 
-      const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
+      const url = "https://generativelanguage.googleapis.com/v1beta/interactions";
       const response = UrlFetchApp.fetch(url, {
         method: "post",
         contentType: "application/json",
@@ -299,12 +304,12 @@ Yalnızca nihai mesajı yaz.`;
       }
 
       if (code >= 200 && code < 300) {
-        const text = extractText_(data);
+        const text = extractInteractionText_(data);
         if (text && text.length >= 35) {
           const missing = missingRequirements_(text, gun, anahtar);
           const sim = onceki ? similarity_(onceki, text) : 0;
           if (!missing.length && sim < 0.78) {
-            return { text: text, engine: "ai", model: model, attempt: attempt, similarity: sim };
+            return { text: text, engine: "ai", model: model, api: "interactions", attempt: attempt, similarity: sim };
           }
           const problems = [];
           if (missing.length) problems.push("Eksik zorunlu öğe: " + missing.join(", "));
@@ -314,17 +319,13 @@ Yalnızca nihai mesajı yaz.`;
           continue;
         }
 
-        const finishReason = data && data.candidates && data.candidates[0] && data.candidates[0].finishReason;
-        const blockReason = data && data.promptFeedback && data.promptFeedback.blockReason;
-        lastDetail = "Boş veya yetersiz Gemini yanıtı" +
-          (finishReason ? "; finishReason=" + finishReason : "") +
-          (blockReason ? "; blockReason=" + blockReason : "");
+        lastDetail = "Gemini boş/yetersiz yanıt döndürdü; status=" + String(data.status || "bilinmiyor") + "; interaction=" + String(data.id || "yok");
         continue;
       }
 
       lastDetail = data && data.error && data.error.message
         ? data.error.message
-        : response.getContentText().slice(0, 800);
+        : response.getContentText().slice(0, 1200);
 
       if ((code === 429 || code === 500 || code === 502 || code === 503 || code === 504) && attempt < 3) {
         Utilities.sleep(700 * attempt);
@@ -335,7 +336,7 @@ Yalnızca nihai mesajı yaz.`;
 
     return {
       error: "Yapay zekâ mesaj üretim hatası.",
-      detail: "model=" + model + "; HTTP " + lastCode + " - " + lastDetail
+      detail: "Interactions API; model=" + model + "; HTTP " + lastCode + " - " + lastDetail
     };
   } catch (err) {
     return { error: "Yapay zekâ mesaj üretim hatası.", detail: String(err) };
