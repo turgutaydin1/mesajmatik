@@ -135,6 +135,8 @@ Hitap girilmişse ilk satırda bulunur ve ardından bir boş satır bırakılır
 
 İsim / kurum / şirket adı girilmişse mesaj sonunda bir boş satırdan sonra yalnızca imza yer alır.
 
+**Paylaşım kartında imza/isim ana metinden ayrı ele alınacak ve sağa hizalı gösterilecektir.** Ana gövde iki yana yaslı kalırken imza hiçbir tasarım varyasyonunda sola veya ortaya alınmayacaktır.
+
 ## 13. Teknik mimari — GÜNCEL
 
 Güncel yapı:
@@ -184,15 +186,21 @@ Instagram için yanlış çalışan sahte metin paylaşım URL’si kullanılmay
 - Kart boyutu kesin olarak 1080×1080’dir.
 - Tasarım sade, temiz ve manevi çizgide olacaktır.
 - Gereksiz süs ve karmaşa kullanılmayacaktır.
+- Görsel kalite düşük, düz ve tek tip bırakılmayacaktır; sade çizgi korunarak **daha rafine arka plan, çerçeve, ışık ve geometrik detaylar** kullanılabilir.
+- `Tasarımı Değiştir` için en az **8 ayrı sade görsel varyasyon** bulunacaktır.
+- Varyasyonlar yalnız renk tonu değiştiren kopyalar olmayacak; çerçeve, zemin, ince geometrik motif, vurgu ve kompozisyon detaylarında da fark bulunacaktır.
 - Her özel gün/gece için ayrı ve tanınabilir simge olacaktır.
 - Kart mevcut mesaj kutusundaki **son düzenlenmiş metni** kullanır; yeni mesaj üretmez.
 - **Mesajın tamamı karta alınacaktır; metin kesilmeyecektir.**
 - Metin uzun olduğunda yazı boyutu ve satır aralığı otomatik küçültülerek karta sığdırılacaktır.
 - Mesajın son kısmını kesmek, `...` ile kırpmak veya belirli satır sayısından sonra durdurmak yasaktır.
-- Hitap, paragraf boşlukları ve imza düzeni mümkün olduğunca korunacaktır.
+- Hitap ve paragraf boşlukları mümkün olduğunca korunacaktır.
 - **Kartın ana gövde metni iki yana yaslı (justify) olacaktır.**
 - Paragrafın son satırı doğal biçimde sola hizalı kalabilir; diğer satırlar sol ve sağ sınırlara dengeli oturmalıdır.
-- Bu iki yana yaslı düzen sonraki tasarım değişikliklerinde bozulmayacaktır.
+- **İsim / kurum / şirket imzası kartın alt bölümünde sağa hizalı olacaktır.**
+- İmza iki yana yaslanmayacak, sola veya ortaya hizalanmayacaktır.
+- İmza için ana metinden görsel olarak ayrışan ancak abartısız tipografik vurgu kullanılabilir.
+- Bu iki yana yaslı ana metin ve sağa hizalı imza düzeni sonraki tasarım değişikliklerinde bozulmayacaktır.
 
 ### Günlere özel simge zorunluluğu
 
@@ -205,8 +213,9 @@ Bu buton:
 - mesajı değiştirmez
 - Gemini çağırmaz
 - yerel mesaj üretmez
-- yalnızca kartın sade görsel varyasyonunu değiştirir
-- iki yana yaslı metin, tam metni gösterme ve güne özel simge kurallarını bozmaz
+- yalnızca kartın görsel varyasyonunu değiştirir
+- en az 8 farklı tasarım arasında dolaşır
+- iki yana yaslı metin, sağa hizalı imza, tam metni gösterme ve güne özel simge kurallarını bozmaz
 
 ## 16. Geliştirme sırasında korunacak temel kural
 
@@ -219,6 +228,8 @@ Bu buton:
 - gün sıralaması değiştirilirken API akışına dokunulmaz
 - simge değiştirilirken metin hizası veya tam metin kuralı bozulmaz
 - hitap alanı değiştirilirken Gemini taşıma/model ayarları değiştirilmez
+- imza hizası değiştirilirken ana metnin iki yana yaslı yapısı bozulmaz
+- kart tasarım çeşitliliği artırılırken mesaj üretimi, paylaşım akışı ve diğer çalışan alanlara dokunulmaz
 - daha önce açıkça mutabık kalınmış tasarım/işlev kararları yeni bir talimat onları değiştirmedikçe korunur
 
 Her değişiklik cerrahi ve sınırlı olmalıdır.
@@ -250,4 +261,4 @@ Google Apps Script GitHub ile otomatik senkronize değildir.
 
 > **Özel Vurgu / Anahtar Kelimeler alanı bulunmayacaktır; kullanıcı mesajı sonuç kutusunda kendisi düzenleyebilir.**
 
-> **Paylaşım kartı mesajın tamamını göstermeli, ana metni iki yana yaslı olmalı ve seçilen güne özel simge kullanmalıdır.**
+> **Paylaşım kartı mesajın tamamını göstermeli, ana metni iki yana yaslı, imzayı sağa hizalı göstermeli ve seçilen güne özel simge kullanmalıdır.**
