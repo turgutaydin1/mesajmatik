@@ -7,7 +7,7 @@ function doGet(e) {
       status: "ok",
       service: "Mesajmatik",
       geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       transport: "jsonp"
     };
     return jsonpOrJson_(prefix, payload);
@@ -18,7 +18,7 @@ function doGet(e) {
       status: "ok",
       service: "Mesajmatik",
       geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       transport: "jsonp"
     })).setMimeType(ContentService.MimeType.JSON);
   }
@@ -179,7 +179,7 @@ ${onceki ? `- Aşağıdaki önceki mesajın kopyasını veya yakın varyasyonunu
 
 Yalnızca nihai mesajı yaz.`;
 
-    const model = "gemini-2.5-flash";
+    const model = "gemini-3.6-flash";
     let lastDetail = "Bilinmeyen servis hatası.";
     let lastCode = 0;
     let correction = "";
@@ -188,8 +188,6 @@ Yalnızca nihai mesajı yaz.`;
       const payload = {
         contents: [{ role: "user", parts: [{ text: prompt + correction }] }],
         generationConfig: {
-          temperature: 1.1,
-          topP: 0.95,
           maxOutputTokens: 1000
         }
       };
