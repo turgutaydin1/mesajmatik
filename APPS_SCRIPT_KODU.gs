@@ -7,7 +7,7 @@ function doGet(e) {
       status: "ok",
       service: "Mesajmatik",
       geminiKeyConfigured: !!PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY"),
-      model: "gemini-3.6-flash",
+      model: "gemini-2.5-flash",
       transport: "apps-script-direct",
       api: "generateContent",
       requestMode: "single-request"
@@ -89,7 +89,7 @@ function renderApp_() {
           status.textContent="Mesaj oluşturuldu.";
           window.__mesajmatikDebug={
             engine:"ai",
-            detail:"model:"+(r.model||"gemini-3.6-flash")+" api:"+(r.api||"generateContent")+" requests:"+(r.requestCount||1),
+            detail:"model:"+(r.model||"gemini-2.5-flash")+" api:"+(r.api||"generateContent")+" requests:"+(r.requestCount||1),
             time:new Date().toISOString()
           };
           finish();
@@ -223,11 +223,13 @@ Kurallar:
 - Hitap varsa ilk satırda yaz ve sonra bir boş satır bırak.
 - İmza varsa en sonda bir boş satırdan sonra yalnızca imzayı yaz.
 - Dinî, tarihî, kurumsal veya toplumsal bilgi uydurma.
+- Mesajın içine kaynak numarası, dipnot numarası, parantez içinde tek başına sayı, madde numarası, token numarası veya benzeri teknik işaretler ekleme.
+- Cümleleri yarıda kesme; mesaj doğal bir girişle başlasın ve tamamlanmış bir kapanışla bitsin.
 ${onceki ? `- Aşağıdaki önceki mesajın kopyasını veya yakın varyasyonunu üretme. Giriş, ritim, vurgu sırası ve kapanışı belirgin biçimde değiştir.\n\nÖNCEKİ MESAJ:\n---\n${onceki}\n---` : ""}
 
 Yalnızca nihai mesajı yaz.`;
 
-    const model = "gemini-3.6-flash";
+    const model = "gemini-2.5-flash";
     const payload = {
       contents: [
         {
