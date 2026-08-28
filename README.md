@@ -31,7 +31,7 @@ Uygulamada yalnızca şu ana girişler bulunacaktır:
 
 `Oluşturulan Mesaj` kutusu **düzenlenebilir** olacaktır; `readonly` yapılmayacaktır.
 
-Kullanıcı Gemini tarafından oluşturulan mesajı paylaşmadan veya karta dönüştürmeden önce istediği gibi değiştirebilir. Kopyalama, sosyal medya paylaşımı ve görsel kart üretimi, kutuda o anda bulunan son düzenlenmiş metni kullanır.
+Kullanıcı oluşturulan mesajı paylaşmadan veya karta dönüştürmeden önce istediği gibi değiştirebilir. Kopyalama, sosyal medya paylaşımı ve görsel kart üretimi, kutuda o anda bulunan son düzenlenmiş metni kullanır.
 
 ## 5. Desteklenen günler ve sıralama
 
@@ -76,19 +76,27 @@ Halen çalışan yapı:
 - `STOP` dışındaki tamamlanmamış cevaplar başarılı mesaj olarak gösterilmez
 - Yarım cevap kullanıcıya nihai mesaj diye verilmez
 
-**Arayüz, hitap alanı, gün sıralaması, kart, ikon veya paylaşım düzeni değiştirilirken bu çalışan Gemini taşıma/model yapısına dokunulmayacaktır.**
+Gemini yazar tanımı bağlayıcı olarak şudur:
+
+> **“Manevi ve özel günler için doğal, akıcı ve düzgün Türkçe kullanan, Müslüman, ahlaklı ve özenli bir yazarsın. Tüm ürettiğin mesajlar İslami duyarlılıkta olsun.”**
+
+Bu cümle Gemini prompt’unda aynen korunacaktır. Ayrıca prompt kurallarında bütün mesajın İslami duyarlılık, güzel ahlak ve dinî hassasiyet çerçevesinde kalması açıkça istenir.
+
+**Arayüz, hitap alanı, gün sıralaması, kart, ikon, paylaşım veya yerel motor geliştirilirken bu çalışan Gemini taşıma/model yapısına dokunulmayacaktır.**
 
 ## 8. Mesaj üretim akışı
+
+Mevcut güvenli akış:
 
 1. Kullanıcı `Mesajı Oluştur` der.
 2. Gemini ile tek API isteğinde yeni mesaj üretilir.
 3. Gemini tamamlanmış ve geçerli cevap verirse mesaj gösterilir.
 4. Gemini başarısızsa yerel üretici otomatik devreye girmez.
 5. Kullanıcıya yerel mesaj üreticisiyle devam etmek isteyip istemediği sorulur.
-6. Kullanıcı açıkça onaylarsa yerel üretici çalışır.
+6. Kullanıcı açıkça onaylarsa **MYÜM gelişmiş yerel mesaj motoru** çalışır.
 7. Kullanıcı istemezse işlem biter.
 
-**Otomatik fallback yasaktır.**
+**Otomatik fallback yasaktır.** MYÜM entegrasyonu bu onay kuralını değiştirmez.
 
 ## 9. Her tıklamada yeni mesaj zorunluluğu
 
@@ -103,9 +111,11 @@ Mümkün olduğunca değişmesi gerekenler:
 - paragraf akışı
 - kapanış biçimi
 
-Önceki mesaj yalnızca çeşitliliği artırmak için bağlam olarak verilebilir; bunun için ikinci API çağrısı yapılmaz.
+Önceki mesaj çeşitliliği artırmak için bağlam olarak kullanılabilir; bunun için ikinci Gemini API çağrısı yapılmaz. MYÜM de son yerel mesajı bellekte tutarak birebir tekrar üretmemeye çalışır.
 
-## 10. Türkçe ve içerik kalitesi
+## 10. Türkçe, İslami duyarlılık ve içerik kalitesi
+
+**Gemini ve MYÜM için ortak ana içerik kuralı:** Tüm mesajlar İslami duyarlılıkta, güzel ahlakı gözeten, dinî hassasiyetlere saygılı bir çerçevede olacaktır.
 
 Mesajlarda:
 
@@ -116,8 +126,12 @@ Mesajlarda:
 - aynı dilek fiilleri gereksiz tekrarlanmamalı
 - hazır ve mekanik kalıplar azaltılmalı
 - dinî, tarihî, kurumsal veya toplumsal bilgi uydurulmamalı
+- İslami kavramlar bağlam dışı veya anlamsız süs olarak kullanılmamalı
+- ayet/hadis uydurulmamalı
+- kaynaklı üslupta yalnız doğruluğu önceden kontrol edilmiş kaynak kayıtları kullanılmalı
 - parantez içinde anlamsız sayı, token numarası veya teknik işaret bulunmamalı
 - cümleler yarım bırakılmamalı
+- dua, rahmet, mağfiret, şükür, ibadet ve güzel ahlak dili seçilen günün anlamıyla uyumlu olmalı
 
 ## 11. Mesaj uzunluğu
 
@@ -127,7 +141,7 @@ Yaklaşık hedefler:
 - Orta: 90–130 kelime
 - Uzun: 150–210 kelime
 
-Doğal anlatım kelime sayısından daha önemlidir.
+Doğal anlatım kelime sayısından daha önemlidir. MYÜM bu aralıklara dinamik cümle ekleme/çıkarma ile yaklaşır.
 
 ## 12. Hitap ve imza düzeni
 
@@ -147,6 +161,8 @@ Güncel yapı:
 
 `Google Apps Script Kod.gs → arayüz + kart sistemi + google.script.run → Gemini API`
 
+`Kod.gs içindeki istemci tarafı → kullanıcı onayı sonrasında MYÜM yerel mesaj motoru`
+
 ### Google Apps Script `Kod.gs`
 
 - gerçek uygulama arayüzünü doğrudan üretir
@@ -156,6 +172,7 @@ Güncel yapı:
 - `GEMINI_API_KEY` değerini Script Properties’ten okur
 - Gemini API çağrısını yapar
 - tamamlanmamış cevabı reddeder
+- Gemini hata verirse kullanıcı onayı sonrasında MYÜM’ü tarayıcı tarafında çalıştırır
 - mesaj, paylaşım ve kart sistemini çalıştırır
 
 ### GitHub `index.html`
@@ -252,7 +269,8 @@ Uygulama cep telefonunda masaüstü sayfasının küçültülmüş hali gibi gö
 - gün sıralaması değiştirilirken API akışına dokunulmaz
 - simge değiştirilirken metin hizası veya tam metin kuralı bozulmaz
 - yerel motor geliştirilirken mevcut Gemini yolu, kart, mobil görünüm, paylaşım, yönlendirme ve imza sistemi bozulmaz
-- yeni motor önce ayrı fonksiyon/modül olarak geliştirilir ve test edilir; çalışan üretim akışına doğrudan gömülmez
+- MYÜM yeni fonksiyonlar halinde geliştirilir; Gemini sunucu fonksiyonları değiştirilmez
+- Gemini yazar tanımı ve İslami duyarlılık kuralı her iki motorun da ortak içerik standardıdır
 
 Her değişiklik cerrahi ve sınırlı olmalıdır.
 
@@ -279,6 +297,8 @@ Parça kod verilip kullanıcının doğru yeri bulması istenmeyecektir.
 
 > **Her yeni mesaj isteği, aynı girdiler kullanılsa bile yeni ve belirgin biçimde farklı bir mesaj üretmelidir.**
 
+> **Bütün mesajlar İslami duyarlılık, güzel ahlak ve dinî hassasiyet çerçevesinde üretilmelidir.**
+
 > **Çalışan Gemini yapısı, arayüz ve görsel geliştirmeleri sırasında bozulmayacaktır.**
 
 > **Hitap alanı boş ve serbest metin olacaktır; hazır seçenek olmayacaktır.**
@@ -291,125 +311,142 @@ Parça kod verilip kullanıcının doğru yeri bulması istenmeyecektir.
 
 ## 20. Kullanıcıya görünen teknik ibareler — SON KARAR
 
-- Başarılı mesaj üretiminden sonra kullanıcıya yalnızca `Mesaj oluşturuldu.` bilgisi gösterilir.
+- Başarılı Gemini mesajından sonra kullanıcıya yalnızca `Mesaj oluşturuldu.` bilgisi gösterilir.
+- MYÜM kullanıcı onayıyla devreye girdiğinde `Yerel mesaj oluşturuldu.` bilgisi gösterilebilir.
 - Kullanıcı arayüzünde `Gemini`, `gemini-3.6-flash`, model adı veya yapay zekâ üretici ibaresi gösterilmez.
 - Teknik model bilgisi yalnız geliştirici/debug verisinde tutulabilir.
 - GitHub Pages yönlendirmesi aktif Apps Script `/exec` adresinin doğru deployment kimliğini kullanacaktır.
 
 ## 21. 2026-08-28 ÇALIŞAN SÜRÜMÜ DONDURMA KAYDI
 
-Bu tarihte çalışan mevcut sistem yeni geliştirmeler için **geri dönüş tabanı** kabul edilir.
+Bu tarihte çalışan sistem yeni geliştirmeler için **geri dönüş tabanı** kabul edilir.
 
 - GitHub Pages doğrudan çalışan Apps Script deployment’ına açılmaktadır.
 - Aktif `/exec` adresi README Bölüm 13’te kayıtlıdır.
-- Gemini üretimi çalışmaktadır ancak ücretsiz/kısıtlı kota nedeniyle yoğun kullanımda `429 quota exceeded` oluşabilmektedir.
-- Gemini motoru kaldırılmamıştır ve yerel motor geliştirilirken değiştirilmeyecektir.
-- Son kullanıcıya görünen başarı mesajı `Mesaj oluşturuldu.` şeklindedir.
-- Gemini hata verirse mevcut sistem kullanıcı onayıyla eski basit yerel fallback’i çalıştırabilir; bu davranış yeni yerel motor hazır olana kadar korunur.
+- Gemini üretimi çalışmaktadır ancak kota nedeniyle yoğun kullanımda `429 quota exceeded` oluşabilmektedir.
+- Gemini motoru kaldırılmamıştır ve MYÜM geliştirilirken taşıma/model ayarları değiştirilmemiştir.
+- Gemini yazar tanımına Müslüman, ahlaklı ve İslami duyarlılık kuralı eklenmiştir.
+- Son kullanıcıya görünen başarılı Gemini mesajı `Mesaj oluşturuldu.` şeklindedir.
+- Gemini hata verirse mevcut sistem kullanıcı onayıyla MYÜM gelişmiş yerel motorunu çalıştırır.
 - Kişi adı standardı `Ad SOYAD`dır.
 - Kartlar 1080×1080, ana metin justify, imza sağ hizalıdır.
 - Gün simgeleri Bölüm 15’te kayıtlı haritaya göre çalışır.
-- Mobil görünüm mevcut haliyle çalışan kabul edilir ve yerel motor geliştirmesi sırasında değiştirilmez.
+- Mobil görünüm mevcut haliyle çalışan kabul edilir ve MYÜM geliştirmesi sırasında değiştirilmez.
 
-## 22. YENİ HEDEF — KOTASIZ YEREL MESAJ ÜRETİM MOTORU
+## 22. KOTASIZ YEREL MESAJ ÜRETİM MOTORU — MYÜM
 
 ### Amaç
 
-Gemini/API kotasına bağlı olmadan, sunucuya veya ücretli yapay zekâ servisine istek göndermeden, Mesajmatik’in kendi kodu içinde çok sayıda doğal Türkçe mesaj üretebilen bir motor geliştirilecektir.
+Gemini/API kotasına bağlı olmadan, ücretli yapay zekâ servisine istek göndermeden, Mesajmatik’in kendi kodu içinde çok sayıda doğal Türkçe ve İslami duyarlılığa sahip mesaj üreten motor geliştirilmektedir.
 
-Bu motorun çalışma adı: **Mesajmatik Yerel Üretim Motoru (MYÜM)**.
+Motorun çalışma adı: **Mesajmatik Yerel Üretim Motoru (MYÜM)**.
 
-### Temel karar
+### Mimari karar
 
-İlk aşamada tarayıcıya birkaç GB yapay zekâ modeli indiren gerçek bir yerel LLM kullanılmayacaktır. Bunun nedeni mobil cihaz uyumluluğu, ilk indirme boyutu, RAM ihtiyacı, WebGPU desteği ve düşük donanımlı telefonlarda kararlılık riskidir.
+İlk aşamada tarayıcıya birkaç GB yapay zekâ modeli indiren gerçek bir yerel LLM kullanılmayacaktır. Bunun yerine Mesajmatik’in dar ve belirli kullanım alanına özel bir **doğal dil üretim motoru (NLG)** kullanılacaktır.
 
-Bunun yerine Mesajmatik’in ihtiyacına özel bir **doğal dil üretim motoru (NLG)** geliştirilecektir. Bu motor klasik sabit mesaj listesi olmayacaktır.
+Bu motor sabit 10–20 mesaj arasından seçim yapan eski fallback değildir. Mesajı dinamik katmanlardan kurar.
 
-### MYÜM çalışma prensibi
+### MYÜM katmanları
 
-Motor bir mesajı tek parça hazır şablondan seçmeyecek; aşağıdaki katmanlardan dinamik olarak kuracaktır:
+1. seçilen gün/gece için doğru İslami tema ve kavramlar
+2. seçilen üsluba özel giriş ailesi
+3. günün temasını işleyen vurgu ailesi
+4. dua/dilek ve güzel ahlak cümleleri
+5. hedef uzunluğa göre ek cümle seçimi
+6. kapanış ailesi
+7. hitap
+8. imza
+9. son mesajı tekrar etmeme kontrolü
 
-1. gün/gece bağlamı
-2. seçilen üslup
-3. hedef uzunluk
-4. hitap
-5. giriş cümlesi ailesi
-6. ana tema/vurgu dizisi
-7. dua/dilek cümlesi ailesi
-8. bağlaç ve geçiş yapısı
-9. kapanış cümlesi ailesi
-10. imza
+### Ortak içerik standardı
 
-Her katmanda birden fazla cümle iskeleti, kelime alternatifi ve cümle düzeni bulunacaktır. Ağırlıklı seçim + tekrar önleme ile aynı girdilerde farklı sonuçlar üretilecektir.
+MYÜM, Gemini’deki şu ilkenin yerel karşılığını uygular:
 
-### Türkçe kalite katmanı
+> **“Manevi ve özel günler için doğal, akıcı ve düzgün Türkçe kullanan, Müslüman, ahlaklı ve özenli bir yazarsın. Tüm ürettiğin mesajlar İslami duyarlılıkta olsun.”**
 
-Motor yalnız rastgele kelime birleştirmeyecektir. Aşağıdaki kontroller yapılacaktır:
+Yerel motorda bu bir prompt değildir; gün temaları, cümle bankaları ve kalite kuralları doğrudan bu ilkeye göre tasarlanır.
 
-- kişi/kurum anlatımına göre tekil-çoğul uyumu
-- üsluba göre `diliyorum / dileriz / temenni ederim / temenni ederiz` seçimi
-- yinelenen `diliyorum`, `olsun`, `vesile olsun` gibi kalıpların azaltılması
-- art arda aynı fiil veya aynı cümle başlangıcının engellenmesi
-- noktalama ve boşluk temizliği
-- hitap/imza yerleşimi
-- hedef kelime aralığına yaklaşma
-- önceki üretilen mesajla yüksek benzerlik varsa yeniden kompozisyon
+### Gün bağlamları
+
+MYÜM her gün için ayrı tema kaydı kullanır:
+
+- Arefe: arınma, dua, hazırlık, kulluk
+- Berat: bağışlanma, tövbe, dua, gönül muhasebesi
+- Cuma: dua, kardeşlik, rahmet, bereket
+- Kadir: Kur'an, dua, ibadet, af dileme
+- Kurban Bayramı: teslimiyet, paylaşma, kardeşlik, infak
+- Mevlid: Peygamber sevgisi, güzel ahlak, rahmet, sünnete bağlılık
+- Miraç: namaz, kulluk, dua, manevi yükseliş
+- Ramazan: oruç, Kur'an, sabır, infak, kulluk
+- Ramazan Bayramı: şükür, kardeşlik, sevinç, paylaşma
+- Regaib: rahmet, dua, tövbe, Allah'a yöneliş
 
 ### Üslup motorları
 
-Her üslup ayrı kompozisyon kurallarına sahip olacaktır:
+- **Samimi:** sıcak, doğal, kişisel dua ve temenniler
+- **Resmî:** ölçülü, saygılı, birlik ve toplumsal hayır vurgusu
+- **Kurumsal:** kurum adına çoğul anlatım; çalışanlar/mensuplar ve ailelere yönelik dil
+- **Dua ağırlıklı:** `Allah'ım / Rabbimiz / Ya Rabbi` yapısı merkezde; ibadet, af, şifa, güzel ahlak ve kulluk duaları
+- **Ayet/Hadis ağırlıklı:** yerel motor yalnız kod içinde önceden doğrulanmış kaynak kayıtlarını kullanır; kendiliğinden ayet/hadis uydurmaz
 
-- **Samimi:** sıcak, kişisel, doğal ve kısa geçişli cümleler
-- **Resmî:** ölçülü, saygılı, protokol dili
-- **Kurumsal:** kurum adına çoğul anlatım ve temsil dili
-- **Dua ağırlıklı:** dua yapısı merkezde; aynı dua fiili tekrar ettirilmez
-- **Ayet/Hadis ağırlıklı:** yalnız önceden doğrulanmış ve kod içinde güvenilir kaynak kaydı bulunan sınırlı alıntılar kullanılabilir; motor kendi ayet/hadis metnini uyduramaz
+### MYÜM kaynaklı üslupta ilk doğrulanmış kayıt kümesi
 
-### Çeşitlilik hedefi
+İlk sürümde doğrudan uzun alıntı yerine anlamı açık biçimde özetlenen ve sure/ayet numarası verilen kayıtlar kullanılır:
 
-Amaç yalnız 10–20 mesajı döndürmek değildir. Cümle aileleri, vurgu dizileri, sıralama ve geçiş kombinasyonları sayesinde her gün × üslup × uzunluk için çok yüksek kombinasyon sayısı üretilecektir.
+- Bakara 2/186 — Allah'ın kullarına yakınlığı ve duaya karşılık vermesi
+- İnşirah 94/5-6 — zorlukla beraber kolaylık
+- Ra'd 13/28 — kalplerin Allah'ı anmakla huzur bulması
+- Zümer 39/53 — Allah'ın rahmetinden ümit kesmeme
+- Bakara 2/152 — Allah'ı anma ve şükretme
 
-Motor son üretilen mesajların kısa özet/imza hariç yapısal izlerini tarayıcı belleğinde tutarak art arda aynı kompozisyonu seçmemeye çalışacaktır.
+Kaynak kütüphanesi genişletilirken doğrulanmamış metin eklenmeyecektir.
+
+### Uzunluk motoru
+
+- Kısa: 45–70 kelime
+- Orta: 90–130 kelime
+- Uzun: 150–210 kelime
+
+MYÜM önce temel kompozisyonu kurar; hedef altındaysa uygun yeni cümleler ekler, hedefin belirgin üstündeyse kapanışı koruyarak ara cümleleri azaltır.
 
 ### Kota ve maliyet
 
-MYÜM:
+MYÜM mesaj üretirken:
 
-- API çağrısı yapmaz
-- Gemini kotası tüketmez
-- kullanıcı sayısı arttıkça harici yapay zekâ maliyeti oluşturmaz
-- çalışması için API anahtarı gerektirmez
-- temel üretim için internet bağlantısına ihtiyaç duymaz; uygulama sayfası yüklendikten sonra üretim kodu tarayıcıda çalışabilir
+- Gemini API çağrısı yapmaz
+- API kotası tüketmez
+- API anahtarı kullanmaz
+- harici yapay zekâ maliyeti oluşturmaz
+- mesaj üretimi istemci tarafında yapılır
 
-### Geliştirme güvenliği
+## 23. MYÜM İLK ENTEGRASYON DURUMU — 2026-08-28
 
-MYÜM ilk aşamada **mevcut `localMessage()` fonksiyonunun yerine doğrudan yazılmayacaktır**.
+İlk MYÜM sürümü `APPS_SCRIPT_KODU.gs` içine eklenmiştir.
 
-Önce ayrı bir fonksiyon/modül olarak hazırlanacaktır; örnek: `generateLocalSmartMessage()`.
+Uygulananlar:
 
-Mevcut çalışan Gemini ve basit fallback korunacaktır. Yeni motor yeterli kaliteye ulaştığında hangi sırada kullanılacağı ayrıca kararlaştırılacaktır.
+1. Eski üç sabit yerel cümlelik fallback kaldırılmıştır.
+2. `localMessage()` artık MYÜM kompozisyon motorunu çağırmaktadır.
+3. 10 özel günün her biri için ayrı tema bilgisi tanımlanmıştır.
+4. Samimi, Resmî, Kurumsal, Dua ve Ayet/Hadis ağırlıklı üsluplar için ayrı cümle aileleri oluşturulmuştur.
+5. Kısa/Orta/Uzun hedefleri için dinamik cümle ekleme/çıkarma yapılmaktadır.
+6. Hitap ve `Ad SOYAD` imza sistemi aynen korunmaktadır.
+7. Son yerel mesaj istemci belleğinde tutulur ve birebir aynı gövdenin art arda gelmemesi için yeniden kompozisyon denenir.
+8. Gemini önce çalışmaya devam eder; MYÜM yalnız Gemini hata verip kullanıcı açıkça onayladığında devreye girer.
+9. Kart, mobil görünüm, paylaşım, GitHub yönlendirmesi ve Gemini API taşıma ayarları değiştirilmemiştir.
 
-Olası ilerideki akış seçenekleri:
+Bu ilk sürüm **başlangıç motorudur**. Sonraki geliştirmede amaç; daha büyük cümle aileleri, daha güçlü benzerlik kontrolü, Türkçe ek/ifade kalite filtresi ve günlere daha özgü kompozisyon yapıları eklemektir.
 
-- Yerel motor ana üretici, Gemini isteğe bağlı kalite modu
-- Gemini ana üretici, kota/hata halinde yerel akıllı motor
-- Kullanıcıya `Yerel / Yapay Zekâ` seçimi
+## 24. MYÜM GELİŞTİRME SIRASI
 
-Bu seçimlerden hiçbiri test edilmeden mevcut üretim akışına uygulanmayacaktır.
-
-### Gerçek yerel LLM seçeneği — İLERİ AŞAMA
-
-İleride WebGPU/WASM üzerinde küçük bir Türkçe/multilingual LLM çalıştırma seçeneği ayrıca değerlendirilebilir. Ancak bu yöntem birkaç yüz MB–GB model indirme, yüksek RAM, cihaz uyumluluğu ve mobil performans sorunları nedeniyle MYÜM’den ayrı bir ileri aşamadır ve mevcut web uygulamasının temel çözümü olarak kabul edilmez.
-
-## 23. YEREL MOTOR GELİŞTİRME SIRASI
-
-1. Mevcut çalışan kod değişmeden korunacak.
-2. MYÜM sözlük/cümle aileleri ayrı veri yapısında hazırlanacak.
-3. Samimi + Kısa ile ilk prototip yapılacak.
-4. Aynı girdide en az 20–30 üretim alınarak tekrar oranı ve Türkçe kalite kontrol edilecek.
-5. Sonra Resmî, Kurumsal, Dua ve Ayet/Hadis üslupları eklenecek.
-6. Orta ve Uzun kompozisyon motorları eklenecek.
-7. Tüm 10 özel gün için bağlamlar tamamlanacak.
-8. Önceki mesajla benzerlik önleme ve kalite filtresi eklenecek.
-9. Ayrı test tamamlandıktan sonra mevcut uygulamaya kontrollü biçimde bağlanacak.
-10. Entegrasyon sırasında Gemini, kart, mobil, paylaşım ve GitHub yönlendirme sistemi değiştirilmeden korunacak.
+1. İlk entegre sürümden tüm gün × üslup × uzunluk kombinasyonlarında örnek çıktılar alınacak.
+2. Dilbilgisi ve doğal Türkçe hataları temizlenecek.
+3. Gün bazında özel cümle aileleri genişletilecek; yalnız genel kandil cümlelerine dayanılmayacak.
+4. Her üslubun giriş, orta bölüm ve kapanış ritmi daha da ayrıştırılacak.
+5. Basit birebir tekrar kontrolüne ek olarak kelime/ifade benzerliği kontrolü eklenecek.
+6. Aynı mesaj içinde tekrar eden `diliyorum / niyaz ediyorum / nasip eylesin / vesile olsun` yapıları dengelenecek.
+7. Ayet/Hadis ağırlıklı güvenilir kaynak kütüphanesi kontrollü biçimde genişletilecek.
+8. MYÜM kalitesi yeterli seviyeye geldiğinde Gemini’ye bağımlılığı azaltacak nihai üretim sırası ayrıca kararlaştırılacak.
+9. Bu karar verilene kadar Gemini ana yol, MYÜM onaylı kota/hata alternatifi olarak kalacaktır.
+10. Tüm geliştirmelerde çalışan kart, mobil, paylaşım, GitHub yönlendirme ve isim standardı korunacaktır.
