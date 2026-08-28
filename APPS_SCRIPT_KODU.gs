@@ -43,6 +43,7 @@ function getAppHtml_() {
   select,input,textarea{width:100%;min-width:0;border:1px solid #ccd8d2;border-radius:11px;padding:11px 12px;font-size:14px;background:#fff;color:#22342d;outline:none}
   select:focus,input:focus,textarea:focus{border-color:#63a88c;box-shadow:0 0 0 3px rgba(47,138,102,.10)}
   .primary{width:100%;border:0;border-radius:12px;padding:14px 16px;font-weight:800;font-size:16px;cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--green2),var(--gold))}.primary:disabled{opacity:.62;cursor:wait}
+  .localTest{width:100%;border:1px solid #b8cfc5;border-radius:12px;padding:12px 16px;font-weight:800;font-size:14px;cursor:pointer;color:var(--green);background:#f4faf7}
   .section{border-top:1px dashed #dce5e1;margin-top:18px;padding-top:18px}h2{font-size:18px;margin:0 0 10px;color:var(--green)}
   #sonuc{min-height:185px;resize:vertical;line-height:1.65;font-size:16px;font-family:Georgia,"Times New Roman",serif}.status{margin:9px 0 0;font-size:12px;color:var(--green);font-weight:700;min-height:18px;overflow-wrap:anywhere}
   .mainActions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:11px}.mainActions button{min-width:0;border:0;border-radius:10px;padding:10px 8px;font-weight:700;cursor:pointer;color:#fff;font-size:13px}.mainActions button:nth-child(1){background:#2d6ea3}.mainActions button:nth-child(2){background:#7da493}.mainActions button:nth-child(3){background:#c49325}
@@ -55,7 +56,7 @@ function getAppHtml_() {
     main{padding:14px}.grid{grid-template-columns:1fr;gap:12px}.full{grid-column:auto}
     label{font-size:15px;margin-bottom:6px;line-height:1.25}
     select,input,textarea{font-size:17px;padding:13px 12px;border-radius:10px;line-height:1.35}
-    .primary{font-size:17px;padding:15px 12px}
+    .primary{font-size:17px;padding:15px 12px}.localTest{font-size:15px;padding:13px 12px}
     #sonuc{min-height:205px;font-size:17px;line-height:1.7}.section{margin-top:16px;padding-top:16px}h2{font-size:20px}.status{font-size:14px;line-height:1.4}
     .mainActions{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.mainActions button{padding:13px 6px;font-size:14px}
     .socialActions{gap:10px;margin-top:13px}.socialBtn{width:46px;height:46px;flex-basis:46px}.socialBtn svg{width:24px;height:24px}
@@ -81,6 +82,7 @@ function getAppHtml_() {
 <div><label for="hitap">Hitap</label><input id="hitap" autocomplete="off"></div>
 <div class="full"><label for="imza">İsim / Kurum / Şirket Adı</label><input id="imza" autocomplete="off" onblur="imzayiDuzenle()"></div>
 <div class="full"><button id="olusturBtn" class="primary" onclick="mesajOlustur()">✨ Mesajı Oluştur</button></div>
+<div class="full"><button class="localTest" onclick="yerelMotorTestEt()">🧪 Yerel Motoru Test Et</button></div>
 </div>
 <div class="section"><h2>Oluşturulan Mesaj</h2><textarea id="sonuc" placeholder="Mesajınız burada görünecek..."></textarea><div id="status" class="status"></div>
 <div class="mainActions"><button onclick="kopyala()">📋 Kopyala</button><button onclick="paylas()">📤 Paylaş</button><button onclick="gorselKartOlustur()">🖼️ Görsel Kart</button></div>
@@ -96,6 +98,7 @@ function imzayiDuzenle(){var i=el("imza");i.value=duzenliImza(i.value);return i.
 function paramsOku(){var imza=imzayiDuzenle();return{gun:el("gunSecim").value,uslup:el("uslup").value,uzunluk:el("uzunluk").value,hitap:el("hitap").value.trim(),imza:imza,onceki:(__mesajmatikLastAiText||__mesajmatikLastLocalText||"").slice(0,1500),seed:Date.now()+"-"+Math.random().toString(36).slice(2)}}
 function butonBekle(v){var b=el("olusturBtn");b.disabled=v;b.textContent=v?"⏳ Mesaj hazırlanıyor...":"✨ Mesajı Oluştur"}
 function mesajOlustur(){butonBekle(true);el("status").textContent="Mesaj hazırlanıyor...";google.script.run.withSuccessHandler(function(r){r=r||{};butonBekle(false);if(r.text&&String(r.text).trim().length>=35){var t=String(r.text).trim();__mesajmatikLastAiText=t;el("sonuc").value=t;el("status").textContent="Mesaj oluşturuldu.";window.__mesajmatikDebug={engine:"ai",detail:r.model||"Gemini",requestCount:r.requestCount||1,finishReason:r.finishReason||"STOP"};return}var d=[r.error,r.detail].filter(Boolean).join(" — ")||"Bilinmeyen hata";window.__mesajmatikDebug={engine:"ai_error",detail:d,requestCount:r.requestCount||1,finishReason:r.finishReason||""};el("status").textContent="AI hatası: "+d.slice(0,300);var devam=window.confirm("Yapay Zekâ Mesaj Üretim Hatası\n\n"+d+"\n\nYerel mesaj üreticisiyle devam etmek ister misiniz?");if(devam){var yerel=localMessage();__mesajmatikLastLocalText=yerel;el("sonuc").value=yerel;el("status").textContent="Yerel mesaj oluşturuldu."}}).withFailureHandler(function(err){butonBekle(false);var d=String(err&&err.message?err.message:err);el("status").textContent="Sistem hatası: "+d.slice(0,300);window.alert("Mesaj oluşturulamadı.\n\n"+d)}).generateMessageBridge(paramsOku())}
+function yerelMotorTestEt(){var yerel=localMessage();__mesajmatikLastLocalText=yerel;el("sonuc").value=yerel;el("status").textContent="Yerel motor test mesajı oluşturuldu.";window.__mesajmatikDebug={engine:"local_test",detail:"MYÜM",requestCount:0,finishReason:"LOCAL"}}
 
 function yerelSec(arr,used){if(!arr||!arr.length)return"";var pool=arr.filter(function(x){return !used||used.indexOf(x)<0});if(!pool.length)pool=arr;return pool[Math.floor(Math.random()*pool.length)]}
 function yerelKelimeSay(text){return String(text||"").trim().split(/\s+/).filter(Boolean).length}
