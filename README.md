@@ -137,6 +137,8 @@ Hitap girilmişse ilk satırda bulunur ve ardından bir boş satır bırakılır
 
 **Paylaşım kartında imza/isim ana metinden ayrı ele alınacak ve sağa hizalı gösterilecektir.** Ana gövde iki yana yaslı kalırken imza hiçbir tasarım varyasyonunda sola veya ortaya alınmayacaktır.
 
+Kişi adı olarak algılanan 2–4 kelimelik imzalarda yazım standardı `Ad SOYAD` olacaktır. Örnek: `hasan can` → `Hasan CAN`. Kurum/şirket ifadeleri kişi adı gibi zorla dönüştürülmeyecektir.
+
 ## 13. Teknik mimari — GÜNCEL
 
 Güncel yapı:
@@ -163,7 +165,8 @@ Güncel yapı:
 - GitHub Pages adresini açan kullanıcı gerçek çalışan Mesajmatik’e ulaşır
 - yönlendirme adresi, aktif `/exec` deployment adresiyle birebir aynı tutulur
 - yazım hatalı/eski deployment kimliği bırakılmaz
-- otomatik JavaScript yönlendirmesine ek olarak meta-refresh ve kullanıcıya görünen yedek `Uygulamayı Aç` bağlantısı bulunur
+- mevcut çalışan deployment adresi: `https://script.google.com/macros/s/AKfycby9lM6959cBka4D83g_VGxBhszXbMmpf38x27Pp5KScYaT-xHWINKc-y5QkXEf0ph2E/exec`
+- aynı mevcut Web App deployment’ı `Dağıt → Dağıtımları yönet → Kalem → Yeni sürüm → Dağıt` yoluyla güncellendiğinde bu `/exec` adresi korunur; yeni deployment oluşturulursa kimlik değişebilir
 
 Eski popup, iframe, JSONP veya eski API köprüsü yeniden kullanılmayacaktır.
 
@@ -192,29 +195,29 @@ Instagram için yanlış çalışan sahte metin paylaşım URL’si kullanılmay
 - Kart boyutu kesin olarak 1080×1080’dir.
 - Tasarım sade, temiz ve manevi çizgide olacaktır.
 - Gereksiz süs ve karmaşa kullanılmayacaktır.
-- Görsel kalite düşük, düz ve tek tip bırakılmayacaktır; sade çizgi korunarak **daha rafine arka plan, çerçeve, ışık ve geometrik detaylar** kullanılabilir.
 - `Tasarımı Değiştir` için en az **8 ayrı sade görsel varyasyon** bulunacaktır.
-- Varyasyonlar yalnız renk tonu değiştiren kopyalar olmayacak; **konsept, kompozisyon, çerçeve, zemin, başlık/simge yerleşimi ve geometrik yapı bakımından da belirgin biçimde farklı** olacaktır.
-- Farklı konsept örnekleri: klasik çift çerçeve, yıldızlı gece, parşömen, mihrap/kemer, bordo geometrik, modern açık tasarım, lacivert bantlı kompozisyon, zümrüt madalyon.
-- Her özel gün/gece için ayrı ve tanınabilir simge olacaktır.
 - Kart mevcut mesaj kutusundaki **son düzenlenmiş metni** kullanır; yeni mesaj üretmez.
 - **Mesajın tamamı karta alınacaktır; metin kesilmeyecektir.**
 - Metin uzun olduğunda yazı boyutu ve satır aralığı otomatik küçültülerek karta sığdırılacaktır.
-- Mesajın son kısmını kesmek, `...` ile kırpmak veya belirli satır sayısından sonra durdurmak yasaktır.
-- Hitap ve paragraf boşlukları mümkün olduğunca korunacaktır.
 - **Kartın ana gövde metni iki yana yaslı (justify) olacaktır.**
-- Paragrafın son satırı doğal biçimde sola hizalı kalabilir; diğer satırlar sol ve sağ sınırlara dengeli oturmalıdır.
 - **İsim / kurum / şirket imzası kartın alt bölümünde sağa hizalı olacaktır.**
-- İmza iki yana yaslanmayacak, sola veya ortaya hizalanmayacaktır.
-- İmza için ana metinden görsel olarak ayrışan ancak abartısız tipografik vurgu kullanılabilir.
-- Bu iki yana yaslı ana metin ve sağa hizalı imza düzeni sonraki tasarım değişikliklerinde bozulmayacaktır.
-- **Paylaşım kartının üzerinde `Mesajmatik` yazısı bulunmayacaktır.**
-- **Paylaşım kartının üzerinde `Gemini tarafından üretildi`, model adı, yapay zekâ etiketi, watermark veya benzeri üretici ibaresi bulunmayacaktır.**
-- Uygulama ekranındaki teknik durum bilgileri karta basılmayacaktır.
+- **Paylaşım kartının üzerinde `Mesajmatik`, Gemini, model adı, yapay zekâ etiketi veya watermark bulunmayacaktır.**
+- Simge değişikliği kart altyapısını, metin alanını, imza hizasını veya tema sistemini değiştirmeyecektir.
 
-### Günlere özel simge zorunluluğu
+### Günlere özel simge — GÜNCEL DONDURULMUŞ HARİTA
 
-Mevcut her gün için farklı simge tanımlanır. Yeni gün eklenirse ona da ayrı simge tanımlanması zorunludur.
+- Arefe Günü: `☾`
+- Berat Kandili: `☾✦`
+- Cuma Günü: `☪`
+- Kadir Gecesi: `☾★`
+- Kurban Bayramı: `☾✦✦`
+- Mevlid Kandili: `✦☾`
+- Miraç Kandili: `★☾★`
+- Ramazan Ayı: `☾★`
+- Ramazan Bayramı: `☾✦`
+- Regaib Kandili: `✦☾✦`
+
+Anlamı belirsiz ok, yön, teknik veya dinî çağrışımı olmayan semboller (`↟` vb.) kullanılmayacaktır.
 
 ### `Tasarımı Değiştir`
 
@@ -224,23 +227,19 @@ Bu buton:
 - Gemini çağırmaz
 - yerel mesaj üretmez
 - yalnızca kartın görsel varyasyonunu değiştirir
-- en az 8 farklı tasarım arasında dolaşır
-- iki yana yaslı metin, sağa hizalı imza, tam metni gösterme ve güne özel simge kurallarını bozmaz
-- karta marka, yapay zekâ veya model etiketi eklemez
+- iki yana yaslı metin, sağa hizalı imza ve tam metni gösterme kurallarını bozmaz
 
 ## 16. Mobil görünüm — SABİT KURAL
 
 Uygulama cep telefonunda masaüstü sayfasının küçültülmüş hali gibi görünmeyecektir.
 
 - Sayfa yatay taşma yapmayacaktır.
-- Ana uygulama kartı telefon ekranına sağ ve solda küçük güvenli boşluklarla oturacaktır.
+- Ana uygulama kartı telefon ekranına oturacaktır.
 - Form alanları mobilde tek sütuna düşecektir.
-- Giriş alanları mobil tarayıcıların otomatik yakınlaştırmasını tetiklemeyecek okunabilir yazı boyutunda olacaktır.
-- `Kopyala`, `Paylaş` ve `Görsel Kart` butonları dar ekranda sıkışmayacak şekilde yeniden dizilecektir.
-- Sosyal medya ikonları ekrana sığacak, düzenli aralıklarla yerleşecek ve dokunmatik kullanım için yeterli büyüklükte olacaktır.
-- 1080×1080 kart önizlemesi ekran genişliğine orantılı küçülecek; sayfanın dışına taşmayacaktır.
-- Çok dar telefonlarda ana işlem butonları tek sütuna düşebilir.
-- iPhone güvenli alanları dahil mobil ekran kenarları dikkate alınacaktır.
+- Giriş alanları okunabilir yazı boyutunda olacaktır.
+- `Kopyala`, `Paylaş` ve `Görsel Kart` butonları dar ekranda sıkışmayacaktır.
+- Sosyal medya ikonları ekrana sığacaktır.
+- 1080×1080 kart önizlemesi ekran genişliğine orantılı küçülecektir.
 
 ## 17. Geliştirme sırasında korunacak temel kural
 
@@ -252,12 +251,8 @@ Uygulama cep telefonunda masaüstü sayfasının küçültülmüş hali gibi gö
 - sosyal medya butonları değiştirilirken mesaj motoruna dokunulmaz
 - gün sıralaması değiştirilirken API akışına dokunulmaz
 - simge değiştirilirken metin hizası veya tam metin kuralı bozulmaz
-- hitap alanı değiştirilirken Gemini taşıma/model ayarları değiştirilmez
-- imza hizası değiştirilirken ana metnin iki yana yaslı yapısı bozulmaz
-- kart tasarım çeşitliliği artırılırken mesaj üretimi, paylaşım akışı ve diğer çalışan alanlara dokunulmaz
-- mobil görünüm değiştirilirken Gemini kodu, mesaj üretim mantığı ve kart içeriği değiştirilmez
-- karttan marka/AI etiketi kaldırılırken mesaj metni veya imza düzeni değiştirilmez
-- daha önce açıkça mutabık kalınmış tasarım/işlev kararları yeni bir talimat onları değiştirmedikçe korunur
+- yerel motor geliştirilirken mevcut Gemini yolu, kart, mobil görünüm, paylaşım, yönlendirme ve imza sistemi bozulmaz
+- yeni motor önce ayrı fonksiyon/modül olarak geliştirilir ve test edilir; çalışan üretim akışına doğrudan gömülmez
 
 Her değişiklik cerrahi ve sınırlı olmalıdır.
 
@@ -278,6 +273,8 @@ Google Apps Script GitHub ile otomatik senkronize değildir.
 3. Kullanıcıya **tam ve güncel Kod.gs içeriği** doğrudan verilir.
 4. Kullanıcı Apps Script’e yapıştırır ve yeni sürüm dağıtır.
 
+Parça kod verilip kullanıcının doğru yeri bulması istenmeyecektir.
+
 ## 19. Değişmez ana kurallar
 
 > **Her yeni mesaj isteği, aynı girdiler kullanılsa bile yeni ve belirgin biçimde farklı bir mesaj üretmelidir.**
@@ -286,19 +283,133 @@ Google Apps Script GitHub ile otomatik senkronize değildir.
 
 > **Hitap alanı boş ve serbest metin olacaktır; hazır seçenek olmayacaktır.**
 
-> **Özel Vurgu / Anahtar Kelimeler alanı bulunmayacaktır; kullanıcı mesajı sonuç kutusunda kendisi düzenleyebilir.**
+> **Özel Vurgu / Anahtar Kelimeler alanı bulunmayacaktır.**
 
-> **Paylaşım kartı mesajın tamamını göstermeli, ana metni iki yana yaslı, imzayı sağa hizalı göstermeli ve seçilen güne özel simge kullanmalıdır.**
+> **Paylaşım kartı mesajın tamamını göstermeli, ana metni iki yana yaslı, imzayı sağa hizalı göstermelidir.**
 
-> **Paylaşım kartında Mesajmatik, Gemini, model adı veya yapay zekâ üretim etiketi bulunmayacaktır.**
+> **Mobil görünüm telefon ekranına taşmadan çalışacaktır.**
 
-> **Mobil görünüm telefon ekranına taşmadan, tek sütun ve dokunmatik kullanıma uygun şekilde oturacaktır.**
-
-## 20. Kullanıcıya görünen teknik ibareler ve kart konseptleri — SON KARAR
+## 20. Kullanıcıya görünen teknik ibareler — SON KARAR
 
 - Başarılı mesaj üretiminden sonra kullanıcıya yalnızca `Mesaj oluşturuldu.` bilgisi gösterilir.
-- Kullanıcı arayüzünde başarılı sonuç satırında `Gemini`, `gemini-3.6-flash`, model adı veya yapay zekâ üretici ibaresi gösterilmez.
-- Teknik model bilgisi yalnız geliştirici/debug verisinde tutulabilir; son kullanıcıya görünür metin haline getirilmez.
-- GitHub Pages yönlendirmesi aktif Apps Script `/exec` adresinin doğru deployment kimliğini kullanacaktır. Yanlış veya eski kimlik kabul edilmez.
-- Kart varyasyonlarında yalnız renk değişimi yeterli değildir. Sekiz tasarımın her biri gözle bakıldığında ayrı bir konsept olarak ayırt edilebilir olmalıdır.
-- Konsept değişse bile ana metin iki yana yaslı, imza sağa hizalı, tam metin görünür ve güne özel simge korunur.
+- Kullanıcı arayüzünde `Gemini`, `gemini-3.6-flash`, model adı veya yapay zekâ üretici ibaresi gösterilmez.
+- Teknik model bilgisi yalnız geliştirici/debug verisinde tutulabilir.
+- GitHub Pages yönlendirmesi aktif Apps Script `/exec` adresinin doğru deployment kimliğini kullanacaktır.
+
+## 21. 2026-08-28 ÇALIŞAN SÜRÜMÜ DONDURMA KAYDI
+
+Bu tarihte çalışan mevcut sistem yeni geliştirmeler için **geri dönüş tabanı** kabul edilir.
+
+- GitHub Pages doğrudan çalışan Apps Script deployment’ına açılmaktadır.
+- Aktif `/exec` adresi README Bölüm 13’te kayıtlıdır.
+- Gemini üretimi çalışmaktadır ancak ücretsiz/kısıtlı kota nedeniyle yoğun kullanımda `429 quota exceeded` oluşabilmektedir.
+- Gemini motoru kaldırılmamıştır ve yerel motor geliştirilirken değiştirilmeyecektir.
+- Son kullanıcıya görünen başarı mesajı `Mesaj oluşturuldu.` şeklindedir.
+- Gemini hata verirse mevcut sistem kullanıcı onayıyla eski basit yerel fallback’i çalıştırabilir; bu davranış yeni yerel motor hazır olana kadar korunur.
+- Kişi adı standardı `Ad SOYAD`dır.
+- Kartlar 1080×1080, ana metin justify, imza sağ hizalıdır.
+- Gün simgeleri Bölüm 15’te kayıtlı haritaya göre çalışır.
+- Mobil görünüm mevcut haliyle çalışan kabul edilir ve yerel motor geliştirmesi sırasında değiştirilmez.
+
+## 22. YENİ HEDEF — KOTASIZ YEREL MESAJ ÜRETİM MOTORU
+
+### Amaç
+
+Gemini/API kotasına bağlı olmadan, sunucuya veya ücretli yapay zekâ servisine istek göndermeden, Mesajmatik’in kendi kodu içinde çok sayıda doğal Türkçe mesaj üretebilen bir motor geliştirilecektir.
+
+Bu motorun çalışma adı: **Mesajmatik Yerel Üretim Motoru (MYÜM)**.
+
+### Temel karar
+
+İlk aşamada tarayıcıya birkaç GB yapay zekâ modeli indiren gerçek bir yerel LLM kullanılmayacaktır. Bunun nedeni mobil cihaz uyumluluğu, ilk indirme boyutu, RAM ihtiyacı, WebGPU desteği ve düşük donanımlı telefonlarda kararlılık riskidir.
+
+Bunun yerine Mesajmatik’in ihtiyacına özel bir **doğal dil üretim motoru (NLG)** geliştirilecektir. Bu motor klasik sabit mesaj listesi olmayacaktır.
+
+### MYÜM çalışma prensibi
+
+Motor bir mesajı tek parça hazır şablondan seçmeyecek; aşağıdaki katmanlardan dinamik olarak kuracaktır:
+
+1. gün/gece bağlamı
+2. seçilen üslup
+3. hedef uzunluk
+4. hitap
+5. giriş cümlesi ailesi
+6. ana tema/vurgu dizisi
+7. dua/dilek cümlesi ailesi
+8. bağlaç ve geçiş yapısı
+9. kapanış cümlesi ailesi
+10. imza
+
+Her katmanda birden fazla cümle iskeleti, kelime alternatifi ve cümle düzeni bulunacaktır. Ağırlıklı seçim + tekrar önleme ile aynı girdilerde farklı sonuçlar üretilecektir.
+
+### Türkçe kalite katmanı
+
+Motor yalnız rastgele kelime birleştirmeyecektir. Aşağıdaki kontroller yapılacaktır:
+
+- kişi/kurum anlatımına göre tekil-çoğul uyumu
+- üsluba göre `diliyorum / dileriz / temenni ederim / temenni ederiz` seçimi
+- yinelenen `diliyorum`, `olsun`, `vesile olsun` gibi kalıpların azaltılması
+- art arda aynı fiil veya aynı cümle başlangıcının engellenmesi
+- noktalama ve boşluk temizliği
+- hitap/imza yerleşimi
+- hedef kelime aralığına yaklaşma
+- önceki üretilen mesajla yüksek benzerlik varsa yeniden kompozisyon
+
+### Üslup motorları
+
+Her üslup ayrı kompozisyon kurallarına sahip olacaktır:
+
+- **Samimi:** sıcak, kişisel, doğal ve kısa geçişli cümleler
+- **Resmî:** ölçülü, saygılı, protokol dili
+- **Kurumsal:** kurum adına çoğul anlatım ve temsil dili
+- **Dua ağırlıklı:** dua yapısı merkezde; aynı dua fiili tekrar ettirilmez
+- **Ayet/Hadis ağırlıklı:** yalnız önceden doğrulanmış ve kod içinde güvenilir kaynak kaydı bulunan sınırlı alıntılar kullanılabilir; motor kendi ayet/hadis metnini uyduramaz
+
+### Çeşitlilik hedefi
+
+Amaç yalnız 10–20 mesajı döndürmek değildir. Cümle aileleri, vurgu dizileri, sıralama ve geçiş kombinasyonları sayesinde her gün × üslup × uzunluk için çok yüksek kombinasyon sayısı üretilecektir.
+
+Motor son üretilen mesajların kısa özet/imza hariç yapısal izlerini tarayıcı belleğinde tutarak art arda aynı kompozisyonu seçmemeye çalışacaktır.
+
+### Kota ve maliyet
+
+MYÜM:
+
+- API çağrısı yapmaz
+- Gemini kotası tüketmez
+- kullanıcı sayısı arttıkça harici yapay zekâ maliyeti oluşturmaz
+- çalışması için API anahtarı gerektirmez
+- temel üretim için internet bağlantısına ihtiyaç duymaz; uygulama sayfası yüklendikten sonra üretim kodu tarayıcıda çalışabilir
+
+### Geliştirme güvenliği
+
+MYÜM ilk aşamada **mevcut `localMessage()` fonksiyonunun yerine doğrudan yazılmayacaktır**.
+
+Önce ayrı bir fonksiyon/modül olarak hazırlanacaktır; örnek: `generateLocalSmartMessage()`.
+
+Mevcut çalışan Gemini ve basit fallback korunacaktır. Yeni motor yeterli kaliteye ulaştığında hangi sırada kullanılacağı ayrıca kararlaştırılacaktır.
+
+Olası ilerideki akış seçenekleri:
+
+- Yerel motor ana üretici, Gemini isteğe bağlı kalite modu
+- Gemini ana üretici, kota/hata halinde yerel akıllı motor
+- Kullanıcıya `Yerel / Yapay Zekâ` seçimi
+
+Bu seçimlerden hiçbiri test edilmeden mevcut üretim akışına uygulanmayacaktır.
+
+### Gerçek yerel LLM seçeneği — İLERİ AŞAMA
+
+İleride WebGPU/WASM üzerinde küçük bir Türkçe/multilingual LLM çalıştırma seçeneği ayrıca değerlendirilebilir. Ancak bu yöntem birkaç yüz MB–GB model indirme, yüksek RAM, cihaz uyumluluğu ve mobil performans sorunları nedeniyle MYÜM’den ayrı bir ileri aşamadır ve mevcut web uygulamasının temel çözümü olarak kabul edilmez.
+
+## 23. YEREL MOTOR GELİŞTİRME SIRASI
+
+1. Mevcut çalışan kod değişmeden korunacak.
+2. MYÜM sözlük/cümle aileleri ayrı veri yapısında hazırlanacak.
+3. Samimi + Kısa ile ilk prototip yapılacak.
+4. Aynı girdide en az 20–30 üretim alınarak tekrar oranı ve Türkçe kalite kontrol edilecek.
+5. Sonra Resmî, Kurumsal, Dua ve Ayet/Hadis üslupları eklenecek.
+6. Orta ve Uzun kompozisyon motorları eklenecek.
+7. Tüm 10 özel gün için bağlamlar tamamlanacak.
+8. Önceki mesajla benzerlik önleme ve kalite filtresi eklenecek.
+9. Ayrı test tamamlandıktan sonra mevcut uygulamaya kontrollü biçimde bağlanacak.
+10. Entegrasyon sırasında Gemini, kart, mobil, paylaşım ve GitHub yönlendirme sistemi değiştirilmeden korunacak.
