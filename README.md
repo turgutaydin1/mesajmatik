@@ -450,3 +450,26 @@ Bu ilk sürüm **başlangıç motorudur**. Sonraki geliştirmede amaç; daha bü
 8. MYÜM kalitesi yeterli seviyeye geldiğinde Gemini’ye bağımlılığı azaltacak nihai üretim sırası ayrıca kararlaştırılacak.
 9. Bu karar verilene kadar Gemini ana yol, MYÜM onaylı kota/hata alternatifi olarak kalacaktır.
 10. Tüm geliştirmelerde çalışan kart, mobil, paylaşım, GitHub yönlendirme ve isim standardı korunacaktır.
+
+## 25. MYÜM HAM METİN API YOLU — 2026-09-03
+
+Google Apps Script `doGet(e)` içine mevcut web arayüzünü bozmadan ayrı bir ham metin üretim yolu eklenmiştir.
+
+- Normal `/exec` adresi parametresiz açıldığında mevcut Mesajmatik web arayüzü aynen açılır.
+- `?ping=1` davranışı aynen korunur.
+- `?action=generate` kullanıldığında yalnızca MYÜM tarafından üretilen ham mesaj metni döner.
+- Bu yol Gemini çağırmaz, Gemini kotası tüketmez ve `GEMINI_API_KEY` kullanmaz.
+- Kestirmeler, otomasyonlar veya başka istemciler dönen metni doğrudan okuyabilir.
+- Desteklenen parametreler: `gun`, `uslup`, `uzunluk`, `hitap`, `imza`.
+- Geçersiz veya eksik değerlerde güvenli varsayılanlar kullanılır: `Cuma Günü`, `samimi`, `kisa`.
+- `imza` kişi adıysa mevcut `Ad SOYAD` standardı uygulanır; kurum/şirket ifadeleri olduğu gibi korunur.
+
+Örnek çağrı:
+
+`/exec?action=generate&gun=Cuma%20Günü&uslup=samimi&uzunluk=kisa`
+
+Hitap ve imza ile örnek:
+
+`/exec?action=generate&gun=Berat%20Kandili&uslup=dua&uzunluk=orta&hitap=Kıymetli%20Dostum&imza=Turgut%20Aydın`
+
+Bu API yolu mevcut web uygulamasındaki `Mesajı Oluştur → Gemini → hata halinde kullanıcı onayıyla MYÜM` akışını değiştirmez; yalnızca harici istemciler için ek bir yerel üretim girişidir.
