@@ -3,6 +3,12 @@ const MESAJMATIK_MODEL = "gemini-3.6-flash";
 function doGet(e) {
   const p = e && e.parameter ? e.parameter : {};
 
+  if (String(p.action || "") === "generate") {
+    return ContentService
+      .createTextOutput(generateLocalApiMessage_(p))
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+
   if (String(p.ping || "") === "1") {
     return ContentService
       .createTextOutput(JSON.stringify({
@@ -23,6 +29,200 @@ function doGet(e) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
+function apiPick_(arr) {
+  if (!arr || !arr.length) return "";
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function apiWordCount_(text) {
+  return String(text || "").trim().split(/\s+/).filter(Boolean).length;
+}
+
+function apiSignature_(value) {
+  var v = String(value || "").trim().replace(/\s+/g, " ");
+  if (!v) return "";
+  var p = v.split(" ");
+  var kurum = /(^|\s)(a\.?\s*ş\.?|ltd\.?|şti\.?|şirketi|holding|grup|group|üniversitesi|belediyesi|bakanlığı|müdürlüğü|derneği|vakfı|ticaret|sanayi|bankası|hastanesi|havalimanı|otel|ajans|teknoloji|enerji|inşaat|otomotiv|gıda|turizm|lojistik|medya|yayınları)(\s|$)/i;
+  var kisi = p.length >= 2 && p.length <= 4 && !kurum.test(v) && p.every(function(x) {
+    return /^[A-Za-zÇĞİÖŞÜçğıöşü'-]+$/.test(x);
+  });
+  if (!kisi) return v;
+  return p.map(function(x, i) {
+    if (i === p.length - 1) return String(x).toLocaleUpperCase("tr-TR");
+    var l = String(x).toLocaleLowerCase("tr-TR");
+    return l ? l.charAt(0).toLocaleUpperCase("tr-TR") + l.slice(1) : "";
+  }).join(" ");
+}
+
+function apiLocalDay_(gun) {
+  var m = {
+    "Arefe Günü": {ad:"Arefe günü", tamlayan:"Arefe gününün", tema:"arınma, dua, hazırlık ve kulluk bilinci"},
+    "Berat Kandili": {ad:"Berat Kandili", tamlayan:"Berat Kandili'nin", tema:"bağışlanma, tövbe, dua ve gönül muhasebesi"},
+    "Cuma Günü": {ad:"Cuma günü", tamlayan:"Cuma gününün", tema:"dua, kardeşlik, rahmet ve bereket"},
+    "Kadir Gecesi": {ad:"Kadir Gecesi", tamlayan:"Kadir Gecesi'nin", tema:"Kur'an, dua, ibadet ve af dileme"},
+    "Kurban Bayramı": {ad:"Kurban Bayramı", tamlayan:"Kurban Bayramı'nın", tema:"teslimiyet, paylaşma, kardeşlik ve infak"},
+    "Mevlid Kandili": {ad:"Mevlid Kandili", tamlayan:"Mevlid Kandili'nin", tema:"Peygamber sevgisi, güzel ahlak, rahmet ve sünnete bağlılık"},
+    "Miraç Kandili": {ad:"Miraç Kandili", tamlayan:"Miraç Kandili'nin", tema:"namaz, kulluk, dua ve manevi yükseliş"},
+    "Ramazan Ayı": {ad:"Ramazan ayı", tamlayan:"Ramazan ayının", tema:"oruç, Kur'an, sabır, infak ve kulluk"},
+    "Ramazan Bayramı": {ad:"Ramazan Bayramı", tamlayan:"Ramazan Bayramı'nın", tema:"şükür, kardeşlik, sevinç ve paylaşma"},
+    "Regaib Kandili": {ad:"Regaib Kandili", tamlayan:"Regaib Kandili'nin", tema:"rahmet, dua, tövbe ve Allah'a yöneliş"}
+  };
+  return m[gun] || m["Cuma Günü"];
+}
+
+function apiLocalSource_() {
+  return apiPick_([
+    "Bakara Suresi 2/186'da Allah'ın kullarına yakın olduğu ve dua edenin duasına karşılık verdiği bildirilir.",
+    "İnşirah Suresi 94/5-6'da zorlukla beraber kolaylığın bulunduğu hatırlatılır.",
+    "Ra'd Suresi 13/28'de kalplerin Allah'ı anmakla huzur bulduğu bildirilir.",
+    "Zümer Suresi 39/53'te Allah'ın rahmetinden ümit kesilmemesi emredilir.",
+    "Bakara Suresi 2/152'de Allah'ı anmanın ve O'na şükretmenin önemi hatırlatılır."
+  ]);
+}
+
+function apiLocalBanks_(uslup, b) {
+  var bank = {
+    giris: [
+      "Bu mübarek " + b.ad + " vesilesiyle gönüllerimizin Rabbimize daha samimi yönelmesini diliyorum.",
+      b.tamlayan + " manevi ikliminin kalplerimize huzur, hayatımıza hayır ve bereket taşımasını niyaz ediyorum.",
+      "Rabbimizin rahmetine sığınarak idrak ettiğimiz bu " + b.ad + " vesilesiyle dualarımızın hayra açılmasını diliyorum.",
+      "Bu kıymetli " + b.ad + " vesilesiyle kalplerimizin dua, şükür ve güzel ahlakla güçlenmesini temenni ediyorum."
+    ],
+    orta: [
+      "Rabbim bizleri affına, rahmetine ve rızasına erişen kullarından eylesin.",
+      "Dualarımızı kabul, niyetlerimizi halis, amellerimizi salih eylesin.",
+      "Hanelerimize huzur, ömrümüze bereket, gönüllerimize iman kuvveti nasip eylesin.",
+      "Bizi kırgınlıkları onaran, iyiliği çoğaltan ve kul hakkından sakınan kullarından eylesin.",
+      "Sevdiklerimizle birlikte sağlık, afiyet ve hayırlı ömürler nasip eylesin.",
+      "Kalplerimizi kibirden, dillerimizi kırıcı sözden, işlerimizi haramdan muhafaza eylesin."
+    ],
+    tema: [
+      "Bu mübarek zamanın " + b.tema + " bilincimizi kuvvetlendirmesine vesile olmasını diliyorum.",
+      b.tema.charAt(0).toLocaleUpperCase("tr-TR") + b.tema.slice(1) + " hususunda daha gayretli olmayı Rabbim hepimize nasip eylesin.",
+      "Bu mübarek vaktin hatırlattığı " + b.tema + " değerlerini hayatımıza taşımayı nasip etsin."
+    ],
+    kapanis: [
+      b.ad + " mübarek olsun; Rabbim dualarımızı ve ibadetlerimizi kabul eylesin.",
+      "Rabbim bu mübarek vakti hakkımızda hayra, mağfirete ve berekete vesile eylesin. " + b.ad + " mübarek olsun.",
+      b.ad + " vesilesiyle Rabbim gönüllerimize huzur, hanelerimize bereket nasip eylesin.",
+      "Allah bu mübarek vakti birlik, iyilik ve hayırlara vesile kılsın. " + b.ad + " mübarek olsun."
+    ]
+  };
+
+  if (uslup === "resmi") {
+    bank.giris = [
+      b.ad + " vesilesiyle, bu mübarek zamanın milletimize ve İslam âlemine hayırlar getirmesini temenni ediyorum.",
+      "Manevi değerlerimizi güçlendiren " + b.ad + " vesilesiyle sağlık, huzur ve esenlik diliyorum.",
+      b.tamlayan + " birlik, kardeşlik ve yardımlaşma duygularımızı kuvvetlendirmesini temenni ediyorum."
+    ];
+    bank.kapanis = [
+      "Bu vesileyle " + b.ad + "nı tebrik ediyor; Rabbimizden sağlık, huzur ve hayırlar niyaz ediyorum.",
+      b.ad + "nın ülkemiz, milletimiz ve İslam âlemi için hayırlara vesile olmasını diliyorum.",
+      "Rabbimizin rahmet ve bereketinin üzerimizde olması duasıyla " + b.ad + "nı tebrik ediyorum."
+    ];
+  } else if (uslup === "kurumsal") {
+    bank.giris = [
+      "Kurumumuz adına, " + b.ad + " vesilesiyle tüm mensuplarımıza ve ailelerine sağlık, huzur ve bereket diliyoruz.",
+      b.ad + " vesilesiyle birlik, dayanışma ve güzel ahlakın hayatımızda daha da güçlenmesini temenni ediyoruz.",
+      "Bu mübarek " + b.ad + "nın gönüllerimize huzur, çalışma hayatımıza hayır ve bereket getirmesini diliyoruz."
+    ];
+    bank.orta = [
+      "Rabbimizin rahmetinin hanelerimizi kuşatmasını, dualarımızın kabul olmasını niyaz ediyoruz.",
+      "Birbirimize karşı adalet, merhamet ve sorumluluk bilincimizi güçlendirmesini diliyoruz.",
+      "İyiliği çoğaltan, paylaşmayı ve kardeşliği güçlendiren davranışlara vesile olmasını temenni ediyoruz.",
+      "Tüm çalışanlarımız ve aileleri için sağlık, afiyet ve hayırlı ömürler diliyoruz."
+    ];
+    bank.kapanis = [
+      b.ad + "nı tebrik ediyor; Rabbimizden ülkemiz ve İslam âlemi için hayırlar diliyoruz.",
+      "Bu mübarek vaktin birlik ve beraberliğimizi güçlendirmesini diliyor, " + b.ad + "nı tebrik ediyoruz.",
+      b.ad + "nın tüm insanlık için barışa, iyiliğe ve hayra vesile olmasını niyaz ediyoruz."
+    ];
+  } else if (uslup === "dua") {
+    bank.giris = [
+      "Allah'ım, bu mübarek " + b.ad + " vesilesiyle bizleri rahmetinle kuşat, kusurlarımızı bağışla ve kalplerimizi Sana yönelt.",
+      "Rabbimiz, " + b.ad + " hürmetine gönüllerimize iman huzuru, hanelerimize bereket ve hayatımıza hayır nasip eyle.",
+      "Ya Rabbi, bu mübarek " + b.ad + " vesilesiyle dualarımızı kabul, tövbelerimizi makbul, niyetlerimizi halis eyle."
+    ];
+    bank.orta = [
+      "Bizi doğru yoldan ayırma; haramdan, kul hakkından ve kötü ahlaktan muhafaza eyle.",
+      "Anne babamıza, ailemize, sevdiklerimize ve bütün müminlere sağlık, afiyet ve hayırlı ömürler ihsan eyle.",
+      "Darda olanlara ferahlık, hastalara şifa, borçlulara kolaylık, mazlumlara yardım ihsan eyle.",
+      "Kalplerimizi kin ve kibirden arındır; dilimizi doğru sözden, elimizi iyilikten ayırma.",
+      "Bizleri ibadetlerinde samimi, nimetlerine şükreden ve güzel ahlakla yaşayan kullarından eyle."
+    ];
+    bank.kapanis = [
+      "Dualarımızı kabul eyle Allah'ım. " + b.ad + "nı hakkımızda hayırlara vesile kıl.",
+      "Bizleri affınla bağışla, rahmetinle kuşat ve rızana eriştir. Âmin.",
+      "Bu mübarek vakti günahlarımızın affına, kalplerimizin huzuruna ve hayırlı bir ömre vesile eyle. Âmin."
+    ];
+  } else if (uslup === "kaynakli") {
+    bank.giris = [
+      apiLocalSource_() + " Bu ilahi hatırlatmanın ışığında " + b.ad + "nı dua ve kulluk bilinciyle idrak etmeyi diliyorum.",
+      apiLocalSource_() + " " + b.ad + " vesilesiyle bu hakikati gönlümüzde diri tutmayı niyaz ediyorum.",
+      apiLocalSource_() + " Bu mübarek " + b.ad + "nın Kur'an'ın rehberliğine daha sıkı sarılmamıza vesile olmasını diliyorum."
+    ];
+    bank.tema = [
+      "Kur'an'ın öğrettiği dua, sabır, şükür ve güzel ahlak ölçülerini hayatımıza taşımayı Rabbim nasip eylesin.",
+      "Bu mübarek vakit, Kur'an'ın rehberliğinde sözümüzü ve davranışlarımızı güzelleştirmeye vesile olsun.",
+      "Rabbim bizi ayetlerini anlayarak okuyan, öğüdünü hayatına taşıyan ve güzel ahlakla yaşayan kullarından eylesin."
+    ];
+  }
+  return bank;
+}
+
+function apiLocalBody_(gun, uslup, uzunluk) {
+  var b = apiLocalDay_(gun);
+  var bank = apiLocalBanks_(uslup, b);
+  var hedef = uzunluk === "kisa" ? [45,70] : uzunluk === "uzun" ? [150,210] : [90,130];
+  var parts = [];
+  var used = {};
+
+  function add(arr) {
+    var pool = (arr || []).filter(function(x) { return !used[x]; });
+    if (!pool.length) return;
+    var s = apiPick_(pool);
+    used[s] = true;
+    parts.push(s);
+  }
+
+  add(bank.giris);
+  add(bank.tema);
+  add(bank.orta);
+  if (uzunluk !== "kisa") {
+    add(bank.orta);
+    add(bank.tema);
+  }
+  if (uzunluk === "uzun") {
+    add(bank.orta);
+    add(bank.orta);
+    add(bank.tema);
+  }
+  add(bank.kapanis);
+
+  var extra = bank.orta.concat(bank.tema);
+  while (apiWordCount_(parts.join(" ")) < hedef[0] && parts.length < 12) add(extra);
+  while (parts.length > 3 && apiWordCount_(parts.join(" ")) > hedef[1]) parts.splice(parts.length - 2, 1);
+  return parts.join(" ").replace(/\s+/g, " ").trim();
+}
+
+function generateLocalApiMessage_(p) {
+  var allowedDays = ["Arefe Günü","Berat Kandili","Cuma Günü","Kadir Gecesi","Kurban Bayramı","Mevlid Kandili","Miraç Kandili","Ramazan Ayı","Ramazan Bayramı","Regaib Kandili"];
+  var allowedStyles = ["samimi","resmi","kurumsal","dua","kaynakli"];
+  var allowedLengths = ["kisa","orta","uzun"];
+  var gun = String(p.gun || "Cuma Günü").slice(0,80);
+  var uslup = String(p.uslup || "samimi").slice(0,40);
+  var uzunluk = String(p.uzunluk || "kisa").slice(0,20);
+  var hitap = String(p.hitap || "").trim().slice(0,120);
+  var imza = apiSignature_(String(p.imza || "").slice(0,160));
+
+  if (allowedDays.indexOf(gun) < 0) gun = "Cuma Günü";
+  if (allowedStyles.indexOf(uslup) < 0) uslup = "samimi";
+  if (allowedLengths.indexOf(uzunluk) < 0) uzunluk = "kisa";
+
+  var body = apiLocalBody_(gun, uslup, uzunluk);
+  return (hitap ? hitap + "\n\n" : "") + body + (imza ? "\n\n" + imza : "");
+}
+
 function getAppHtml_() {
   return String.raw`<!doctype html>
 <html lang="tr">
@@ -41,7 +241,7 @@ function getAppHtml_() {
   main{padding:20px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}
   label{display:block;font-weight:700;font-size:13px;margin:0 0 6px}
   select,input,textarea{width:100%;min-width:0;border:1px solid #ccd8d2;border-radius:11px;padding:11px 12px;font-size:14px;background:#fff;color:#22342d;outline:none}
-  select:focus,input:focus,textarea:focus{border-color:#63a88c;box-shadow:0 0 0 3px rgba(47,138,102,.10)}
+  select:focus,input,textarea:focus{border-color:#63a88c;box-shadow:0 0 0 3px rgba(47,138,102,.10)}
   .primary{width:100%;border:0;border-radius:12px;padding:14px 16px;font-weight:800;font-size:16px;cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--green2),var(--gold))}.primary:disabled{opacity:.62;cursor:wait}
   .section{border-top:1px dashed #dce5e1;margin-top:18px;padding-top:18px}h2{font-size:18px;margin:0 0 10px;color:var(--green)}
   #sonuc{min-height:185px;resize:vertical;line-height:1.65;font-size:16px;font-family:Georgia,"Times New Roman",serif}.status{margin:9px 0 0;font-size:12px;color:var(--green);font-weight:700;min-height:18px;overflow-wrap:anywhere}
